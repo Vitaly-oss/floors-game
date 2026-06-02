@@ -335,8 +335,11 @@
         <canvas id="gameCanvas"></canvas>
         <div id="ui-layer">
             <div class="ui-item">🏗️ <span id="floorCount">1</span></div>
+			<div class="ui-item">🏆 <span id="bestDisplay">0</span></div>
             <div class="ui-item">🔥 <span id="comboText">0</span></div>
             <div class="ui-item">🪙 <span id="coinDisplay">0</span></div>
+			
+
         </div>
         
         <div class="combo-popup" id="comboPopup"></div>
@@ -447,6 +450,7 @@
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
 
+			const bestDisplay = document.getElementById('bestDisplay');
             const floorCountEl = document.getElementById('floorCount');
             const comboTextEl = document.getElementById('comboText');
             const coinDisplayEl = document.getElementById('coinDisplay');
@@ -924,20 +928,25 @@
             function hideCombo() { comboPopup.style.opacity = '0'; }
 
             function triggerGameOver() {
-                gameState = 'gameover'; currentFloor = null;
-                const tf = floors.length - 1, cb = 1 + getCollectionBonus() / 100;
-                const bc = Math.floor(tf * 5 * cb); coins += bc;
-                if (tf > bestFloors) bestFloors = tf;
-                goFloorsEl.textContent = tf; goComboEl.textContent = bestCombo; goCoinsEl.textContent = bc;
-                gameoverPanel.style.display = 'flex'; hintText.style.display = 'none';
-                document.getElementById('bottom-buttons').style.display = 'none';
-                updateUI(); saveGame();
-            }
+    gameState = 'gameover'; currentFloor = null;
+    const tf = floors.length - 1, cb = 1 + getCollectionBonus() / 100;
+    const bc = Math.floor(tf * 5 * cb); coins += bc;
+    if (tf > bestFloors) {
+        bestFloors = tf;
+        bestDisplay.textContent = bestFloors;
+    }
+    goFloorsEl.textContent = tf; goComboEl.textContent = bestCombo; goCoinsEl.textContent = bc;
+    gameoverPanel.style.display = 'flex'; hintText.style.display = 'none';
+    document.getElementById('bottom-buttons').style.display = 'none';
+    updateUI(); saveGame();
+}
 
             function updateUI() {
-                floorCountEl.textContent = Math.max(1, floors.length);
-                comboTextEl.textContent = comboCount; coinDisplayEl.textContent = coins;
-            }
+    floorCountEl.textContent = Math.max(1, floors.length);
+    bestDisplay.textContent = bestFloors;
+    comboTextEl.textContent = comboCount;
+    coinDisplayEl.textContent = coins;
+}
 
             // === МАГАЗИН ===
             function getUpgradeCost(u) {
