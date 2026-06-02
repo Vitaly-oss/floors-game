@@ -47,19 +47,22 @@
             align-items: center;
             pointer-events: none;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
             z-index: 5;
+            flex-wrap: wrap;
+            gap: 4px;
         }
         .ui-item {
             background: rgba(0,0,0,0.6);
             backdrop-filter: blur(10px);
-            padding: 8px 14px;
+            padding: 6px 10px;
             border-radius: 20px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
+            font-size: 13px;
         }
         #bottom-buttons {
             position: absolute;
@@ -70,7 +73,7 @@
             gap: 10px;
             z-index: 6;
         }
-        #shop-btn, #collection-btn, #skin-btn, #bg-skin-btn, #reset-btn {
+        #shop-btn, #collection-btn, #skin-btn, #bg-skin-btn, #achievement-btn, #reset-btn {
             width: 50px;
             height: 50px;
             border: none;
@@ -83,23 +86,13 @@
             justify-content: center;
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
-        #shop-btn {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-        }
-        #collection-btn {
-            background: linear-gradient(135deg, #e94560, #c23152);
-        }
-        #skin-btn {
-            background: linear-gradient(135deg, #7c3aed, #5b21b6);
-        }
-        #bg-skin-btn {
-            background: linear-gradient(135deg, #06b6d4, #0891b2);
-        }
-        #reset-btn {
-            background: linear-gradient(135deg, #666, #333);
-            font-size: 14px;
-        }
-        #shop-btn:active, #collection-btn:active, #skin-btn:active, #bg-skin-btn:active, #reset-btn:active {
+        #shop-btn { background: linear-gradient(135deg, #ffd700, #ffaa00); }
+        #collection-btn { background: linear-gradient(135deg, #e94560, #c23152); }
+        #skin-btn { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
+        #bg-skin-btn { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+        #achievement-btn { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        #reset-btn { background: linear-gradient(135deg, #666, #333); font-size: 14px; }
+        #shop-btn:active, #collection-btn:active, #skin-btn:active, #bg-skin-btn:active, #achievement-btn:active, #reset-btn:active {
             transform: scale(0.9);
         }
         .combo-popup {
@@ -132,7 +125,28 @@
             text-align: center;
             line-height: 1.4;
         }
-        #shop-panel, #collection-panel, #skin-panel, #bg-skin-panel {
+        /* Достижение */
+        #achievement-popup {
+            position: absolute;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1a1a3e, #0f0f2e);
+            border: 2px solid #f59e0b;
+            border-radius: 16px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            z-index: 11;
+            text-align: center;
+            opacity: 0;
+            transition: all 0.5s ease-out;
+            pointer-events: none;
+            box-shadow: 0 8px 30px rgba(245,158,11,0.4);
+            white-space: nowrap;
+        }
+        #shop-panel, #collection-panel, #skin-panel, #bg-skin-panel, #achievement-panel {
             position: absolute;
             bottom: 0;
             left: 0;
@@ -154,10 +168,11 @@
         #collection-panel { border-top: 2px solid #e94560; }
         #skin-panel { border-top: 2px solid #7c3aed; }
         #bg-skin-panel { border-top: 2px solid #06b6d4; }
-        #shop-panel.open, #collection-panel.open, #skin-panel.open, #bg-skin-panel.open {
+        #achievement-panel { border-top: 2px solid #f59e0b; }
+        #shop-panel.open, #collection-panel.open, #skin-panel.open, #bg-skin-panel.open, #achievement-panel.open {
             transform: translateY(0);
         }
-        #shop-panel h3, #collection-panel h3, #skin-panel h3, #bg-skin-panel h3 {
+        #shop-panel h3, #collection-panel h3, #skin-panel h3, #bg-skin-panel h3, #achievement-panel h3 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 5px;
@@ -166,7 +181,8 @@
         #collection-panel h3 { color: #e94560; }
         #skin-panel h3 { color: #a78bfa; }
         #bg-skin-panel h3 { color: #67e8f9; }
-        .shop-item {
+        #achievement-panel h3 { color: #f59e0b; }
+        .shop-item, .achievement-item {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -217,7 +233,14 @@
         .shop-buy.cant-afford { background: #666; opacity: 0.6; }
         .shop-buy.owned { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
         .shop-buy.active-skin { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
-        #close-shop, #close-collection, #close-skin, #close-bg-skin {
+        .achievement-item.locked { opacity: 0.4; }
+        .achievement-item.unlocked { border-color: #f59e0b; }
+        .achievement-item .reward {
+            color: #f59e0b;
+            font-size: 11px;
+            margin-top: 2px;
+        }
+        #close-shop, #close-collection, #close-skin, #close-bg-skin, #close-achievement {
             display: block;
             margin: 5px auto 0;
             background: rgba(255,255,255,0.1);
@@ -335,13 +358,12 @@
         <canvas id="gameCanvas"></canvas>
         <div id="ui-layer">
             <div class="ui-item">🏗️ <span id="floorCount">1</span></div>
-			<div class="ui-item">🏆 <span id="bestDisplay">0</span></div>
+            <div class="ui-item">🏆 <span id="bestDisplay">0</span></div>
             <div class="ui-item">🔥 <span id="comboText">0</span></div>
             <div class="ui-item">🪙 <span id="coinDisplay">0</span></div>
-			
-
         </div>
         
+        <div id="achievement-popup"></div>
         <div class="combo-popup" id="comboPopup"></div>
         <div class="collect-popup" id="collectPopup"></div>
         <div class="hint-text" id="hintText">👆 Тапни, чтобы опустить этаж</div>
@@ -350,6 +372,7 @@
             <button id="shop-btn">🛒</button>
             <button id="skin-btn">🎨</button>
             <button id="bg-skin-btn">🌌</button>
+            <button id="achievement-btn">🏅</button>
             <button id="collection-btn">📖</button>
             <button id="reset-btn">🔄</button>
         </div>
@@ -421,6 +444,13 @@
             <button id="close-bg-skin">✕ Закрыть</button>
         </div>
         
+        <!-- Достижения -->
+        <div id="achievement-panel">
+            <h3>🏅 Достижения</h3>
+            <div id="achievement-list"></div>
+            <button id="close-achievement">✕ Закрыть</button>
+        </div>
+        
         <!-- Коллекция -->
         <div id="collection-panel">
             <h3>📖 Коллекция жильцов</h3>
@@ -450,12 +480,13 @@
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
 
-			const bestDisplay = document.getElementById('bestDisplay');
+            const bestDisplay = document.getElementById('bestDisplay');
             const floorCountEl = document.getElementById('floorCount');
             const comboTextEl = document.getElementById('comboText');
             const coinDisplayEl = document.getElementById('coinDisplay');
             const comboPopup = document.getElementById('comboPopup');
             const collectPopup = document.getElementById('collectPopup');
+            const achievementPopup = document.getElementById('achievement-popup');
             const hintText = document.getElementById('hintText');
             const gameoverPanel = document.getElementById('gameover-panel');
             const goFloorsEl = document.getElementById('goFloors');
@@ -467,19 +498,23 @@
             const shopBtn = document.getElementById('shop-btn');
             const skinBtn = document.getElementById('skin-btn');
             const bgSkinBtn = document.getElementById('bg-skin-btn');
+            const achievementBtn = document.getElementById('achievement-btn');
             const collectionBtn = document.getElementById('collection-btn');
             const resetBtn = document.getElementById('reset-btn');
             const shopPanel = document.getElementById('shop-panel');
             const skinPanel = document.getElementById('skin-panel');
             const bgSkinPanel = document.getElementById('bg-skin-panel');
+            const achievementPanel = document.getElementById('achievement-panel');
             const collectionPanel = document.getElementById('collection-panel');
             const closeShopBtn = document.getElementById('close-shop');
             const closeSkinBtn = document.getElementById('close-skin');
             const closeBgSkinBtn = document.getElementById('close-bg-skin');
+            const closeAchievementBtn = document.getElementById('close-achievement');
             const closeCollectionBtn = document.getElementById('close-collection');
             const collectionContent = document.getElementById('collection-content');
             const skinList = document.getElementById('skin-list');
             const bgSkinList = document.getElementById('bg-skin-list');
+            const achievementList = document.getElementById('achievement-list');
             
             const buyFoundation = document.getElementById('buy-foundation');
             const buyArchitect = document.getElementById('buy-architect');
@@ -513,6 +548,9 @@
             let comboCount = 0;
             let bestCombo = 0;
             let bestFloors = 0;
+            let totalFloorsBuilt = 0;
+            let totalCoinsEarned = 0;
+            let gamesPlayed = 0;
             let direction = 1;
             let moveSpeed = START_SPEED;
             let cameraY = 0;
@@ -529,6 +567,78 @@
                 goldrush:   { level: 1, baseCost: 250 },
                 magnet:     { level: 1, baseCost: 250 }
             };
+            
+            // === ДОСТИЖЕНИЯ ===
+            const ACHIEVEMENTS = [
+                { id: 'floors10', name: 'Строитель', desc: 'Построить 10 этажей за игру', emoji: '🔨', check: () => floors.length - 1 >= 10, reward: 500 },
+                { id: 'floors25', name: 'Архитектор', desc: 'Построить 25 этажей', emoji: '📐', check: () => floors.length - 1 >= 25, reward: 1500 },
+                { id: 'floors50', name: 'Небоскрёб', desc: 'Построить 50 этажей', emoji: '🏙️', check: () => floors.length - 1 >= 50, reward: 5000 },
+                { id: 'floors100', name: 'До небес', desc: 'Построить 100 этажей', emoji: '🚀', check: () => floors.length - 1 >= 100, reward: 20000 },
+                { id: 'combo5', name: 'В ударе', desc: 'Сделать комбо ×5', emoji: '🔥', check: () => comboCount >= 5, reward: 2000 },
+                { id: 'combo10', name: 'Мастер точности', desc: 'Сделать комбо ×10', emoji: '🎯', check: () => comboCount >= 10, reward: 10000 },
+                { id: 'collector5', name: 'Коллекционер', desc: 'Собрать 5 жильцов', emoji: '📖', check: () => collectedResidents.length >= 5, reward: 3000 },
+                { id: 'collector20', name: 'Охотник', desc: 'Собрать 20 жильцов', emoji: '🏹', check: () => collectedResidents.length >= 20, reward: 15000 },
+                { id: 'coins10k', name: 'Капитал', desc: 'Накопить 10 000 монет', emoji: '💰', check: () => coins >= 10000, reward: 5000 },
+                { id: 'coins100k', name: 'Миллионер', desc: 'Накопить 100 000 монет', emoji: '💎', check: () => coins >= 100000, reward: 50000 },
+                { id: 'all_common', name: 'Простые радости', desc: 'Собрать всех обычных жильцов', emoji: '🟢', check: () => ALL_RESIDENTS.filter(r => r.rarity === 'common').every(r => collectedResidents.includes(r.id)), reward: 10000 },
+                { id: 'first_legendary', name: 'Легенда', desc: 'Найти первого легендарного жильца', emoji: '👑', check: () => ALL_RESIDENTS.filter(r => r.rarity === 'legendary').some(r => collectedResidents.includes(r.id)), reward: 25000 },
+            ];
+            
+            let unlockedAchievements = [];
+            let achievementQueue = [];
+            let showingAchievement = false;
+            
+            function checkAchievements() {
+                ACHIEVEMENTS.forEach(ach => {
+                    if (!unlockedAchievements.includes(ach.id) && ach.check()) {
+                        unlockedAchievements.push(ach.id);
+                        achievementQueue.push(ach);
+                        coins += ach.reward;
+                        updateUI();
+                    }
+                });
+                
+                if (!showingAchievement && achievementQueue.length > 0) {
+                    showNextAchievement();
+                }
+            }
+            
+            function showNextAchievement() {
+                if (achievementQueue.length === 0) {
+                    showingAchievement = false;
+                    return;
+                }
+                showingAchievement = true;
+                const ach = achievementQueue.shift();
+                achievementPopup.innerHTML = `${ach.emoji} <b>${ach.name}</b> +${ach.reward}🪙`;
+                achievementPopup.style.opacity = '1';
+                achievementPopup.style.top = '100px';
+                
+                clearTimeout(achievementPopup._timeout);
+                achievementPopup._timeout = setTimeout(() => {
+                    achievementPopup.style.opacity = '0';
+                    achievementPopup.style.top = '80px';
+                    setTimeout(() => showNextAchievement(), 400);
+                }, 2000);
+            }
+            
+            function renderAchievements() {
+                let html = '';
+                ACHIEVEMENTS.forEach(ach => {
+                    const unlocked = unlockedAchievements.includes(ach.id);
+                    html += `
+                        <div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
+                            <span class="shop-icon">${unlocked ? ach.emoji : '🔒'}</span>
+                            <div class="shop-info">
+                                <div class="name">${ach.name}</div>
+                                <div class="desc">${ach.desc}</div>
+                                <div class="reward">${unlocked ? '✅ Получено' : 'Награда: ' + ach.reward + '🪙'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                achievementList.innerHTML = html;
+            }
             
             // Скины этажей
             const SKINS = [
@@ -548,33 +658,15 @@
             
             // Скины фона
             const BG_SKINS = [
-                { id: 'night', name: 'Ночное небо', emoji: '🌙', cost: 0,
-                  gradient: ['#0a0a1a', '#1a1a3e', '#0f2040'],
-                  starColor: 'rgba(255,255,255,{alpha})', starCount: 60 },
-                { id: 'sunset', name: 'Закат', emoji: '🌅', cost: 5000,
-                  gradient: ['#ff6b35', '#e94560', '#1a1a2e'],
-                  starColor: 'rgba(255,215,0,{alpha})', starCount: 40 },
-                { id: 'morning', name: 'Утро', emoji: '🌤️', cost: 5000,
-                  gradient: ['#87CEEB', '#ffcccb', '#b8d4e3'],
-                  starColor: null, starCount: 0 },
-                { id: 'space', name: 'Космос', emoji: '🌌', cost: 15000,
-                  gradient: ['#000011', '#1a0033', '#0d004d'],
-                  starColor: 'rgba({color}, {alpha})', starCount: 100 },
-                { id: 'aurora', name: 'Северное сияние', emoji: '🌠', cost: 25000,
-                  gradient: ['#001a33', '#003322', '#001a33'],
-                  starColor: 'rgba(100,255,200,{alpha})', starCount: 50 },
-                { id: 'storm', name: 'Гроза', emoji: '⛈️', cost: 35000,
-                  gradient: ['#1a1a2e', '#2d2d44', '#0a0a1a'],
-                  starColor: null, starCount: 0 },
-                { id: 'ocean', name: 'Подводный мир', emoji: '🌊', cost: 50000,
-                  gradient: ['#0077b6', '#023e8a', '#001d3d'],
-                  starColor: 'rgba(200,240,255,{alpha})', starCount: 30 },
-                { id: 'hell', name: 'Огненный ад', emoji: '🔥', cost: 75000,
-                  gradient: ['#ff4500', '#8b0000', '#1a0000'],
-                  starColor: 'rgba(255,100,0,{alpha})', starCount: 70 },
-                { id: 'rainbow', name: 'Радужное небо', emoji: '🌈', cost: 100000,
-                  gradient: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#9b59b6'],
-                  starColor: 'rgba(255,255,255,{alpha})', starCount: 40 },
+                { id: 'night', name: 'Ночное небо', emoji: '🌙', cost: 0, gradient: ['#0a0a1a', '#1a1a3e', '#0f2040'], starColor: 'rgba(255,255,255,{alpha})', starCount: 60 },
+                { id: 'sunset', name: 'Закат', emoji: '🌅', cost: 5000, gradient: ['#ff6b35', '#e94560', '#1a1a2e'], starColor: 'rgba(255,215,0,{alpha})', starCount: 40 },
+                { id: 'morning', name: 'Утро', emoji: '🌤️', cost: 5000, gradient: ['#87CEEB', '#ffcccb', '#b8d4e3'], starColor: null, starCount: 0 },
+                { id: 'space', name: 'Космос', emoji: '🌌', cost: 15000, gradient: ['#000011', '#1a0033', '#0d004d'], starColor: 'rgba({color}, {alpha})', starCount: 100 },
+                { id: 'aurora', name: 'Северное сияние', emoji: '🌠', cost: 25000, gradient: ['#001a33', '#003322', '#001a33'], starColor: 'rgba(100,255,200,{alpha})', starCount: 50 },
+                { id: 'storm', name: 'Гроза', emoji: '⛈️', cost: 35000, gradient: ['#1a1a2e', '#2d2d44', '#0a0a1a'], starColor: null, starCount: 0 },
+                { id: 'ocean', name: 'Подводный мир', emoji: '🌊', cost: 50000, gradient: ['#0077b6', '#023e8a', '#001d3d'], starColor: 'rgba(200,240,255,{alpha})', starCount: 30 },
+                { id: 'hell', name: 'Огненный ад', emoji: '🔥', cost: 75000, gradient: ['#ff4500', '#8b0000', '#1a0000'], starColor: 'rgba(255,100,0,{alpha})', starCount: 70 },
+                { id: 'rainbow', name: 'Радужное небо', emoji: '🌈', cost: 100000, gradient: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#9b59b6'], starColor: 'rgba(255,255,255,{alpha})', starCount: 40 },
             ];
             
             let ownedBgSkins = ['night'];
@@ -628,7 +720,7 @@
             
             function saveGame() {
                 const data = {
-                    coins, bestFloors, bestCombo,
+                    coins, bestFloors, bestCombo, totalFloorsBuilt, totalCoinsEarned, gamesPlayed,
                     upgrades: {
                         foundation: upgrades.foundation.level,
                         architect: upgrades.architect.level,
@@ -637,7 +729,8 @@
                         magnet: upgrades.magnet.level
                     },
                     collectedResidents, ownedSkins, activeSkin,
-                    ownedBgSkins, activeBgSkin
+                    ownedBgSkins, activeBgSkin,
+                    unlockedAchievements
                 };
                 try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
             }
@@ -648,6 +741,11 @@
                     if (!raw) return false;
                     const data = JSON.parse(raw);
                     coins = data.coins || 0;
+                    bestFloors = data.bestFloors || 0;
+                    bestCombo = data.bestCombo || 0;
+                    totalFloorsBuilt = data.totalFloorsBuilt || 0;
+                    totalCoinsEarned = data.totalCoinsEarned || 0;
+                    gamesPlayed = data.gamesPlayed || 0;
                     if (data.upgrades) {
                         upgrades.foundation.level = data.upgrades.foundation || 1;
                         upgrades.architect.level = data.upgrades.architect || 1;
@@ -660,8 +758,7 @@
                     activeSkin = data.activeSkin || 'classic';
                     ownedBgSkins = data.ownedBgSkins || ['night'];
                     activeBgSkin = data.activeBgSkin || 'night';
-                    bestFloors = data.bestFloors || 0;
-                    bestCombo = data.bestCombo || 0;
+                    unlockedAchievements = data.unlockedAchievements || [];
                     return true;
                 } catch (e) { return false; }
             }
@@ -680,33 +777,27 @@
             
             // === БОНУСЫ ===
             function getWidthBonus() { return (upgrades.foundation.level - 1) * 3; }
-            
             function getArchitectBonus() {
                 const l = upgrades.architect.level;
                 return l <= 20 ? 1 + (l - 1) * 0.06 : 1 + 19 * 0.06 + (l - 20) * 0.01;
             }
-            
             function getGoldrushChance() {
                 const l = upgrades.goldrush.level;
                 return l <= 20 ? (l - 1) * 0.05 : 0.95 + (l - 20) * 0.005;
             }
-            
             function getMagnetBonus() {
                 const l = upgrades.magnet.level;
                 return l <= 10 ? (l - 1) * 0.08 : 0.72 + (l - 10) * 0.02;
             }
-            
             function updateIncrement() {
                 const l = upgrades.brakes.level;
                 const reduction = l <= 20 ? Math.max(0.10, 1 - (l - 1) * 0.04) : Math.max(0.05, 0.24 - (l - 20) * 0.005);
                 currentIncrement = BASE_SPEED_INCREMENT * reduction;
             }
-
             function recalculateSpeed() {
                 updateIncrement();
                 moveSpeed = Math.min(START_SPEED + Math.max(0, floors.length - 1) * currentIncrement, BASE_MAX_SPEED);
             }
-            
             function getRandomResident() {
                 const r = Math.random() * 100;
                 const pool = r < 55 ? ALL_RESIDENTS.filter(x => x.rarity === 'common') :
@@ -715,33 +806,28 @@
                                        ALL_RESIDENTS.filter(x => x.rarity === 'legendary');
                 return pool[Math.floor(Math.random() * pool.length)];
             }
-            
             function getCollectionBonus() {
                 return collectedResidents.reduce((sum, id) => {
                     const r = ALL_RESIDENTS.find(x => x.id === id);
                     return sum + (r ? r.bonus : 0);
                 }, 0);
             }
-            
             function isResidentCollected(id) { return collectedResidents.includes(id); }
-            
             function collectResident(resident) {
                 if (!isResidentCollected(resident.id)) {
                     collectedResidents.push(resident.id);
                     showCollectPopup(resident);
                     autoSave();
+                    checkAchievements();
                 }
             }
-            
             function showCollectPopup(resident) {
                 const colors = { common: '#aaa', rare: '#4da6ff', epic: '#c044ff', legendary: '#ffd700' };
                 collectPopup.innerHTML = `${resident.emoji}<br><span style="color:${colors[resident.rarity]};font-size:16px;">${resident.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${resident.bonus}% к монетам</span>`;
-                collectPopup.style.opacity = '1';
-                collectPopup.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                collectPopup.style.opacity = '1'; collectPopup.style.transform = 'translate(-50%, -50%) scale(1.1)';
                 clearTimeout(collectPopup._timeout);
                 collectPopup._timeout = setTimeout(() => { collectPopup.style.opacity = '0'; collectPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 2000);
             }
-            
             function renderCollection() {
                 const cats = [
                     { rarity: 'legendary', name: '🟡 Легендарные', color: '#ffd700' },
@@ -770,7 +856,6 @@
                 const s = SKINS.find(x => x.id === activeSkin);
                 return s && s.colors ? s.colors : null;
             }
-            
             function renderSkinShop() {
                 let html = '';
                 SKINS.forEach(skin => {
@@ -798,10 +883,7 @@
             }
             
             // === СКИНЫ ФОНА ===
-            function getBgSkin() {
-                return BG_SKINS.find(x => x.id === activeBgSkin) || BG_SKINS[0];
-            }
-            
+            function getBgSkin() { return BG_SKINS.find(x => x.id === activeBgSkin) || BG_SKINS[0]; }
             function renderBgSkinShop() {
                 let html = '';
                 BG_SKINS.forEach(skin => {
@@ -837,9 +919,7 @@
                 canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
                 ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio, devicePixelRatio);
             }
-
             function getStartWidth() { return BASE_WIDTH + getWidthBonus(); }
-
             function initGame() {
                 floors = []; comboCount = 0; direction = 1; cameraY = 0; targetCameraY = 0;
                 residentFloors = {}; lightningTimer = 0;
@@ -850,9 +930,9 @@
                 comboPopup.style.opacity = '0'; collectPopup.style.opacity = '0';
                 hintText.style.display = 'block';
                 document.getElementById('bottom-buttons').style.display = 'flex';
+                gamesPlayed++;
                 spawnFloor(); updateUI();
             }
-
             function getColor(index) {
                 const sc = getSkinColors();
                 if (sc) {
@@ -866,7 +946,6 @@
                 const h = (200 + index * 6) % 360;
                 return { top: `hsl(${h},65%,55%)`, bottom: `hsl(${h},65%,30%)`, stroke: `hsl(${h},75%,70%)`, glow: `hsl(${h},75%,60%)` };
             }
-
             function spawnFloor() {
                 if (!floors.length) return;
                 const lf = floors[floors.length - 1];
@@ -874,7 +953,6 @@
                 currentFloor = { x: sx, y: lf.y - FLOOR_HEIGHT, w: lf.w };
                 recalculateSpeed();
             }
-
             function placeFloor() {
                 if (!currentFloor || gameState !== 'playing') return;
                 const lf = floors[floors.length - 1];
@@ -883,6 +961,7 @@
                 if (ow <= 0) { triggerGameOver(); return; }
                 const nf = { x: ol, y: currentFloor.y, w: ow };
                 floors.push(nf);
+                totalFloorsBuilt++;
                 const fi = floors.length - 1;
                 if (residentFloors[fi]) {
                     const res = ALL_RESIDENTS.find(r => r.id === residentFloors[fi]);
@@ -897,25 +976,25 @@
                 else { comboCount = 0; earned = Math.floor((floors.length / 2) * cb); hideCombo(); }
                 if (Math.random() < Math.min(getGoldrushChance(), 0.99)) { earned *= 2; showGoldrush(); }
                 coins += earned;
+                totalCoinsEarned += earned;
                 if (floors.length > bestFloors) bestFloors = floors.length;
                 currentFloor = null;
                 if (floors.length > 6) targetCameraY = (floors.length - 6) * FLOOR_HEIGHT;
                 updateUI(); direction *= -1; spawnFloor();
                 hintText.style.display = 'none'; autoSave();
+                checkAchievements();
                 
                 const ni = floors.length;
                 if (ni > 1 && ni % 5 === 0 && !residentFloors[ni]) {
                     if (Math.random() < Math.min(0.6 + getMagnetBonus(), 1.0)) residentFloors[ni] = getRandomResident().id;
                 }
             }
-
             function showGoldrush() {
                 comboPopup.textContent = '💰 ЗОЛОТО! ×2'; comboPopup.style.color = '#ffd700';
                 comboPopup.style.opacity = '1'; comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
                 clearTimeout(comboPopup._timeout);
                 comboPopup._timeout = setTimeout(() => { comboPopup.style.opacity = '0'; comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 700);
             }
-
             function showCombo(c) {
                 if (c > 1) { comboPopup.textContent = `ИДЕАЛЬНО! x${c} 🔥`; comboPopup.style.color = '#ffd700'; }
                 else if (c === 0 && floors.length > 1) { comboPopup.textContent = 'Отлично! ✨'; comboPopup.style.color = '#fff'; }
@@ -924,36 +1003,30 @@
                 clearTimeout(comboPopup._timeout);
                 comboPopup._timeout = setTimeout(() => { comboPopup.style.opacity = '0'; comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 500);
             }
-
             function hideCombo() { comboPopup.style.opacity = '0'; }
-
             function triggerGameOver() {
-    gameState = 'gameover'; currentFloor = null;
-    const tf = floors.length - 1, cb = 1 + getCollectionBonus() / 100;
-    const bc = Math.floor(tf * 5 * cb); coins += bc;
-    if (tf > bestFloors) {
-        bestFloors = tf;
-        bestDisplay.textContent = bestFloors;
-    }
-    goFloorsEl.textContent = tf; goComboEl.textContent = bestCombo; goCoinsEl.textContent = bc;
-    gameoverPanel.style.display = 'flex'; hintText.style.display = 'none';
-    document.getElementById('bottom-buttons').style.display = 'none';
-    updateUI(); saveGame();
-}
-
+                gameState = 'gameover'; currentFloor = null;
+                const tf = floors.length - 1, cb = 1 + getCollectionBonus() / 100;
+                const bc = Math.floor(tf * 5 * cb); coins += bc;
+                totalCoinsEarned += bc;
+                if (tf > bestFloors) { bestFloors = tf; bestDisplay.textContent = bestFloors; }
+                goFloorsEl.textContent = tf; goComboEl.textContent = bestCombo; goCoinsEl.textContent = bc;
+                gameoverPanel.style.display = 'flex'; hintText.style.display = 'none';
+                document.getElementById('bottom-buttons').style.display = 'none';
+                updateUI(); saveGame(); checkAchievements();
+            }
             function updateUI() {
-    floorCountEl.textContent = Math.max(1, floors.length);
-    bestDisplay.textContent = bestFloors;
-    comboTextEl.textContent = comboCount;
-    coinDisplayEl.textContent = coins;
-}
-
+                floorCountEl.textContent = Math.max(1, floors.length);
+                bestDisplay.textContent = bestFloors;
+                comboTextEl.textContent = comboCount;
+                coinDisplayEl.textContent = coins;
+            }
+            
             // === МАГАЗИН ===
             function getUpgradeCost(u) {
                 const l = u.level;
                 return l <= 20 ? u.baseCost + (l - 1) * u.baseCost : u.baseCost * 20 + (l - 20) * u.baseCost * 2;
             }
-            
             function updateShopUI() {
                 [['foundation', buyFoundation, foundationLvlEl, foundationCostEl],
                  ['architect', buyArchitect, architectLvlEl, architectCostEl],
@@ -966,7 +1039,6 @@
                     btn.classList.toggle('cant-afford', coins < c);
                 });
             }
-            
             function buyUpgrade(name) {
                 const u = upgrades[name], c = getUpgradeCost(u);
                 if (coins < c) return;
@@ -978,8 +1050,9 @@
             function openShop() { if (gameState === 'gameover') return; panelOpen = true; shopPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; updateShopUI(); }
             function openSkinShop() { if (gameState === 'gameover') return; panelOpen = true; skinPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderSkinShop(); }
             function openBgSkinShop() { if (gameState === 'gameover') return; panelOpen = true; bgSkinPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderBgSkinShop(); }
+            function openAchievement() { if (gameState === 'gameover') return; panelOpen = true; achievementPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderAchievements(); }
             function openCollection() { if (gameState === 'gameover') return; panelOpen = true; collectionPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderCollection(); }
-            function closePanels() { panelOpen = false; shopPanel.classList.remove('open'); skinPanel.classList.remove('open'); bgSkinPanel.classList.remove('open'); collectionPanel.classList.remove('open'); overlay.classList.remove('show'); if (gameState !== 'gameover') document.getElementById('bottom-buttons').style.display = 'flex'; }
+            function closePanels() { panelOpen = false; shopPanel.classList.remove('open'); skinPanel.classList.remove('open'); bgSkinPanel.classList.remove('open'); achievementPanel.classList.remove('open'); collectionPanel.classList.remove('open'); overlay.classList.remove('show'); if (gameState !== 'gameover') document.getElementById('bottom-buttons').style.display = 'flex'; }
 
             function update() {
                 if (gameState !== 'playing' || panelOpen) return;
@@ -989,7 +1062,6 @@
                     else if (currentFloor.x + currentFloor.w >= W) { currentFloor.x = W - currentFloor.w; direction = -1; }
                 }
                 cameraY += (targetCameraY - cameraY) * 0.1;
-                // Молния для грозы
                 if (activeBgSkin === 'storm') {
                     lightningTimer--;
                     if (lightningTimer <= 0 && Math.random() < 0.02) lightningTimer = 5;
@@ -1008,85 +1080,55 @@
             function drawBackground() {
                 const bg = getBgSkin();
                 const grad = ctx.createLinearGradient(0, 0, 0, H);
-                if (bg.id === 'rainbow') {
-                    bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
-                } else {
-                    bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
-                }
+                bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
                 ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
                 
-                // Эффекты фона
                 if (bg.id === 'aurora') {
-                    // Северное сияние — волны
                     const t = Date.now() / 3000;
                     for (let i = 0; i < 3; i++) {
                         ctx.fillStyle = `rgba(${100 + i*30}, ${200 + i*20}, ${150 + i*30}, 0.15)`;
-                        ctx.beginPath();
-                        ctx.moveTo(0, H);
-                        for (let x = 0; x <= W; x += 20) {
-                            ctx.lineTo(x, H * 0.3 + Math.sin(x * 0.02 + t + i) * 40 + Math.sin(x * 0.05 + t * 2) * 20);
-                        }
+                        ctx.beginPath(); ctx.moveTo(0, H);
+                        for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H * 0.3 + Math.sin(x * 0.02 + t + i) * 40 + Math.sin(x * 0.05 + t * 2) * 20);
                         ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
                     }
                 }
-                
                 if (bg.id === 'ocean') {
-                    // Пузырьки
                     if (!drawBackground.bubbles) drawBackground.bubbles = Array.from({length: 15}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 2+Math.random()*6, s: 0.2+Math.random()*0.5 }));
-                    const bt = Date.now() / 1000;
                     drawBackground.bubbles.forEach(b => {
-                        b.y -= b.s;
-                        if (b.y < -10) { b.y = H + 10; b.x = Math.random() * W; }
-                        ctx.fillStyle = `rgba(200,240,255,${0.2 + Math.sin(bt + b.x) * 0.1})`;
+                        b.y -= b.s; if (b.y < -10) { b.y = H + 10; b.x = Math.random() * W; }
+                        ctx.fillStyle = `rgba(200,240,255,${0.2 + Math.sin(Date.now()/1000 + b.x) * 0.1})`;
                         ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
                     });
                 }
-                
                 if (bg.id === 'hell') {
-                    // Искры
                     if (!drawBackground.sparks) drawBackground.sparks = Array.from({length: 40}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, s: 0.3+Math.random()*1.5 }));
-                    const st = Date.now() / 1000;
                     drawBackground.sparks.forEach(sp => {
                         sp.y -= sp.s; if (sp.y < -10) { sp.y = H + 10; sp.x = Math.random() * W; }
-                        ctx.fillStyle = `rgba(255,${100 + Math.floor(Math.random()*100)},0,${0.4 + Math.sin(st + sp.x) * 0.2})`;
+                        ctx.fillStyle = `rgba(255,${100 + Math.floor(Math.random()*100)},0,${0.4 + Math.sin(Date.now()/1000 + sp.x) * 0.2})`;
                         ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); ctx.fill();
                     });
                 }
-                
-                // Молния для грозы
                 if (bg.id === 'storm' && lightningTimer > 0) {
-                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-                    ctx.fillRect(0, 0, W, H);
+                    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(0, 0, W, H);
                     lightningTimer--;
                 }
-                
-                // Звёзды
                 if (bg.starColor && bg.starCount > 0) {
-                    if (!drawBackground.stars) {
-                        drawBackground.stars = Array.from({length: 100}, () => ({
-                            x: Math.random()*420, y: Math.random()*750, r: 0.3+Math.random()*1.5, twinkle: Math.random()*Math.PI*2
-                        }));
-                    }
+                    if (!drawBackground.stars) drawBackground.stars = Array.from({length: 100}, () => ({ x: Math.random()*420, y: Math.random()*750, r: 0.3+Math.random()*1.5, twinkle: Math.random()*Math.PI*2 }));
                     const time = Date.now() / 1000;
                     for (let i = 0; i < Math.min(bg.starCount, drawBackground.stars.length); i++) {
                         const star = drawBackground.stars[i];
                         const alpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.2;
-                        let color = bg.starColor;
+                        let color = bg.starColor.replace('{alpha}', alpha).replace('{color}', '255,255,255');
                         if (bg.id === 'space') {
                             const colors = ['rgba(255,255,255,', 'rgba(200,220,255,', 'rgba(255,255,200,', 'rgba(255,200,200,'];
                             color = colors[Math.floor(Math.random() * 4)] + alpha + ')';
-                        } else {
-                            color = color.replace('{alpha}', alpha).replace('{color}', '255,255,255');
                         }
                         ctx.fillStyle = color;
                         ctx.beginPath(); ctx.arc(star.x, star.y, star.r, 0, Math.PI*2); ctx.fill();
                     }
                 }
-                
-                // Утро — облачка
                 if (bg.id === 'morning') {
                     if (!drawBackground.clouds) drawBackground.clouds = Array.from({length: 5}, () => ({ x: Math.random()*W, y: 50+Math.random()*H*0.4, w: 40+Math.random()*80 }));
-                    const ct = Date.now() / 10000;
                     drawBackground.clouds.forEach(c => {
                         c.x += 0.2; if (c.x > W + 100) c.x = -100;
                         ctx.fillStyle = 'rgba(255,255,255,0.25)';
@@ -1132,17 +1174,18 @@
 
             function restartGame() { initGame(); }
 
-            // События
             canvas.addEventListener('pointerdown', handleTap);
             restartBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); restartGame(); });
             shopBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openShop(); });
             skinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openSkinShop(); });
             bgSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openBgSkinShop(); });
+            achievementBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openAchievement(); });
             collectionBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openCollection(); });
             resetBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); resetProgress(); });
             closeShopBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
             closeSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
             closeBgSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
+            closeAchievementBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
             closeCollectionBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
             overlay.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
             buyFoundation.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('foundation'); updateShopUI(); });
