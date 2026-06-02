@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Этаж — Строй свою башню</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #1a1a2e;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            touch-action: none;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            max-height: 750px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #ui-layer {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            pointer-events: none;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
+            z-index: 5;
+        }
+        .ui-item {
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            padding: 8px 14px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        #bottom-buttons {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            z-index: 6;
+        }
+        #shop-btn, #collection-btn, #skin-btn {
+            width: 55px;
+            height: 55px;
+            border: none;
+            border-radius: 50%;
+            font-size: 26px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+        #shop-btn {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+        }
+        #collection-btn {
+            background: linear-gradient(135deg, #e94560, #c23152);
+        }
+        #skin-btn {
+            background: linear-gradient(135deg, #7c3aed, #5b21b6);
+        }
+        #shop-btn:active, #collection-btn:active, #skin-btn:active {
+            transform: scale(0.9);
+        }
+        .combo-popup {
+            position: absolute;
+            top: 35%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ffd700;
+            font-size: 32px;
+            font-weight: bold;
+            pointer-events: none;
+            text-shadow: 0 0 20px rgba(255,215,0,0.9);
+            opacity: 0;
+            transition: all 0.5s ease-out;
+            z-index: 6;
+        }
+        .collect-popup {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #ff69b4;
+            font-size: 22px;
+            font-weight: bold;
+            pointer-events: none;
+            text-shadow: 0 0 15px rgba(255,105,180,0.8);
+            opacity: 0;
+            transition: all 0.5s ease-out;
+            z-index: 6;
+            text-align: center;
+            line-height: 1.4;
+        }
+        #shop-panel, #collection-panel, #skin-panel {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 35, 0.97);
+            border-top: 2px solid #ffd700;
+            border-radius: 24px 24px 0 0;
+            padding: 20px;
+            z-index: 8;
+            transform: translateY(110%);
+            transition: transform 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            backdrop-filter: blur(20px);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        #collection-panel {
+            border-top: 2px solid #e94560;
+        }
+        #skin-panel {
+            border-top: 2px solid #7c3aed;
+        }
+        #shop-panel.open, #collection-panel.open, #skin-panel.open {
+            transform: translateY(0);
+        }
+        #shop-panel h3, #collection-panel h3, #skin-panel h3 {
+            text-align: center;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        #shop-panel h3 { color: #ffd700; }
+        #collection-panel h3 { color: #e94560; }
+        #skin-panel h3 { color: #a78bfa; }
+        .shop-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 16px;
+            padding: 14px;
+            gap: 12px;
+        }
+        .shop-icon {
+            font-size: 32px;
+            min-width: 40px;
+            text-align: center;
+        }
+        .shop-info {
+            flex: 1;
+            color: white;
+        }
+        .shop-info .name {
+            font-weight: bold;
+            font-size: 15px;
+        }
+        .shop-info .desc {
+            font-size: 12px;
+            color: #aaa;
+            margin-top: 2px;
+        }
+        .shop-info .level {
+            font-size: 11px;
+            color: #ffd700;
+            margin-top: 2px;
+        }
+        .shop-buy {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: 0.2s;
+            min-width: 70px;
+            text-align: center;
+        }
+        .shop-buy:active {
+            transform: scale(0.95);
+        }
+        .shop-buy.maxed {
+            background: #555;
+            cursor: default;
+        }
+        .shop-buy.cant-afford {
+            background: #666;
+            opacity: 0.6;
+        }
+        .shop-buy.owned {
+            background: linear-gradient(135deg, #7c3aed, #5b21b6);
+        }
+        .shop-buy.active-skin {
+            background: linear-gradient(135deg, #ffd700, #ffaa00);
+            color: #000;
+        }
+        #close-shop, #close-collection, #close-skin {
+            display: block;
+            margin: 5px auto 0;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .collection-stats {
+            text-align: center;
+            color: #ccc;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+        .collection-stats span {
+            color: #ffd700;
+            font-weight: bold;
+        }
+        .collection-category {
+            color: #aaa;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 5px;
+            margin-bottom: 2px;
+        }
+        .collection-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-start;
+        }
+        .collection-slot {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            position: relative;
+        }
+        .collection-slot.locked {
+            opacity: 0.3;
+            filter: grayscale(1);
+        }
+        .collection-slot .bonus-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            background: #ffd700;
+            color: #000;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 1px 4px;
+            border-radius: 6px;
+        }
+        #gameover-panel {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(15, 15, 30, 0.95);
+            border: 2px solid #e94560;
+            border-radius: 24px;
+            padding: 30px 25px;
+            text-align: center;
+            color: white;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            min-width: 260px;
+            backdrop-filter: blur(20px);
+            z-index: 10;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        #gameover-panel h2 {
+            color: #e94560;
+            font-size: 24px;
+            margin: 0;
+        }
+        #gameover-panel .emoji {
+            font-size: 45px;
+        }
+        #gameover-panel .stats {
+            font-size: 16px;
+            color: #ccc;
+            line-height: 1.5;
+        }
+        #gameover-panel .coins {
+            font-size: 24px;
+            color: #ffd700;
+            font-weight: bold;
+        }
+        #restart-btn {
+            background: linear-gradient(135deg, #e94560, #c23152);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 8px 25px rgba(233,69,96,0.4);
+        }
+        #restart-btn:active {
+            transform: scale(0.95);
+        }
+        .hint-text {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+            pointer-events: none;
+            text-align: center;
+            z-index: 5;
+            transition: opacity 0.3s;
+        }
+        #overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 7;
+            display: none;
+        }
+        #overlay.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <div class="ui-item">🏗️ <span id="floorCount">1</span></div>
+            <div class="ui-item">🔥 <span id="comboText">0</span></div>
+            <div class="ui-item">🪙 <span id="coinDisplay">0</span></div>
+        </div>
+        
+        <div class="combo-popup" id="comboPopup"></div>
+        <div class="collect-popup" id="collectPopup"></div>
+        <div class="hint-text" id="hintText">👆 Тапни, чтобы опустить этаж</div>
+        
+        <div id="bottom-buttons">
+            <button id="shop-btn">🛒</button>
+            <button id="skin-btn">🎨</button>
+            <button id="collection-btn">📖</button>
+        </div>
+        
+        <div id="overlay"></div>
+        
+        <!-- Магазин улучшений -->
+        <div id="shop-panel">
+            <h3>🏪 Улучшения</h3>
+            <div class="shop-item" id="shop-foundation">
+                <span class="shop-icon">🏛️</span>
+                <div class="shop-info">
+                    <div class="name">Усиленный фундамент</div>
+                    <div class="desc">Все этажи шире на +3 пикс. за уровень</div>
+                    <div class="level">Уровень: <span id="foundation-lvl">1</span></div>
+                </div>
+                <button class="shop-buy" id="buy-foundation">🪙 <span id="foundation-cost">100</span></button>
+            </div>
+            <div class="shop-item" id="shop-architect">
+                <span class="shop-icon">📐</span>
+                <div class="shop-info">
+                    <div class="name">Точный архитектор</div>
+                    <div class="desc">Зона идеального попадания шире</div>
+                    <div class="level">Уровень: <span id="architect-lvl">1</span></div>
+                </div>
+                <button class="shop-buy" id="buy-architect">🪙 <span id="architect-cost">150</span></button>
+            </div>
+            <div class="shop-item" id="shop-brakes">
+                <span class="shop-icon">🐌</span>
+                <div class="shop-info">
+                    <div class="name">Замедление времени</div>
+                    <div class="desc">Скорость растёт медленнее</div>
+                    <div class="level">Уровень: <span id="brakes-lvl">1</span></div>
+                </div>
+                <button class="shop-buy" id="buy-brakes">🪙 <span id="brakes-cost">200</span></button>
+            </div>
+            <div class="shop-item" id="shop-goldrush">
+                <span class="shop-icon">💰</span>
+                <div class="shop-info">
+                    <div class="name">Золотая лихорадка</div>
+                    <div class="desc">Шанс ×2 монет за этаж</div>
+                    <div class="level">Уровень: <span id="goldrush-lvl">1</span></div>
+                </div>
+                <button class="shop-buy" id="buy-goldrush">🪙 <span id="goldrush-cost">250</span></button>
+            </div>
+            <div class="shop-item" id="shop-magnet">
+                <span class="shop-icon">🧲</span>
+                <div class="shop-info">
+                    <div class="name">Магнит для жильцов</div>
+                    <div class="desc">Жильцы появляются чаще</div>
+                    <div class="level">Уровень: <span id="magnet-lvl">1</span></div>
+                </div>
+                <button class="shop-buy" id="buy-magnet">🪙 <span id="magnet-cost">250</span></button>
+            </div>
+            <button id="close-shop">✕ Закрыть</button>
+        </div>
+        
+        <!-- Магазин скинов -->
+        <div id="skin-panel">
+            <h3>🎨 Скины этажей</h3>
+            <div id="skin-list"></div>
+            <button id="close-skin">✕ Закрыть</button>
+        </div>
+        
+        <!-- Коллекция -->
+        <div id="collection-panel">
+            <h3>📖 Коллекция жильцов</h3>
+            <div class="collection-stats">
+                Собрано: <span id="collected-count">0</span> / <span id="total-count">36</span> | 
+                Бонус к монетам: <span id="bonus-percent">+0%</span>
+            </div>
+            <div id="collection-content"></div>
+            <button id="close-collection">✕ Закрыть</button>
+        </div>
+        
+        <!-- Game Over -->
+        <div id="gameover-panel">
+            <span class="emoji">💥</span>
+            <h2>Башня рухнула!</h2>
+            <div class="stats">
+                Этажей: <b><span id="goFloors">0</span></b><br>
+                Лучшее комбо: <b><span id="goCombo">0</span></b>
+            </div>
+            <div class="coins">🪙 +<span id="goCoins">0</span></div>
+            <button id="restart-btn">🔄 Строить заново</button>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // UI
+            const floorCountEl = document.getElementById('floorCount');
+            const comboTextEl = document.getElementById('comboText');
+            const coinDisplayEl = document.getElementById('coinDisplay');
+            const comboPopup = document.getElementById('comboPopup');
+            const collectPopup = document.getElementById('collectPopup');
+            const hintText = document.getElementById('hintText');
+            const gameoverPanel = document.getElementById('gameover-panel');
+            const goFloorsEl = document.getElementById('goFloors');
+            const goComboEl = document.getElementById('goCombo');
+            const goCoinsEl = document.getElementById('goCoins');
+            const restartBtn = document.getElementById('restart-btn');
+            const overlay = document.getElementById('overlay');
+            
+            // Кнопки
+            const shopBtn = document.getElementById('shop-btn');
+            const skinBtn = document.getElementById('skin-btn');
+            const collectionBtn = document.getElementById('collection-btn');
+            const shopPanel = document.getElementById('shop-panel');
+            const skinPanel = document.getElementById('skin-panel');
+            const collectionPanel = document.getElementById('collection-panel');
+            const closeShopBtn = document.getElementById('close-shop');
+            const closeSkinBtn = document.getElementById('close-skin');
+            const closeCollectionBtn = document.getElementById('close-collection');
+            const collectionContent = document.getElementById('collection-content');
+            const skinList = document.getElementById('skin-list');
+            
+            // Кнопки покупок
+            const buyFoundation = document.getElementById('buy-foundation');
+            const buyArchitect = document.getElementById('buy-architect');
+            const buyBrakes = document.getElementById('buy-brakes');
+            const buyGoldrush = document.getElementById('buy-goldrush');
+            const buyMagnet = document.getElementById('buy-magnet');
+            
+            const foundationLvlEl = document.getElementById('foundation-lvl');
+            const architectLvlEl = document.getElementById('architect-lvl');
+            const brakesLvlEl = document.getElementById('brakes-lvl');
+            const goldrushLvlEl = document.getElementById('goldrush-lvl');
+            const magnetLvlEl = document.getElementById('magnet-lvl');
+            const foundationCostEl = document.getElementById('foundation-cost');
+            const architectCostEl = document.getElementById('architect-cost');
+            const brakesCostEl = document.getElementById('brakes-cost');
+            const goldrushCostEl = document.getElementById('goldrush-cost');
+            const magnetCostEl = document.getElementById('magnet-cost');
+
+            let W, H;
+            
+            const FLOOR_HEIGHT = 28;
+            const BASE_WIDTH = 160;
+            const START_SPEED = 1.2;
+            const BASE_MAX_SPEED = 7;
+            const BASE_SPEED_INCREMENT = 0.18;
+            
+            let floors = [];
+            let currentFloor = null;
+            let gameState = 'playing';
+            let coins = 0;
+            let comboCount = 0;
+            let bestCombo = 0;
+            let direction = 1;
+            let moveSpeed = START_SPEED;
+            let cameraY = 0;
+            let targetCameraY = 0;
+            let panelOpen = false;
+            let currentIncrement = BASE_SPEED_INCREMENT;
+            
+            // Улучшения — бесконечные (нет maxLevel)
+            let upgrades = {
+                foundation: { level: 1, baseCost: 100 },
+                architect:  { level: 1, baseCost: 150 },
+                brakes:     { level: 1, baseCost: 200 },
+                goldrush:   { level: 1, baseCost: 250 },
+                magnet:     { level: 1, baseCost: 250 }
+            };
+            
+            // Скины
+            const SKINS = [
+                { id: 'classic', name: 'Классический', emoji: '🧱', cost: 0, colors: null },
+                { id: 'forest', name: 'Лесной', emoji: '🌿', cost: 5000, colors: { top: [120, 60, 40], bottom: [120, 60, 20], stroke: [120, 70, 50] } },
+                { id: 'ice', name: 'Ледяной', emoji: '🧊', cost: 10000, colors: { top: [200, 70, 70], bottom: [200, 70, 40], stroke: [200, 80, 85] } },
+                { id: 'lava', name: 'Лавовый', emoji: '🔥', cost: 20000, colors: { top: [10, 90, 55], bottom: [10, 90, 25], stroke: [10, 100, 70] } },
+                { id: 'ghost', name: 'Призрачный', emoji: '👻', cost: 50000, colors: { top: [0, 0, 80], bottom: [0, 0, 50], stroke: [0, 0, 95] } },
+                { id: 'halloween', name: 'Хэллоуин', emoji: '🎃', cost: 75000, colors: { top: [30, 85, 55], bottom: [30, 85, 25], stroke: [30, 90, 70] } },
+                { id: 'crystal', name: 'Кристальный', emoji: '💎', cost: 100000, colors: { top: [190, 50, 85], bottom: [190, 50, 50], stroke: [190, 60, 95] } },
+                { id: 'shadow', name: 'Теневой', emoji: '🖤', cost: 150000, colors: { top: [260, 30, 25], bottom: [260, 30, 10], stroke: [260, 50, 60] } },
+                { id: 'gold', name: 'Золотой', emoji: '🏆', cost: 250000, colors: { top: [48, 90, 65], bottom: [48, 90, 35], stroke: [48, 100, 85] } },
+            ];
+            
+            let ownedSkins = ['classic']; // какие скины куплены
+            let activeSkin = 'classic';   // какой скин надет
+            
+            // Жильцы
+            const ALL_RESIDENTS = [
+                { id: 'cat', emoji: '🐱', name: 'Кот', rarity: 'common', bonus: 2 },
+                { id: 'chef', emoji: '👨‍🍳', name: 'Повар', rarity: 'common', bonus: 2 },
+                { id: 'student', emoji: '📚', name: 'Студент', rarity: 'common', bonus: 2 },
+                { id: 'dj', emoji: '🎧', name: 'Диджей', rarity: 'common', bonus: 2 },
+                { id: 'taco', emoji: '🌮', name: 'Тако-шеф', rarity: 'common', bonus: 2 },
+                { id: 'sleeper', emoji: '💤', name: 'Соня', rarity: 'common', bonus: 2 },
+                { id: 'plant', emoji: '🌵', name: 'Кактусовод', rarity: 'common', bonus: 2 },
+                { id: 'gamer', emoji: '🎮', name: 'Геймер', rarity: 'common', bonus: 2 },
+                { id: 'artist', emoji: '🎨', name: 'Художник', rarity: 'common', bonus: 2 },
+                { id: 'coffee', emoji: '☕', name: 'Бариста', rarity: 'common', bonus: 2 },
+                { id: 'biker', emoji: '🏍️', name: 'Байкер', rarity: 'common', bonus: 2 },
+                { id: 'robot', emoji: '🤖', name: 'Робот', rarity: 'common', bonus: 2 },
+                { id: 'grandma', emoji: '👵', name: 'Бабушка с геранью', rarity: 'rare', bonus: 5 },
+                { id: 'hacker', emoji: '💻', name: 'Хакер', rarity: 'rare', bonus: 5 },
+                { id: 'neighbor', emoji: '🔧', name: 'Сосед с дрелью', rarity: 'rare', bonus: 5 },
+                { id: 'detective', emoji: '🕵️', name: 'Детектив', rarity: 'rare', bonus: 5 },
+                { id: 'wizard', emoji: '🧙‍♂️', name: 'Волшебник', rarity: 'rare', bonus: 5 },
+                { id: 'ninja', emoji: '🥷', name: 'Ниндзя', rarity: 'rare', bonus: 5 },
+                { id: 'mermaid', emoji: '🧜‍♀️', name: 'Русалка', rarity: 'rare', bonus: 5 },
+                { id: 'vampire', emoji: '🧛', name: 'Вампир', rarity: 'rare', bonus: 5 },
+                { id: 'astronaut', emoji: '👨‍🚀', name: 'Космонавт', rarity: 'rare', bonus: 5 },
+                { id: 'cowboy', emoji: '🤠', name: 'Ковбой', rarity: 'rare', bonus: 5 },
+                { id: 'ghost', emoji: '👻', name: 'Призрак', rarity: 'epic', bonus: 10 },
+                { id: 'alien', emoji: '👽', name: 'Инопланетянин', rarity: 'epic', bonus: 10 },
+                { id: 'superhero', emoji: '🦸', name: 'Супергерой', rarity: 'epic', bonus: 10 },
+                { id: 'phoenix', emoji: '🦅', name: 'Феникс', rarity: 'epic', bonus: 10 },
+                { id: 'djinn', emoji: '🧞', name: 'Джинн', rarity: 'epic', bonus: 10 },
+                { id: 'samurai', emoji: '⚔️', name: 'Самурай', rarity: 'epic', bonus: 10 },
+                { id: 'mermaid_king', emoji: '🧜‍♂️', name: 'Царь морей', rarity: 'epic', bonus: 10 },
+                { id: 'time_lord', emoji: '⏳', name: 'Повелитель времени', rarity: 'epic', bonus: 10 },
+                { id: 'dragon', emoji: '🐉', name: 'Дракон', rarity: 'legendary', bonus: 20 },
+                { id: 'pirate_king', emoji: '🏴‍☠️', name: 'Король пиратов', rarity: 'legendary', bonus: 20 },
+                { id: 'president', emoji: '🎩', name: 'Президент', rarity: 'legendary', bonus: 20 },
+                { id: 'unicorn', emoji: '🦄', name: 'Единорог', rarity: 'legendary', bonus: 20 },
+                { id: 'cthulhu', emoji: '🐙', name: 'Ктулху', rarity: 'legendary', bonus: 20 },
+                { id: 'zeus', emoji: '⚡', name: 'Зевс', rarity: 'legendary', bonus: 20 },
+            ];
+            
+            let collectedResidents = [];
+            let residentFloors = {};
+            
+            // === БОНУСЫ ===
+            
+            function getWidthBonus() {
+                return (upgrades.foundation.level - 1) * 3;
+            }
+            
+            function getArchitectBonus() {
+                // Бесконечная формула с затуханием после 20 уровня
+                const level = upgrades.architect.level;
+                if (level <= 20) return 1 + (level - 1) * 0.06;
+                return 1 + 19 * 0.06 + (level - 20) * 0.01;
+            }
+            
+            function getGoldrushChance() {
+                const level = upgrades.goldrush.level;
+                if (level <= 20) return (level - 1) * 0.05;
+                return 0.95 + (level - 20) * 0.005;
+            }
+            
+            function getMagnetBonus() {
+                const level = upgrades.magnet.level;
+                if (level <= 10) return (level - 1) * 0.08;
+                return 0.72 + (level - 10) * 0.02;
+            }
+            
+            function updateIncrement() {
+                const level = upgrades.brakes.level;
+                let reduction;
+                if (level <= 20) reduction = Math.max(0.10, 1 - (level - 1) * 0.04);
+                else reduction = Math.max(0.05, 0.24 - (level - 20) * 0.005);
+                currentIncrement = BASE_SPEED_INCREMENT * reduction;
+            }
+
+            function recalculateSpeed() {
+                updateIncrement();
+                const floorsAboveFoundation = Math.max(0, floors.length - 1);
+                moveSpeed = START_SPEED + floorsAboveFoundation * currentIncrement;
+                if (moveSpeed > BASE_MAX_SPEED) moveSpeed = BASE_MAX_SPEED;
+            }
+            
+            // === ЖИЛЬЦЫ ===
+            
+            function getRandomResident() {
+                const rand = Math.random() * 100;
+                let pool;
+                if (rand < 55) pool = ALL_RESIDENTS.filter(r => r.rarity === 'common');
+                else if (rand < 80) pool = ALL_RESIDENTS.filter(r => r.rarity === 'rare');
+                else if (rand < 95) pool = ALL_RESIDENTS.filter(r => r.rarity === 'epic');
+                else pool = ALL_RESIDENTS.filter(r => r.rarity === 'legendary');
+                
+                return pool[Math.floor(Math.random() * pool.length)];
+            }
+            
+            function getCollectionBonus() {
+                let total = 0;
+                collectedResidents.forEach(id => {
+                    const resident = ALL_RESIDENTS.find(r => r.id === id);
+                    if (resident) total += resident.bonus;
+                });
+                return total;
+            }
+            
+            function isResidentCollected(id) {
+                return collectedResidents.includes(id);
+            }
+            
+            function collectResident(resident) {
+                if (!isResidentCollected(resident.id)) {
+                    collectedResidents.push(resident.id);
+                    showCollectPopup(resident);
+                }
+            }
+            
+            function showCollectPopup(resident) {
+                const rarityColors = {
+                    common: '#aaa',
+                    rare: '#4da6ff',
+                    epic: '#c044ff',
+                    legendary: '#ffd700'
+                };
+                collectPopup.innerHTML = `
+                    ${resident.emoji}<br>
+                    <span style="color:${rarityColors[resident.rarity]};font-size:16px;">
+                        ${resident.name} найден!
+                    </span>
+                    <br><span style="font-size:12px;color:#aaa;">+${resident.bonus}% к монетам</span>
+                `;
+                collectPopup.style.opacity = '1';
+                collectPopup.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                
+                clearTimeout(collectPopup._timeout);
+                collectPopup._timeout = setTimeout(() => {
+                    collectPopup.style.opacity = '0';
+                    collectPopup.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                }, 2000);
+            }
+            
+            function renderCollection() {
+                const categories = [
+                    { rarity: 'legendary', name: '🟡 Легендарные', color: '#ffd700' },
+                    { rarity: 'epic', name: '🟣 Эпические', color: '#c044ff' },
+                    { rarity: 'rare', name: '🔵 Редкие', color: '#4da6ff' },
+                    { rarity: 'common', name: '🟢 Обычные', color: '#aaa' },
+                ];
+                
+                let html = '';
+                categories.forEach(cat => {
+                    const residents = ALL_RESIDENTS.filter(r => r.rarity === cat.rarity);
+                    html += `<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r => isResidentCollected(r.id)).length}/${residents.length})</div>`;
+                    html += '<div class="collection-grid">';
+                    residents.forEach(r => {
+                        const collected = isResidentCollected(r.id);
+                        html += `
+                            <div class="collection-slot ${collected ? '' : 'locked'}">
+                                ${collected ? r.emoji : '❓'}
+                                ${collected ? `<span class="bonus-badge">+${r.bonus}%</span>` : ''}
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                });
+                
+                collectionContent.innerHTML = html;
+                document.getElementById('collected-count').textContent = collectedResidents.length;
+                document.getElementById('total-count').textContent = ALL_RESIDENTS.length;
+                document.getElementById('bonus-percent').textContent = `+${getCollectionBonus()}%`;
+            }
+            
+            // === СКИНЫ ===
+            
+            function getSkinColors() {
+                const skin = SKINS.find(s => s.id === activeSkin);
+                if (!skin || !skin.colors) return null;
+                return skin.colors;
+            }
+            
+            function renderSkinShop() {
+                let html = '';
+                SKINS.forEach(skin => {
+                    const owned = ownedSkins.includes(skin.id);
+                    const active = activeSkin === skin.id;
+                    let btnText, btnClass;
+                    
+                    if (active) {
+                        btnText = '✅ Надет';
+                        btnClass = 'active-skin';
+                    } else if (owned) {
+                        btnText = '👕 Надеть';
+                        btnClass = 'owned';
+                    } else {
+                        btnText = '🪙 ' + skin.cost;
+                        btnClass = coins >= skin.cost ? '' : 'cant-afford';
+                    }
+                    
+                    html += `
+                        <div class="shop-item">
+                            <span class="shop-icon">${skin.emoji}</span>
+                            <div class="shop-info">
+                                <div class="name">${skin.name}</div>
+                                <div class="desc">${skin.id === 'classic' ? 'Стандартный стиль' : 'Уникальный дизайн этажей'}</div>
+                            </div>
+                            <button class="shop-buy ${btnClass}" data-skin="${skin.id}">${btnText}</button>
+                        </div>
+                    `;
+                });
+                skinList.innerHTML = html;
+                
+                // Навешиваем обработчики
+                skinList.querySelectorAll('.shop-buy').forEach(btn => {
+                    btn.addEventListener('pointerdown', (e) => {
+                        e.stopPropagation();
+                        const skinId = btn.dataset.skin;
+                        handleSkinClick(skinId);
+                    });
+                });
+            }
+            
+            function handleSkinClick(skinId) {
+                if (activeSkin === skinId) return;
+                
+                if (ownedSkins.includes(skinId)) {
+                    // Просто надеть
+                    activeSkin = skinId;
+                } else {
+                    // Купить
+                    const skin = SKINS.find(s => s.id === skinId);
+                    if (!skin || coins < skin.cost) return;
+                    coins -= skin.cost;
+                    ownedSkins.push(skinId);
+                    activeSkin = skinId;
+                    updateUI();
+                }
+                renderSkinShop();
+            }
+            
+            // === ИГРА ===
+
+            function resize() {
+                const container = document.getElementById('gameContainer');
+                const rect = container.getBoundingClientRect();
+                W = rect.width;
+                H = rect.height;
+                canvas.width = W * window.devicePixelRatio;
+                canvas.height = H * window.devicePixelRatio;
+                canvas.style.width = W + 'px';
+                canvas.style.height = H + 'px';
+                ctx.setTransform(1, 0, 0, 1, 0, 0);
+                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+            }
+
+            function getStartWidth() {
+                return BASE_WIDTH + getWidthBonus();
+            }
+
+            function initGame() {
+                floors = [];
+                comboCount = 0;
+                bestCombo = 0;
+                direction = 1;
+                cameraY = 0;
+                targetCameraY = 0;
+                residentFloors = {};
+                updateIncrement();
+                
+                const startWidth = getStartWidth();
+                floors.push({
+                    x: W/2 - startWidth/2,
+                    y: H - FLOOR_HEIGHT - 20,
+                    w: startWidth
+                });
+                
+                gameState = 'playing';
+                gameoverPanel.style.display = 'none';
+                comboPopup.style.opacity = '0';
+                collectPopup.style.opacity = '0';
+                hintText.style.display = 'block';
+                document.getElementById('bottom-buttons').style.display = 'flex';
+                
+                spawnFloor();
+                updateUI();
+            }
+
+            function getColor(index) {
+                const skin = getSkinColors();
+                if (skin) {
+                    const hue = skin.top[0];
+                    const sat = skin.top[1];
+                    const light = skin.top[2] + (index % 5);
+                    return {
+                        top: `hsl(${hue}, ${sat}%, ${Math.min(light + 5, 80)}%)`,
+                        bottom: `hsl(${hue}, ${sat}%, ${skin.bottom[2] + (index % 3)}%)`,
+                        stroke: `hsl(${hue}, ${skin.stroke[1]}%, ${skin.stroke[2]}%)`,
+                        glow: `hsl(${hue}, ${skin.stroke[1]}%, ${skin.stroke[2]}%)`
+                    };
+                }
+                const hue = (200 + index * 6) % 360;
+                return {
+                    top: `hsl(${hue}, 65%, 55%)`,
+                    bottom: `hsl(${hue}, 65%, 30%)`,
+                    stroke: `hsl(${hue}, 75%, 70%)`,
+                    glow: `hsl(${hue}, 75%, 60%)`
+                };
+            }
+
+            function spawnFloor() {
+                if (floors.length === 0) return;
+                
+                const lastFloor = floors[floors.length - 1];
+                const newWidth = lastFloor.w;
+                
+                let startX;
+                if (direction > 0) {
+                    startX = -newWidth + 20;
+                } else {
+                    startX = W - 20;
+                }
+                
+                currentFloor = {
+                    x: startX,
+                    y: lastFloor.y - FLOOR_HEIGHT,
+                    w: newWidth
+                };
+                
+                recalculateSpeed();
+            }
+
+            function placeFloor() {
+                if (!currentFloor || gameState !== 'playing') return;
+                
+                const lastFloor = floors[floors.length - 1];
+                
+                const overlapLeft = Math.max(currentFloor.x, lastFloor.x);
+                const overlapRight = Math.min(currentFloor.x + currentFloor.w, lastFloor.x + lastFloor.w);
+                const overlapWidth = overlapRight - overlapLeft;
+                
+                if (overlapWidth <= 0) {
+                    triggerGameOver();
+                    return;
+                }
+                
+                const newFloor = {
+                    x: overlapLeft,
+                    y: currentFloor.y,
+                    w: overlapWidth
+                };
+                
+                floors.push(newFloor);
+                
+                const floorIndex = floors.length - 1;
+                if (residentFloors[floorIndex]) {
+                    const resident = ALL_RESIDENTS.find(r => r.id === residentFloors[floorIndex]);
+                    if (resident && !isResidentCollected(resident.id)) {
+                        collectResident(resident);
+                    }
+                }
+                
+                const accuracy = overlapWidth / lastFloor.w;
+                const archBonus = getArchitectBonus();
+                const collectionBonus = 1 + getCollectionBonus() / 100;
+                
+                let earnedCoins = 0;
+                if (accuracy > 1 - 0.04 * archBonus) {
+                    comboCount++;
+                    if (comboCount > bestCombo) bestCombo = comboCount;
+                    earnedCoins = Math.floor(floors.length * (3 + comboCount * 2) * collectionBonus);
+                    showCombo(comboCount);
+                } else if (accuracy > 1 - 0.25 * archBonus) {
+                    comboCount = 0;
+                    earnedCoins = Math.floor(floors.length * 1.5 * collectionBonus);
+                    showCombo(0);
+                } else {
+                    comboCount = 0;
+                    earnedCoins = Math.floor((floors.length / 2) * collectionBonus);
+                    hideCombo();
+                }
+                
+                if (Math.random() < Math.min(getGoldrushChance(), 0.99)) {
+                    earnedCoins *= 2;
+                    showGoldrush();
+                }
+                
+                coins += earnedCoins;
+                
+                currentFloor = null;
+                
+                if (floors.length > 6) {
+                    targetCameraY = (floors.length - 6) * FLOOR_HEIGHT;
+                }
+                
+                updateUI();
+                
+                direction *= -1;
+                spawnFloor();
+                hintText.style.display = 'none';
+            }
+
+            function showGoldrush() {
+                comboPopup.textContent = '💰 ЗОЛОТО! ×2';
+                comboPopup.style.color = '#ffd700';
+                comboPopup.style.opacity = '1';
+                comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                
+                clearTimeout(comboPopup._timeout);
+                comboPopup._timeout = setTimeout(() => {
+                    comboPopup.style.opacity = '0';
+                    comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                }, 700);
+            }
+
+            function showCombo(combo) {
+                if (combo > 1) {
+                    comboPopup.textContent = `ИДЕАЛЬНО! x${combo} 🔥`;
+                    comboPopup.style.color = '#ffd700';
+                } else if (combo === 0 && floors.length > 1) {
+                    comboPopup.textContent = 'Отлично! ✨';
+                    comboPopup.style.color = '#ffffff';
+                } else {
+                    return;
+                }
+                
+                comboPopup.style.opacity = '1';
+                comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                
+                clearTimeout(comboPopup._timeout);
+                comboPopup._timeout = setTimeout(() => {
+                    comboPopup.style.opacity = '0';
+                    comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)';
+                }, 500);
+            }
+
+            function hideCombo() {
+                comboPopup.style.opacity = '0';
+            }
+
+            function triggerGameOver() {
+                gameState = 'gameover';
+                currentFloor = null;
+                
+                const totalFloors = floors.length - 1;
+                const collectionBonus = 1 + getCollectionBonus() / 100;
+                const bonusCoins = Math.floor(totalFloors * 5 * collectionBonus);
+                coins += bonusCoins;
+                
+                goFloorsEl.textContent = totalFloors;
+                goComboEl.textContent = bestCombo;
+                goCoinsEl.textContent = bonusCoins;
+                gameoverPanel.style.display = 'flex';
+                hintText.style.display = 'none';
+                document.getElementById('bottom-buttons').style.display = 'none';
+                
+                updateUI();
+            }
+
+            function updateUI() {
+                floorCountEl.textContent = Math.max(1, floors.length);
+                comboTextEl.textContent = comboCount;
+                coinDisplayEl.textContent = coins;
+            }
+
+            // === МАГАЗИН ===
+            
+            function getUpgradeCost(upgrade) {
+                const level = upgrade.level;
+                if (level <= 20) return upgrade.baseCost + (level - 1) * upgrade.baseCost;
+                // После 20 уровня цена растёт экспоненциально
+                return upgrade.baseCost * 20 + (level - 20) * upgrade.baseCost * 2;
+            }
+            
+            function updateShopUI() {
+                updateShopItem(upgrades.foundation, buyFoundation, foundationLvlEl, foundationCostEl);
+                updateShopItem(upgrades.architect, buyArchitect, architectLvlEl, architectCostEl);
+                updateShopItem(upgrades.brakes, buyBrakes, brakesLvlEl, brakesCostEl);
+                updateShopItem(upgrades.goldrush, buyGoldrush, goldrushLvlEl, goldrushCostEl);
+                updateShopItem(upgrades.magnet, buyMagnet, magnetLvlEl, magnetCostEl);
+            }
+            
+            function updateShopItem(upgrade, button, levelEl, costEl) {
+                levelEl.textContent = upgrade.level;
+                const cost = getUpgradeCost(upgrade);
+                costEl.textContent = cost;
+                
+                if (coins < cost) {
+                    button.textContent = '🪙 ' + cost;
+                    button.classList.add('cant-afford');
+                } else {
+                    button.textContent = '🪙 ' + cost;
+                    button.classList.remove('cant-afford');
+                }
+            }
+            
+            function buyUpgrade(upgradeName) {
+                const upgrade = upgrades[upgradeName];
+                
+                const cost = getUpgradeCost(upgrade);
+                if (coins < cost) return;
+                
+                coins -= cost;
+                upgrade.level++;
+                
+                updateIncrement();
+                recalculateSpeed();
+                
+                updateUI();
+                updateShopUI();
+            }
+            
+            function openShop() {
+                if (gameState === 'gameover') return;
+                panelOpen = true;
+                shopPanel.classList.add('open');
+                overlay.classList.add('show');
+                document.getElementById('bottom-buttons').style.display = 'none';
+                updateShopUI();
+            }
+            
+            function openSkinShop() {
+                if (gameState === 'gameover') return;
+                panelOpen = true;
+                skinPanel.classList.add('open');
+                overlay.classList.add('show');
+                document.getElementById('bottom-buttons').style.display = 'none';
+                renderSkinShop();
+            }
+            
+            function openCollection() {
+                if (gameState === 'gameover') return;
+                panelOpen = true;
+                collectionPanel.classList.add('open');
+                overlay.classList.add('show');
+                document.getElementById('bottom-buttons').style.display = 'none';
+                renderCollection();
+            }
+            
+            function closePanels() {
+                panelOpen = false;
+                shopPanel.classList.remove('open');
+                skinPanel.classList.remove('open');
+                collectionPanel.classList.remove('open');
+                overlay.classList.remove('show');
+                if (gameState !== 'gameover') {
+                    document.getElementById('bottom-buttons').style.display = 'flex';
+                }
+            }
+
+            function update() {
+                if (gameState !== 'playing') return;
+                if (panelOpen) return;
+                
+                if (currentFloor) {
+                    currentFloor.x += moveSpeed * direction;
+                    
+                    if (currentFloor.x <= 0) {
+                        currentFloor.x = 0;
+                        direction = 1;
+                    } else if (currentFloor.x + currentFloor.w >= W) {
+                        currentFloor.x = W - currentFloor.w;
+                        direction = -1;
+                    }
+                }
+                
+                cameraY += (targetCameraY - cameraY) * 0.1;
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, W, H);
+                
+                drawBackground();
+                
+                ctx.save();
+                ctx.translate(0, cameraY);
+                
+                for (let i = 0; i < floors.length; i++) {
+                    drawFloor(floors[i], i, false);
+                }
+                
+                if (currentFloor && gameState === 'playing' && !panelOpen) {
+                    drawFloor(currentFloor, floors.length, true);
+                }
+                
+                ctx.restore();
+            }
+
+            function drawBackground() {
+                const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+                skyGrad.addColorStop(0, '#0a0a1a');
+                skyGrad.addColorStop(0.5, '#1a1a3e');
+                skyGrad.addColorStop(1, '#0f2040');
+                ctx.fillStyle = skyGrad;
+                ctx.fillRect(0, 0, W, H);
+                
+                if (!drawBackground.stars) {
+                    drawBackground.stars = [];
+                    for (let i = 0; i < 60; i++) {
+                        drawBackground.stars.push({
+                            x: Math.random() * 420,
+                            y: Math.random() * 750,
+                            r: Math.random() * 1.5 + 0.3,
+                            twinkle: Math.random() * Math.PI * 2
+                        });
+                    }
+                }
+                
+                const time = Date.now() / 1000;
+                drawBackground.stars.forEach(star => {
+                    const alpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.2;
+                    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+                    ctx.beginPath();
+                    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+
+            function drawFloor(floor, index, isCurrent) {
+                const color = getColor(index);
+                
+                ctx.fillStyle = 'rgba(0,0,0,0.3)';
+                ctx.fillRect(floor.x + 2, floor.y + 2, floor.w, FLOOR_HEIGHT);
+                
+                const grad = ctx.createLinearGradient(floor.x, floor.y, floor.x, floor.y + FLOOR_HEIGHT);
+                grad.addColorStop(0, color.top);
+                grad.addColorStop(1, color.bottom);
+                ctx.fillStyle = grad;
+                ctx.fillRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
+                
+                if (isCurrent) {
+                    ctx.shadowColor = color.glow;
+                    ctx.shadowBlur = 12;
+                    ctx.strokeStyle = color.stroke;
+                    ctx.lineWidth = 2.5;
+                } else {
+                    ctx.shadowBlur = 0;
+                    ctx.strokeStyle = color.stroke;
+                    ctx.lineWidth = 1.5;
+                }
+                ctx.strokeRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
+                ctx.shadowBlur = 0;
+                
+                ctx.fillStyle = 'rgba(255,255,255,0.12)';
+                ctx.fillRect(floor.x, floor.y, floor.w, 3);
+                
+                if (floor.w > 20) {
+                    const winSize = Math.min(7, floor.w / 4);
+                    const winGap = Math.max(15, winSize * 3);
+                    const winY = floor.y + 9;
+                    
+                    for (let wx = floor.x + 8; wx < floor.x + floor.w - 8; wx += winGap) {
+                        if (wx + winSize > floor.x + floor.w - 4) break;
+                        
+                        const residentId = residentFloors[index];
+                        const hasResident = residentId && !isResidentCollected(residentId);
+                        
+                        if (hasResident && wx === floor.x + 8) {
+                            const resident = ALL_RESIDENTS.find(r => r.id === residentId);
+                            ctx.font = `${winSize + 4}px Arial`;
+                            ctx.fillText(resident.emoji, wx - 2, winY + winSize - 1);
+                        } else {
+                            ctx.fillStyle = 'rgba(255,255,220,0.6)';
+                            ctx.fillRect(wx, winY, winSize, winSize);
+                            
+                            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+                            ctx.lineWidth = 0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(wx + winSize/2, winY);
+                            ctx.lineTo(wx + winSize/2, winY + winSize);
+                            ctx.moveTo(wx, winY + winSize/2);
+                            ctx.lineTo(wx + winSize, winY + winSize/2);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function handleTap(e) {
+                e.preventDefault();
+                if (gameState === 'gameover') return;
+                if (panelOpen) return;
+                if (gameState === 'playing' && currentFloor) {
+                    placeFloor();
+                    
+                    const nextFloorIndex = floors.length;
+                    if (nextFloorIndex > 1 && nextFloorIndex % 5 === 0 && !residentFloors[nextFloorIndex]) {
+                        const magnetBonus = getMagnetBonus();
+                        const spawnChance = 0.6 + magnetBonus;
+                        if (Math.random() < Math.min(spawnChance, 1.0)) {
+                            const resident = getRandomResident();
+                            residentFloors[nextFloorIndex] = resident.id;
+                        }
+                    }
+                }
+            }
+
+            function restartGame() {
+                initGame();
+            }
+
+            // События
+            canvas.addEventListener('pointerdown', handleTap);
+            restartBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                restartGame();
+            });
+            
+            shopBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                openShop();
+            });
+            
+            skinBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                openSkinShop();
+            });
+            
+            collectionBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                openCollection();
+            });
+            
+            closeShopBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                closePanels();
+            });
+            
+            closeSkinBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                closePanels();
+            });
+            
+            closeCollectionBtn.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                closePanels();
+            });
+            
+            overlay.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                closePanels();
+            });
+            
+            buyFoundation.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                buyUpgrade('foundation');
+                updateShopUI();
+            });
+            
+            buyArchitect.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                buyUpgrade('architect');
+                updateShopUI();
+            });
+            
+            buyBrakes.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                buyUpgrade('brakes');
+                updateShopUI();
+            });
+            
+            buyGoldrush.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                buyUpgrade('goldrush');
+                updateShopUI();
+            });
+            
+            buyMagnet.addEventListener('pointerdown', (e) => {
+                e.stopPropagation();
+                buyUpgrade('magnet');
+                updateShopUI();
+            });
+            
+            document.addEventListener('gesturestart', (e) => e.preventDefault());
+            document.addEventListener('gesturechange', (e) => e.preventDefault());
+            document.addEventListener('gestureend', (e) => e.preventDefault());
+
+            window.addEventListener('resize', () => {
+                const oldW = W;
+                resize();
+                const scaleX = W / oldW;
+                floors.forEach((f, i) => {
+                    f.x *= scaleX;
+                    f.w *= scaleX;
+                    f.y = H - FLOOR_HEIGHT - 20 - (i * FLOOR_HEIGHT);
+                });
+                if (currentFloor) {
+                    currentFloor.x *= scaleX;
+                    currentFloor.w *= scaleX;
+                }
+            });
+
+            function gameLoop() {
+                update();
+                draw();
+                requestAnimationFrame(gameLoop);
+            }
+
+            resize();
+            updateIncrement();
+            initGame();
+            updateShopUI();
+            gameLoop();
+
+            console.log('✅ В+Г готово!');
+            console.log('♾️ Бесконечные улучшения');
+            console.log('🎨 9 скинов для этажей');
+        })();
+    </script>
+</body>
+</html>
