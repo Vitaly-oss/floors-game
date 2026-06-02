@@ -658,16 +658,37 @@
             
             // Скины фона
             const BG_SKINS = [
-                { id: 'night', name: 'Ночное небо', emoji: '🌙', cost: 0, gradient: ['#0a0a1a', '#1a1a3e', '#0f2040'], starColor: 'rgba(255,255,255,{alpha})', starCount: 60 },
-                { id: 'sunset', name: 'Закат', emoji: '🌅', cost: 5000, gradient: ['#ff6b35', '#e94560', '#1a1a2e'], starColor: 'rgba(255,215,0,{alpha})', starCount: 40 },
-                { id: 'morning', name: 'Утро', emoji: '🌤️', cost: 5000, gradient: ['#87CEEB', '#ffcccb', '#b8d4e3'], starColor: null, starCount: 0 },
-                { id: 'space', name: 'Космос', emoji: '🌌', cost: 15000, gradient: ['#000011', '#1a0033', '#0d004d'], starColor: 'rgba({color}, {alpha})', starCount: 100 },
-                { id: 'aurora', name: 'Северное сияние', emoji: '🌠', cost: 25000, gradient: ['#001a33', '#003322', '#001a33'], starColor: 'rgba(100,255,200,{alpha})', starCount: 50 },
-                { id: 'storm', name: 'Гроза', emoji: '⛈️', cost: 35000, gradient: ['#1a1a2e', '#2d2d44', '#0a0a1a'], starColor: null, starCount: 0 },
-                { id: 'ocean', name: 'Подводный мир', emoji: '🌊', cost: 50000, gradient: ['#0077b6', '#023e8a', '#001d3d'], starColor: 'rgba(200,240,255,{alpha})', starCount: 30 },
-                { id: 'hell', name: 'Огненный ад', emoji: '🔥', cost: 75000, gradient: ['#ff4500', '#8b0000', '#1a0000'], starColor: 'rgba(255,100,0,{alpha})', starCount: 70 },
-                { id: 'rainbow', name: 'Радужное небо', emoji: '🌈', cost: 100000, gradient: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#9b59b6'], starColor: 'rgba(255,255,255,{alpha})', starCount: 40 },
-            ];
+    { id: 'night', name: 'Ночное небо', emoji: '🌙', cost: 0,
+      gradient: ['#0a0a1a', '#1a1a3e', '#0f2040'],
+      starColor: 'rgba(255,255,255,{alpha})', starCount: 60 },
+    { id: 'sunset', name: 'Закат', emoji: '🌅', cost: 5000,
+      gradient: ['#ff6b35', '#e94560', '#1a1a2e'],
+      starColor: 'rgba(255,215,0,{alpha})', starCount: 40 },
+    { id: 'morning', name: 'Утро', emoji: '🌤️', cost: 5000,
+      gradient: ['#87CEEB', '#ffcccb', '#b8d4e3'],
+      starColor: null, starCount: 0 },
+    { id: 'space', name: 'Космос', emoji: '🌌', cost: 15000,
+      gradient: ['#000011', '#1a0033', '#0d004d'],
+      starColor: 'rgba({color}, {alpha})', starCount: 100 },
+    { id: 'aurora', name: 'Северное сияние', emoji: '🌠', cost: 25000,
+      gradient: ['#001a33', '#003322', '#001a33'],
+      starColor: 'rgba(100,255,200,{alpha})', starCount: 50 },
+    { id: 'storm', name: 'Гроза', emoji: '⛈️', cost: 35000,
+      gradient: ['#1a1a2e', '#2d2d44', '#0a0a1a'],
+      starColor: null, starCount: 0 },
+    { id: 'ocean', name: 'Подводный мир', emoji: '🌊', cost: 50000,
+      gradient: ['#0077b6', '#023e8a', '#001d3d'],
+      starColor: 'rgba(200,240,255,{alpha})', starCount: 30 },
+    { id: 'hell', name: 'Огненный ад', emoji: '🔥', cost: 75000,
+      gradient: ['#ff4500', '#8b0000', '#1a0000'],
+      starColor: 'rgba(255,100,0,{alpha})', starCount: 70 },
+    { id: 'sakura', name: 'Сакура', emoji: '🌸', cost: 100000,
+      gradient: ['#ffccd5', '#ffb3c6', '#ff8fa3'],
+      starColor: 'rgba(255,200,200,{alpha})', starCount: 20 },
+    { id: 'volcano', name: 'Вулкан', emoji: '🌋', cost: 120000,
+      gradient: ['#2d0000', '#6b0000', '#1a0000'],
+      starColor: 'rgba(255,150,0,{alpha})', starCount: 50 },
+];
             
             let ownedBgSkins = ['night'];
             let activeBgSkin = 'night';
@@ -1078,65 +1099,112 @@
             }
 
             function drawBackground() {
-                const bg = getBgSkin();
-                const grad = ctx.createLinearGradient(0, 0, 0, H);
-                bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
-                ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
-                
-                if (bg.id === 'aurora') {
-                    const t = Date.now() / 3000;
-                    for (let i = 0; i < 3; i++) {
-                        ctx.fillStyle = `rgba(${100 + i*30}, ${200 + i*20}, ${150 + i*30}, 0.15)`;
-                        ctx.beginPath(); ctx.moveTo(0, H);
-                        for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H * 0.3 + Math.sin(x * 0.02 + t + i) * 40 + Math.sin(x * 0.05 + t * 2) * 20);
-                        ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-                    }
-                }
-                if (bg.id === 'ocean') {
-                    if (!drawBackground.bubbles) drawBackground.bubbles = Array.from({length: 15}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 2+Math.random()*6, s: 0.2+Math.random()*0.5 }));
-                    drawBackground.bubbles.forEach(b => {
-                        b.y -= b.s; if (b.y < -10) { b.y = H + 10; b.x = Math.random() * W; }
-                        ctx.fillStyle = `rgba(200,240,255,${0.2 + Math.sin(Date.now()/1000 + b.x) * 0.1})`;
-                        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
-                    });
-                }
-                if (bg.id === 'hell') {
-                    if (!drawBackground.sparks) drawBackground.sparks = Array.from({length: 40}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, s: 0.3+Math.random()*1.5 }));
-                    drawBackground.sparks.forEach(sp => {
-                        sp.y -= sp.s; if (sp.y < -10) { sp.y = H + 10; sp.x = Math.random() * W; }
-                        ctx.fillStyle = `rgba(255,${100 + Math.floor(Math.random()*100)},0,${0.4 + Math.sin(Date.now()/1000 + sp.x) * 0.2})`;
-                        ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); ctx.fill();
-                    });
-                }
-                if (bg.id === 'storm' && lightningTimer > 0) {
-                    ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(0, 0, W, H);
-                    lightningTimer--;
-                }
-                if (bg.starColor && bg.starCount > 0) {
-                    if (!drawBackground.stars) drawBackground.stars = Array.from({length: 100}, () => ({ x: Math.random()*420, y: Math.random()*750, r: 0.3+Math.random()*1.5, twinkle: Math.random()*Math.PI*2 }));
-                    const time = Date.now() / 1000;
-                    for (let i = 0; i < Math.min(bg.starCount, drawBackground.stars.length); i++) {
-                        const star = drawBackground.stars[i];
-                        const alpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.2;
-                        let color = bg.starColor.replace('{alpha}', alpha).replace('{color}', '255,255,255');
-                        if (bg.id === 'space') {
-                            const colors = ['rgba(255,255,255,', 'rgba(200,220,255,', 'rgba(255,255,200,', 'rgba(255,200,200,'];
-                            color = colors[Math.floor(Math.random() * 4)] + alpha + ')';
-                        }
-                        ctx.fillStyle = color;
-                        ctx.beginPath(); ctx.arc(star.x, star.y, star.r, 0, Math.PI*2); ctx.fill();
-                    }
-                }
-                if (bg.id === 'morning') {
-                    if (!drawBackground.clouds) drawBackground.clouds = Array.from({length: 5}, () => ({ x: Math.random()*W, y: 50+Math.random()*H*0.4, w: 40+Math.random()*80 }));
-                    drawBackground.clouds.forEach(c => {
-                        c.x += 0.2; if (c.x > W + 100) c.x = -100;
-                        ctx.fillStyle = 'rgba(255,255,255,0.25)';
-                        ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w, c.w*0.3, 0, 0, Math.PI*2); ctx.fill();
-                        ctx.beginPath(); ctx.ellipse(c.x - c.w*0.3, c.y + 5, c.w*0.6, c.w*0.2, 0, 0, Math.PI*2); ctx.fill();
-                    });
-                }
+    const bg = getBgSkin();
+    const grad = ctx.createLinearGradient(0, 0, 0, H);
+    bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
+    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
+    
+    // Северное сияние
+    if (bg.id === 'aurora') {
+        const t = Date.now() / 3000;
+        for (let i = 0; i < 3; i++) {
+            ctx.fillStyle = `rgba(${100 + i*30}, ${200 + i*20}, ${150 + i*30}, 0.15)`;
+            ctx.beginPath(); ctx.moveTo(0, H);
+            for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H * 0.3 + Math.sin(x * 0.02 + t + i) * 40 + Math.sin(x * 0.05 + t * 2) * 20);
+            ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
+        }
+    }
+    
+    // Подводный мир — пузырьки
+    if (bg.id === 'ocean') {
+        if (!drawBackground.bubbles) drawBackground.bubbles = Array.from({length: 15}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 2+Math.random()*6, s: 0.2+Math.random()*0.5 }));
+        drawBackground.bubbles.forEach(b => {
+            b.y -= b.s; if (b.y < -10) { b.y = H + 10; b.x = Math.random() * W; }
+            ctx.fillStyle = `rgba(200,240,255,${0.2 + Math.sin(Date.now()/1000 + b.x) * 0.1})`;
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+        });
+    }
+    
+    // Огненный ад — искры
+    if (bg.id === 'hell') {
+        if (!drawBackground.sparks) drawBackground.sparks = Array.from({length: 40}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, s: 0.3+Math.random()*1.5 }));
+        drawBackground.sparks.forEach(sp => {
+            sp.y -= sp.s; if (sp.y < -10) { sp.y = H + 10; sp.x = Math.random() * W; }
+            ctx.fillStyle = `rgba(255,${100 + Math.floor(Math.random()*100)},0,${0.4 + Math.sin(Date.now()/1000 + sp.x) * 0.2})`;
+            ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); ctx.fill();
+        });
+    }
+    
+    // Гроза — молния
+    if (bg.id === 'storm' && lightningTimer > 0) {
+        ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(0, 0, W, H);
+        lightningTimer--;
+    }
+    
+    // Сакура — падающие лепестки
+    if (bg.id === 'sakura') {
+        if (!drawBackground.petals) drawBackground.petals = Array.from({length: 25}, () => ({ 
+            x: Math.random()*W, y: Math.random()*H, r: 2+Math.random()*3, 
+            s: 0.3+Math.random()*0.8, wobble: Math.random()*Math.PI*2 
+        }));
+        const pt = Date.now() / 1000;
+        drawBackground.petals.forEach(p => {
+            p.y += p.s; p.x += Math.sin(pt + p.wobble) * 0.5;
+            if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
+            ctx.fillStyle = `rgba(255,${180 + Math.floor(Math.random()*40)},${200 + Math.floor(Math.random()*30)},0.7)`;
+            ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r, p.r*0.6, Math.sin(pt + p.wobble)*0.5, 0, Math.PI*2); ctx.fill();
+        });
+    }
+    
+    // Вулкан — пепел и лавовое свечение
+    if (bg.id === 'volcano') {
+        if (!drawBackground.ash) drawBackground.ash = Array.from({length: 35}, () => ({ 
+            x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, 
+            s: 0.2+Math.random()*1, drift: Math.random()*2-1 
+        }));
+        const at = Date.now() / 1000;
+        drawBackground.ash.forEach(a => {
+            a.y -= a.s; a.x += a.drift * 0.3;
+            if (a.y < -10) { a.y = H + 10; a.x = Math.random() * W; }
+            const alpha = 0.3 + Math.sin(at + a.x) * 0.2;
+            ctx.fillStyle = `rgba(${80 + Math.floor(Math.random()*40)},${20 + Math.floor(Math.random()*20)},${5},${alpha})`;
+            ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI*2); ctx.fill();
+        });
+        // Лавовое свечение снизу
+        const lavaGrad = ctx.createLinearGradient(0, H*0.8, 0, H);
+        lavaGrad.addColorStop(0, 'rgba(255,50,0,0)');
+        lavaGrad.addColorStop(1, 'rgba(255,100,0,0.3)');
+        ctx.fillStyle = lavaGrad; ctx.fillRect(0, H*0.8, W, H*0.2);
+    }
+    
+    // Звёзды
+    if (bg.starColor && bg.starCount > 0) {
+        if (!drawBackground.stars) drawBackground.stars = Array.from({length: 100}, () => ({ x: Math.random()*420, y: Math.random()*750, r: 0.3+Math.random()*1.5, twinkle: Math.random()*Math.PI*2 }));
+        const time = Date.now() / 1000;
+        for (let i = 0; i < Math.min(bg.starCount, drawBackground.stars.length); i++) {
+            const star = drawBackground.stars[i];
+            const alpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.2;
+            let color = bg.starColor.replace('{alpha}', alpha).replace('{color}', '255,255,255');
+            if (bg.id === 'space') {
+                const colors = ['rgba(255,255,255,', 'rgba(200,220,255,', 'rgba(255,255,200,', 'rgba(255,200,200,'];
+                color = colors[Math.floor(Math.random() * 4)] + alpha + ')';
             }
+            ctx.fillStyle = color;
+            ctx.beginPath(); ctx.arc(star.x, star.y, star.r, 0, Math.PI*2); ctx.fill();
+        }
+    }
+    
+    // Утро — облачка
+    if (bg.id === 'morning') {
+        if (!drawBackground.clouds) drawBackground.clouds = Array.from({length: 5}, () => ({ x: Math.random()*W, y: 50+Math.random()*H*0.4, w: 40+Math.random()*80 }));
+        drawBackground.clouds.forEach(c => {
+            c.x += 0.2; if (c.x > W + 100) c.x = -100;
+            ctx.fillStyle = 'rgba(255,255,255,0.25)';
+            ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w, c.w*0.3, 0, 0, Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.ellipse(c.x - c.w*0.3, c.y + 5, c.w*0.6, c.w*0.2, 0, 0, Math.PI*2); ctx.fill();
+        });
+    }
+}
 
             function drawFloor(floor, index, isCurrent) {
                 const color = getColor(index);
