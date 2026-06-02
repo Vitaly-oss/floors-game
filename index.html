@@ -804,7 +804,7 @@
             }
             function getGoldrushChance() {
                 const l = upgrades.goldrush.level;
-                return l <= 20 ? (l - 1) * 0.05 : 0.95 + (l - 20) * 0.005;
+                return l <= 20 ? (l - 1) * 0.03 : 0.57 + (l - 20) * 0.003;
             }
             function getMagnetBonus() {
                 const l = upgrades.magnet.level;
@@ -991,10 +991,10 @@
                 const acc = ow / lf.w, ab = getArchitectBonus(), cb = 1 + getCollectionBonus() / 100;
                 let earned = 0;
                 if (acc > 1 - 0.04 * ab) {
-                    comboCount++; if (comboCount > bestCombo) bestCombo = comboCount;
-                    earned = Math.floor(floors.length * (3 + comboCount * 2) * cb); showCombo(comboCount);
-                } else if (acc > 1 - 0.25 * ab) { comboCount = 0; earned = Math.floor(floors.length * 1.5 * cb); showCombo(0); }
-                else { comboCount = 0; earned = Math.floor((floors.length / 2) * cb); hideCombo(); }
+    comboCount++; if (comboCount > bestCombo) bestCombo = comboCount;
+    earned = Math.floor(floors.length * (1 + comboCount * 1.5) * cb); showCombo(comboCount);
+} else if (acc > 1 - 0.25 * ab) { comboCount = 0; earned = Math.floor(floors.length * 0.8 * cb); showCombo(0); }
+else { comboCount = 0; earned = Math.floor((floors.length / 4) * cb); hideCombo(); }
                 if (Math.random() < Math.min(getGoldrushChance(), 0.99)) { earned *= 2; showGoldrush(); }
                 coins += earned;
                 totalCoinsEarned += earned;
@@ -1028,7 +1028,7 @@
             function triggerGameOver() {
                 gameState = 'gameover'; currentFloor = null;
                 const tf = floors.length - 1, cb = 1 + getCollectionBonus() / 100;
-                const bc = Math.floor(tf * 5 * cb); coins += bc;
+                const bc = Math.floor(tf * 2 * cb); coins += bc;
                 totalCoinsEarned += bc;
                 if (tf > bestFloors) { bestFloors = tf; bestDisplay.textContent = bestFloors; }
                 goFloorsEl.textContent = tf; goComboEl.textContent = bestCombo; goCoinsEl.textContent = bc;
@@ -1046,7 +1046,7 @@
             // === МАГАЗИН ===
             function getUpgradeCost(u) {
                 const l = u.level;
-                return l <= 20 ? u.baseCost + (l - 1) * u.baseCost : u.baseCost * 20 + (l - 20) * u.baseCost * 2;
+                return l <= 20 ? u.baseCost + (l - 1) * u.baseCost : u.baseCost * 20 + (l - 20) * u.baseCost * 3;
             }
             function updateShopUI() {
                 [['foundation', buyFoundation, foundationLvlEl, foundationCostEl],
