@@ -67,21 +67,21 @@
             right: 20px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             z-index: 6;
         }
-        #shop-btn, #collection-btn, #skin-btn, #reset-btn {
-            width: 55px;
-            height: 55px;
+        #shop-btn, #collection-btn, #skin-btn, #bg-skin-btn, #reset-btn {
+            width: 50px;
+            height: 50px;
             border: none;
             border-radius: 50%;
-            font-size: 26px;
+            font-size: 24px;
             cursor: pointer;
             transition: 0.2s;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         #shop-btn {
             background: linear-gradient(135deg, #ffd700, #ffaa00);
@@ -92,13 +92,14 @@
         #skin-btn {
             background: linear-gradient(135deg, #7c3aed, #5b21b6);
         }
+        #bg-skin-btn {
+            background: linear-gradient(135deg, #06b6d4, #0891b2);
+        }
         #reset-btn {
             background: linear-gradient(135deg, #666, #333);
-            font-size: 16px;
-            width: 40px;
-            height: 40px;
+            font-size: 14px;
         }
-        #shop-btn:active, #collection-btn:active, #skin-btn:active, #reset-btn:active {
+        #shop-btn:active, #collection-btn:active, #skin-btn:active, #bg-skin-btn:active, #reset-btn:active {
             transform: scale(0.9);
         }
         .combo-popup {
@@ -131,7 +132,7 @@
             text-align: center;
             line-height: 1.4;
         }
-        #shop-panel, #collection-panel, #skin-panel {
+        #shop-panel, #collection-panel, #skin-panel, #bg-skin-panel {
             position: absolute;
             bottom: 0;
             left: 0;
@@ -150,16 +151,13 @@
             max-height: 70vh;
             overflow-y: auto;
         }
-        #collection-panel {
-            border-top: 2px solid #e94560;
-        }
-        #skin-panel {
-            border-top: 2px solid #7c3aed;
-        }
-        #shop-panel.open, #collection-panel.open, #skin-panel.open {
+        #collection-panel { border-top: 2px solid #e94560; }
+        #skin-panel { border-top: 2px solid #7c3aed; }
+        #bg-skin-panel { border-top: 2px solid #06b6d4; }
+        #shop-panel.open, #collection-panel.open, #skin-panel.open, #bg-skin-panel.open {
             transform: translateY(0);
         }
-        #shop-panel h3, #collection-panel h3, #skin-panel h3 {
+        #shop-panel h3, #collection-panel h3, #skin-panel h3, #bg-skin-panel h3 {
             text-align: center;
             font-size: 20px;
             margin-bottom: 5px;
@@ -167,6 +165,7 @@
         #shop-panel h3 { color: #ffd700; }
         #collection-panel h3 { color: #e94560; }
         #skin-panel h3 { color: #a78bfa; }
+        #bg-skin-panel h3 { color: #67e8f9; }
         .shop-item {
             display: flex;
             align-items: center;
@@ -174,12 +173,12 @@
             background: rgba(255,255,255,0.05);
             border: 1px solid rgba(255,255,255,0.15);
             border-radius: 16px;
-            padding: 14px;
+            padding: 12px 14px;
             gap: 12px;
         }
         .shop-icon {
-            font-size: 32px;
-            min-width: 40px;
+            font-size: 30px;
+            min-width: 38px;
             text-align: center;
         }
         .shop-info {
@@ -188,15 +187,15 @@
         }
         .shop-info .name {
             font-weight: bold;
-            font-size: 15px;
+            font-size: 14px;
         }
         .shop-info .desc {
-            font-size: 12px;
+            font-size: 11px;
             color: #aaa;
             margin-top: 2px;
         }
         .shop-info .level {
-            font-size: 11px;
+            font-size: 10px;
             color: #ffd700;
             margin-top: 2px;
         }
@@ -204,31 +203,21 @@
             background: linear-gradient(135deg, #4CAF50, #2E7D32);
             color: white;
             border: none;
-            padding: 10px 16px;
+            padding: 8px 14px;
             border-radius: 20px;
             font-weight: bold;
-            font-size: 13px;
+            font-size: 12px;
             cursor: pointer;
             white-space: nowrap;
             transition: 0.2s;
-            min-width: 70px;
+            min-width: 65px;
             text-align: center;
         }
-        .shop-buy:active {
-            transform: scale(0.95);
-        }
-        .shop-buy.cant-afford {
-            background: #666;
-            opacity: 0.6;
-        }
-        .shop-buy.owned {
-            background: linear-gradient(135deg, #7c3aed, #5b21b6);
-        }
-        .shop-buy.active-skin {
-            background: linear-gradient(135deg, #ffd700, #ffaa00);
-            color: #000;
-        }
-        #close-shop, #close-collection, #close-skin {
+        .shop-buy:active { transform: scale(0.95); }
+        .shop-buy.cant-afford { background: #666; opacity: 0.6; }
+        .shop-buy.owned { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
+        .shop-buy.active-skin { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
+        #close-shop, #close-collection, #close-skin, #close-bg-skin {
             display: block;
             margin: 5px auto 0;
             background: rgba(255,255,255,0.1);
@@ -245,10 +234,7 @@
             font-size: 14px;
             margin-bottom: 5px;
         }
-        .collection-stats span {
-            color: #ffd700;
-            font-weight: bold;
-        }
+        .collection-stats span { color: #ffd700; font-weight: bold; }
         .collection-category {
             color: #aaa;
             font-size: 14px;
@@ -274,10 +260,7 @@
             font-size: 28px;
             position: relative;
         }
-        .collection-slot.locked {
-            opacity: 0.3;
-            filter: grayscale(1);
-        }
+        .collection-slot.locked { opacity: 0.3; filter: grayscale(1); }
         .collection-slot .bonus-badge {
             position: absolute;
             bottom: -2px;
@@ -308,24 +291,10 @@
             z-index: 10;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
-        #gameover-panel h2 {
-            color: #e94560;
-            font-size: 24px;
-            margin: 0;
-        }
-        #gameover-panel .emoji {
-            font-size: 45px;
-        }
-        #gameover-panel .stats {
-            font-size: 16px;
-            color: #ccc;
-            line-height: 1.5;
-        }
-        #gameover-panel .coins {
-            font-size: 24px;
-            color: #ffd700;
-            font-weight: bold;
-        }
+        #gameover-panel h2 { color: #e94560; font-size: 24px; margin: 0; }
+        #gameover-panel .emoji { font-size: 45px; }
+        #gameover-panel .stats { font-size: 16px; color: #ccc; line-height: 1.5; }
+        #gameover-panel .coins { font-size: 24px; color: #ffd700; font-weight: bold; }
         #restart-btn {
             background: linear-gradient(135deg, #e94560, #c23152);
             color: white;
@@ -338,9 +307,7 @@
             transition: 0.2s;
             box-shadow: 0 8px 25px rgba(233,69,96,0.4);
         }
-        #restart-btn:active {
-            transform: scale(0.95);
-        }
+        #restart-btn:active { transform: scale(0.95); }
         .hint-text {
             position: absolute;
             bottom: 40px;
@@ -360,21 +327,7 @@
             z-index: 7;
             display: none;
         }
-        #overlay.show {
-            display: block;
-        }
-        #save-indicator {
-            position: absolute;
-            top: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: #4CAF50;
-            font-size: 12px;
-            pointer-events: none;
-            z-index: 5;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
+        #overlay.show { display: block; }
     </style>
 </head>
 <body>
@@ -386,8 +339,6 @@
             <div class="ui-item">🪙 <span id="coinDisplay">0</span></div>
         </div>
         
-        <div id="save-indicator">💾 Сохранено</div>
-        
         <div class="combo-popup" id="comboPopup"></div>
         <div class="collect-popup" id="collectPopup"></div>
         <div class="hint-text" id="hintText">👆 Тапни, чтобы опустить этаж</div>
@@ -395,6 +346,7 @@
         <div id="bottom-buttons">
             <button id="shop-btn">🛒</button>
             <button id="skin-btn">🎨</button>
+            <button id="bg-skin-btn">🌌</button>
             <button id="collection-btn">📖</button>
             <button id="reset-btn">🔄</button>
         </div>
@@ -452,11 +404,18 @@
             <button id="close-shop">✕ Закрыть</button>
         </div>
         
-        <!-- Магазин скинов -->
+        <!-- Магазин скинов этажей -->
         <div id="skin-panel">
             <h3>🎨 Скины этажей</h3>
             <div id="skin-list"></div>
             <button id="close-skin">✕ Закрыть</button>
+        </div>
+        
+        <!-- Магазин скинов фона -->
+        <div id="bg-skin-panel">
+            <h3>🌌 Скины фона</h3>
+            <div id="bg-skin-list"></div>
+            <button id="close-bg-skin">✕ Закрыть</button>
         </div>
         
         <!-- Коллекция -->
@@ -488,7 +447,6 @@
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
 
-            // UI
             const floorCountEl = document.getElementById('floorCount');
             const comboTextEl = document.getElementById('comboText');
             const coinDisplayEl = document.getElementById('coinDisplay');
@@ -501,23 +459,24 @@
             const goCoinsEl = document.getElementById('goCoins');
             const restartBtn = document.getElementById('restart-btn');
             const overlay = document.getElementById('overlay');
-            const saveIndicator = document.getElementById('save-indicator');
             
-            // Кнопки
             const shopBtn = document.getElementById('shop-btn');
             const skinBtn = document.getElementById('skin-btn');
+            const bgSkinBtn = document.getElementById('bg-skin-btn');
             const collectionBtn = document.getElementById('collection-btn');
             const resetBtn = document.getElementById('reset-btn');
             const shopPanel = document.getElementById('shop-panel');
             const skinPanel = document.getElementById('skin-panel');
+            const bgSkinPanel = document.getElementById('bg-skin-panel');
             const collectionPanel = document.getElementById('collection-panel');
             const closeShopBtn = document.getElementById('close-shop');
             const closeSkinBtn = document.getElementById('close-skin');
+            const closeBgSkinBtn = document.getElementById('close-bg-skin');
             const closeCollectionBtn = document.getElementById('close-collection');
             const collectionContent = document.getElementById('collection-content');
             const skinList = document.getElementById('skin-list');
+            const bgSkinList = document.getElementById('bg-skin-list');
             
-            // Кнопки покупок
             const buyFoundation = document.getElementById('buy-foundation');
             const buyArchitect = document.getElementById('buy-architect');
             const buyBrakes = document.getElementById('buy-brakes');
@@ -557,8 +516,8 @@
             let panelOpen = false;
             let currentIncrement = BASE_SPEED_INCREMENT;
             let saveTimeout = null;
+            let lightningTimer = 0;
             
-            // Улучшения — бесконечные
             let upgrades = {
                 foundation: { level: 1, baseCost: 100 },
                 architect:  { level: 1, baseCost: 150 },
@@ -567,7 +526,7 @@
                 magnet:     { level: 1, baseCost: 250 }
             };
             
-            // Скины
+            // Скины этажей
             const SKINS = [
                 { id: 'classic', name: 'Классический', emoji: '🧱', cost: 0, colors: null },
                 { id: 'forest', name: 'Лесной', emoji: '🌿', cost: 5000, colors: { top: [120, 60, 40], bottom: [120, 60, 20], stroke: [120, 70, 50] } },
@@ -582,6 +541,40 @@
             
             let ownedSkins = ['classic'];
             let activeSkin = 'classic';
+            
+            // Скины фона
+            const BG_SKINS = [
+                { id: 'night', name: 'Ночное небо', emoji: '🌙', cost: 0,
+                  gradient: ['#0a0a1a', '#1a1a3e', '#0f2040'],
+                  starColor: 'rgba(255,255,255,{alpha})', starCount: 60 },
+                { id: 'sunset', name: 'Закат', emoji: '🌅', cost: 5000,
+                  gradient: ['#ff6b35', '#e94560', '#1a1a2e'],
+                  starColor: 'rgba(255,215,0,{alpha})', starCount: 40 },
+                { id: 'morning', name: 'Утро', emoji: '🌤️', cost: 5000,
+                  gradient: ['#87CEEB', '#ffcccb', '#b8d4e3'],
+                  starColor: null, starCount: 0 },
+                { id: 'space', name: 'Космос', emoji: '🌌', cost: 15000,
+                  gradient: ['#000011', '#1a0033', '#0d004d'],
+                  starColor: 'rgba({color}, {alpha})', starCount: 100 },
+                { id: 'aurora', name: 'Северное сияние', emoji: '🌠', cost: 25000,
+                  gradient: ['#001a33', '#003322', '#001a33'],
+                  starColor: 'rgba(100,255,200,{alpha})', starCount: 50 },
+                { id: 'storm', name: 'Гроза', emoji: '⛈️', cost: 35000,
+                  gradient: ['#1a1a2e', '#2d2d44', '#0a0a1a'],
+                  starColor: null, starCount: 0 },
+                { id: 'ocean', name: 'Подводный мир', emoji: '🌊', cost: 50000,
+                  gradient: ['#0077b6', '#023e8a', '#001d3d'],
+                  starColor: 'rgba(200,240,255,{alpha})', starCount: 30 },
+                { id: 'hell', name: 'Огненный ад', emoji: '🔥', cost: 75000,
+                  gradient: ['#ff4500', '#8b0000', '#1a0000'],
+                  starColor: 'rgba(255,100,0,{alpha})', starCount: 70 },
+                { id: 'rainbow', name: 'Радужное небо', emoji: '🌈', cost: 100000,
+                  gradient: ['#ff6b6b', '#ffd93d', '#6bcb77', '#4d96ff', '#9b59b6'],
+                  starColor: 'rgba(255,255,255,{alpha})', starCount: 40 },
+            ];
+            
+            let ownedBgSkins = ['night'];
+            let activeBgSkin = 'night';
             
             // Жильцы
             const ALL_RESIDENTS = [
@@ -627,12 +620,11 @@
             let residentFloors = {};
             
             // === СОХРАНЕНИЕ ===
-            
             const SAVE_KEY = 'floors_game_save';
             
             function saveGame() {
                 const data = {
-                    coins: coins,
+                    coins, bestFloors, bestCombo,
                     upgrades: {
                         foundation: upgrades.foundation.level,
                         architect: upgrades.architect.level,
@@ -640,29 +632,18 @@
                         goldrush: upgrades.goldrush.level,
                         magnet: upgrades.magnet.level
                     },
-                    collectedResidents: collectedResidents,
-                    ownedSkins: ownedSkins,
-                    activeSkin: activeSkin,
-                    bestFloors: bestFloors,
-                    bestCombo: bestCombo
+                    collectedResidents, ownedSkins, activeSkin,
+                    ownedBgSkins, activeBgSkin
                 };
-                
-                try {
-                    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-                } catch (e) {
-                    // localStorage переполнен или недоступен
-                }
+                try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
             }
             
             function loadGame() {
                 try {
                     const raw = localStorage.getItem(SAVE_KEY);
                     if (!raw) return false;
-                    
                     const data = JSON.parse(raw);
-                    
                     coins = data.coins || 0;
-                    
                     if (data.upgrades) {
                         upgrades.foundation.level = data.upgrades.foundation || 1;
                         upgrades.architect.level = data.upgrades.architect || 1;
@@ -670,32 +651,22 @@
                         upgrades.goldrush.level = data.upgrades.goldrush || 1;
                         upgrades.magnet.level = data.upgrades.magnet || 1;
                     }
-                    
                     collectedResidents = data.collectedResidents || [];
                     ownedSkins = data.ownedSkins || ['classic'];
                     activeSkin = data.activeSkin || 'classic';
+                    ownedBgSkins = data.ownedBgSkins || ['night'];
+                    activeBgSkin = data.activeBgSkin || 'night';
                     bestFloors = data.bestFloors || 0;
                     bestCombo = data.bestCombo || 0;
-                    
                     return true;
-                } catch (e) {
-                    return false;
-                }
+                } catch (e) { return false; }
             }
             
             function resetProgress() {
-                if (confirm('Точно сбросить ВЕСЬ прогресс? Монеты, улучшения, коллекция и скины будут удалены.')) {
+                if (confirm('Точно сбросить ВЕСЬ прогресс?')) {
                     localStorage.removeItem(SAVE_KEY);
                     location.reload();
                 }
-            }
-            
-            function showSaveIndicator() {
-                saveIndicator.style.opacity = '1';
-                clearTimeout(saveIndicator._timeout);
-                saveIndicator._timeout = setTimeout(() => {
-                    saveIndicator.style.opacity = '0';
-                }, 1500);
             }
             
             function autoSave() {
@@ -704,69 +675,51 @@
             }
             
             // === БОНУСЫ ===
-            
-            function getWidthBonus() {
-                return (upgrades.foundation.level - 1) * 3;
-            }
+            function getWidthBonus() { return (upgrades.foundation.level - 1) * 3; }
             
             function getArchitectBonus() {
-                const level = upgrades.architect.level;
-                if (level <= 20) return 1 + (level - 1) * 0.06;
-                return 1 + 19 * 0.06 + (level - 20) * 0.01;
+                const l = upgrades.architect.level;
+                return l <= 20 ? 1 + (l - 1) * 0.06 : 1 + 19 * 0.06 + (l - 20) * 0.01;
             }
             
             function getGoldrushChance() {
-                const level = upgrades.goldrush.level;
-                if (level <= 20) return (level - 1) * 0.05;
-                return 0.95 + (level - 20) * 0.005;
+                const l = upgrades.goldrush.level;
+                return l <= 20 ? (l - 1) * 0.05 : 0.95 + (l - 20) * 0.005;
             }
             
             function getMagnetBonus() {
-                const level = upgrades.magnet.level;
-                if (level <= 10) return (level - 1) * 0.08;
-                return 0.72 + (level - 10) * 0.02;
+                const l = upgrades.magnet.level;
+                return l <= 10 ? (l - 1) * 0.08 : 0.72 + (l - 10) * 0.02;
             }
             
             function updateIncrement() {
-                const level = upgrades.brakes.level;
-                let reduction;
-                if (level <= 20) reduction = Math.max(0.10, 1 - (level - 1) * 0.04);
-                else reduction = Math.max(0.05, 0.24 - (level - 20) * 0.005);
+                const l = upgrades.brakes.level;
+                const reduction = l <= 20 ? Math.max(0.10, 1 - (l - 1) * 0.04) : Math.max(0.05, 0.24 - (l - 20) * 0.005);
                 currentIncrement = BASE_SPEED_INCREMENT * reduction;
             }
 
             function recalculateSpeed() {
                 updateIncrement();
-                const floorsAboveFoundation = Math.max(0, floors.length - 1);
-                moveSpeed = START_SPEED + floorsAboveFoundation * currentIncrement;
-                if (moveSpeed > BASE_MAX_SPEED) moveSpeed = BASE_MAX_SPEED;
+                moveSpeed = Math.min(START_SPEED + Math.max(0, floors.length - 1) * currentIncrement, BASE_MAX_SPEED);
             }
             
-            // === ЖИЛЬЦЫ ===
-            
             function getRandomResident() {
-                const rand = Math.random() * 100;
-                let pool;
-                if (rand < 55) pool = ALL_RESIDENTS.filter(r => r.rarity === 'common');
-                else if (rand < 80) pool = ALL_RESIDENTS.filter(r => r.rarity === 'rare');
-                else if (rand < 95) pool = ALL_RESIDENTS.filter(r => r.rarity === 'epic');
-                else pool = ALL_RESIDENTS.filter(r => r.rarity === 'legendary');
-                
+                const r = Math.random() * 100;
+                const pool = r < 55 ? ALL_RESIDENTS.filter(x => x.rarity === 'common') :
+                             r < 80 ? ALL_RESIDENTS.filter(x => x.rarity === 'rare') :
+                             r < 95 ? ALL_RESIDENTS.filter(x => x.rarity === 'epic') :
+                                       ALL_RESIDENTS.filter(x => x.rarity === 'legendary');
                 return pool[Math.floor(Math.random() * pool.length)];
             }
             
             function getCollectionBonus() {
-                let total = 0;
-                collectedResidents.forEach(id => {
-                    const resident = ALL_RESIDENTS.find(r => r.id === id);
-                    if (resident) total += resident.bonus;
-                });
-                return total;
+                return collectedResidents.reduce((sum, id) => {
+                    const r = ALL_RESIDENTS.find(x => x.id === id);
+                    return sum + (r ? r.bonus : 0);
+                }, 0);
             }
             
-            function isResidentCollected(id) {
-                return collectedResidents.includes(id);
-            }
+            function isResidentCollected(id) { return collectedResidents.includes(id); }
             
             function collectResident(resident) {
                 if (!isResidentCollected(resident.id)) {
@@ -777,66 +730,41 @@
             }
             
             function showCollectPopup(resident) {
-                const rarityColors = {
-                    common: '#aaa',
-                    rare: '#4da6ff',
-                    epic: '#c044ff',
-                    legendary: '#ffd700'
-                };
-                collectPopup.innerHTML = `
-                    ${resident.emoji}<br>
-                    <span style="color:${rarityColors[resident.rarity]};font-size:16px;">
-                        ${resident.name} найден!
-                    </span>
-                    <br><span style="font-size:12px;color:#aaa;">+${resident.bonus}% к монетам</span>
-                `;
+                const colors = { common: '#aaa', rare: '#4da6ff', epic: '#c044ff', legendary: '#ffd700' };
+                collectPopup.innerHTML = `${resident.emoji}<br><span style="color:${colors[resident.rarity]};font-size:16px;">${resident.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${resident.bonus}% к монетам</span>`;
                 collectPopup.style.opacity = '1';
                 collectPopup.style.transform = 'translate(-50%, -50%) scale(1.1)';
-                
                 clearTimeout(collectPopup._timeout);
-                collectPopup._timeout = setTimeout(() => {
-                    collectPopup.style.opacity = '0';
-                    collectPopup.style.transform = 'translate(-50%, -50%) scale(0.8)';
-                }, 2000);
+                collectPopup._timeout = setTimeout(() => { collectPopup.style.opacity = '0'; collectPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 2000);
             }
             
             function renderCollection() {
-                const categories = [
+                const cats = [
                     { rarity: 'legendary', name: '🟡 Легендарные', color: '#ffd700' },
                     { rarity: 'epic', name: '🟣 Эпические', color: '#c044ff' },
                     { rarity: 'rare', name: '🔵 Редкие', color: '#4da6ff' },
                     { rarity: 'common', name: '🟢 Обычные', color: '#aaa' },
                 ];
-                
                 let html = '';
-                categories.forEach(cat => {
+                cats.forEach(cat => {
                     const residents = ALL_RESIDENTS.filter(r => r.rarity === cat.rarity);
-                    html += `<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r => isResidentCollected(r.id)).length}/${residents.length})</div>`;
-                    html += '<div class="collection-grid">';
+                    html += `<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r => isResidentCollected(r.id)).length}/${residents.length})</div><div class="collection-grid">`;
                     residents.forEach(r => {
                         const collected = isResidentCollected(r.id);
-                        html += `
-                            <div class="collection-slot ${collected ? '' : 'locked'}">
-                                ${collected ? r.emoji : '❓'}
-                                ${collected ? `<span class="bonus-badge">+${r.bonus}%</span>` : ''}
-                            </div>
-                        `;
+                        html += `<div class="collection-slot ${collected ? '' : 'locked'}">${collected ? r.emoji : '❓'}${collected ? `<span class="bonus-badge">+${r.bonus}%</span>` : ''}</div>`;
                     });
                     html += '</div>';
                 });
-                
                 collectionContent.innerHTML = html;
                 document.getElementById('collected-count').textContent = collectedResidents.length;
                 document.getElementById('total-count').textContent = ALL_RESIDENTS.length;
                 document.getElementById('bonus-percent').textContent = `+${getCollectionBonus()}%`;
             }
             
-            // === СКИНЫ ===
-            
+            // === СКИНЫ ЭТАЖЕЙ ===
             function getSkinColors() {
-                const skin = SKINS.find(s => s.id === activeSkin);
-                if (!skin || !skin.colors) return null;
-                return skin.colors;
+                const s = SKINS.find(x => x.id === activeSkin);
+                return s && s.colors ? s.colors : null;
             }
             
             function renderSkinShop() {
@@ -844,501 +772,344 @@
                 SKINS.forEach(skin => {
                     const owned = ownedSkins.includes(skin.id);
                     const active = activeSkin === skin.id;
-                    let btnText, btnClass;
-                    
-                    if (active) {
-                        btnText = '✅ Надет';
-                        btnClass = 'active-skin';
-                    } else if (owned) {
-                        btnText = '👕 Надеть';
-                        btnClass = 'owned';
-                    } else {
-                        btnText = '🪙 ' + skin.cost;
-                        btnClass = coins >= skin.cost ? '' : 'cant-afford';
-                    }
-                    
-                    html += `
-                        <div class="shop-item">
-                            <span class="shop-icon">${skin.emoji}</span>
-                            <div class="shop-info">
-                                <div class="name">${skin.name}</div>
-                                <div class="desc">${skin.id === 'classic' ? 'Стандартный стиль' : 'Уникальный дизайн этажей'}</div>
-                            </div>
-                            <button class="shop-buy ${btnClass}" data-skin="${skin.id}">${btnText}</button>
-                        </div>
-                    `;
+                    let btnText = active ? '✅ Надет' : owned ? '👕 Надеть' : '🪙 ' + skin.cost;
+                    let btnClass = active ? 'active-skin' : owned ? 'owned' : (coins >= skin.cost ? '' : 'cant-afford');
+                    html += `<div class="shop-item"><span class="shop-icon">${skin.emoji}</span><div class="shop-info"><div class="name">${skin.name}</div><div class="desc">${skin.id === 'classic' ? 'Стандартный стиль' : 'Уникальный дизайн этажей'}</div></div><button class="shop-buy ${btnClass}" data-skin="${skin.id}">${btnText}</button></div>`;
                 });
                 skinList.innerHTML = html;
-                
                 skinList.querySelectorAll('.shop-buy').forEach(btn => {
                     btn.addEventListener('pointerdown', (e) => {
                         e.stopPropagation();
-                        const skinId = btn.dataset.skin;
-                        handleSkinClick(skinId);
+                        const sid = btn.dataset.skin;
+                        if (activeSkin === sid) return;
+                        if (ownedSkins.includes(sid)) { activeSkin = sid; }
+                        else {
+                            const s = SKINS.find(x => x.id === sid);
+                            if (!s || coins < s.cost) return;
+                            coins -= s.cost; ownedSkins.push(sid); activeSkin = sid; updateUI();
+                        }
+                        renderSkinShop(); autoSave();
                     });
                 });
             }
             
-            function handleSkinClick(skinId) {
-                if (activeSkin === skinId) return;
-                
-                if (ownedSkins.includes(skinId)) {
-                    activeSkin = skinId;
-                } else {
-                    const skin = SKINS.find(s => s.id === skinId);
-                    if (!skin || coins < skin.cost) return;
-                    coins -= skin.cost;
-                    ownedSkins.push(skinId);
-                    activeSkin = skinId;
-                    updateUI();
-                }
-                renderSkinShop();
-                autoSave();
+            // === СКИНЫ ФОНА ===
+            function getBgSkin() {
+                return BG_SKINS.find(x => x.id === activeBgSkin) || BG_SKINS[0];
+            }
+            
+            function renderBgSkinShop() {
+                let html = '';
+                BG_SKINS.forEach(skin => {
+                    const owned = ownedBgSkins.includes(skin.id);
+                    const active = activeBgSkin === skin.id;
+                    let btnText = active ? '✅ Надет' : owned ? '🌌 Надеть' : '🪙 ' + skin.cost;
+                    let btnClass = active ? 'active-skin' : owned ? 'owned' : (coins >= skin.cost ? '' : 'cant-afford');
+                    html += `<div class="shop-item"><span class="shop-icon">${skin.emoji}</span><div class="shop-info"><div class="name">${skin.name}</div><div class="desc">${skin.id === 'night' ? 'Стандартное небо' : 'Атмосферный фон'}</div></div><button class="shop-buy ${btnClass}" data-bgskin="${skin.id}">${btnText}</button></div>`;
+                });
+                bgSkinList.innerHTML = html;
+                bgSkinList.querySelectorAll('.shop-buy').forEach(btn => {
+                    btn.addEventListener('pointerdown', (e) => {
+                        e.stopPropagation();
+                        const sid = btn.dataset.bgskin;
+                        if (activeBgSkin === sid) return;
+                        if (ownedBgSkins.includes(sid)) { activeBgSkin = sid; }
+                        else {
+                            const s = BG_SKINS.find(x => x.id === sid);
+                            if (!s || coins < s.cost) return;
+                            coins -= s.cost; ownedBgSkins.push(sid); activeBgSkin = sid; updateUI();
+                        }
+                        renderBgSkinShop(); autoSave();
+                    });
+                });
             }
             
             // === ИГРА ===
-
             function resize() {
-                const container = document.getElementById('gameContainer');
-                const rect = container.getBoundingClientRect();
-                W = rect.width;
-                H = rect.height;
-                canvas.width = W * window.devicePixelRatio;
-                canvas.height = H * window.devicePixelRatio;
-                canvas.style.width = W + 'px';
-                canvas.style.height = H + 'px';
-                ctx.setTransform(1, 0, 0, 1, 0, 0);
-                ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+                const c = document.getElementById('gameContainer');
+                const r = c.getBoundingClientRect();
+                W = r.width; H = r.height;
+                canvas.width = W * devicePixelRatio; canvas.height = H * devicePixelRatio;
+                canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+                ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio, devicePixelRatio);
             }
 
-            function getStartWidth() {
-                return BASE_WIDTH + getWidthBonus();
-            }
+            function getStartWidth() { return BASE_WIDTH + getWidthBonus(); }
 
             function initGame() {
-                floors = [];
-                comboCount = 0;
-                direction = 1;
-                cameraY = 0;
-                targetCameraY = 0;
-                residentFloors = {};
+                floors = []; comboCount = 0; direction = 1; cameraY = 0; targetCameraY = 0;
+                residentFloors = {}; lightningTimer = 0;
                 updateIncrement();
-                
-                const startWidth = getStartWidth();
-                floors.push({
-                    x: W/2 - startWidth/2,
-                    y: H - FLOOR_HEIGHT - 20,
-                    w: startWidth
-                });
-                
-                gameState = 'playing';
-                gameoverPanel.style.display = 'none';
-                comboPopup.style.opacity = '0';
-                collectPopup.style.opacity = '0';
+                const sw = getStartWidth();
+                floors.push({ x: W/2 - sw/2, y: H - FLOOR_HEIGHT - 20, w: sw });
+                gameState = 'playing'; gameoverPanel.style.display = 'none';
+                comboPopup.style.opacity = '0'; collectPopup.style.opacity = '0';
                 hintText.style.display = 'block';
                 document.getElementById('bottom-buttons').style.display = 'flex';
-                
-                spawnFloor();
-                updateUI();
+                spawnFloor(); updateUI();
             }
 
             function getColor(index) {
-                const skin = getSkinColors();
-                if (skin) {
-                    const hue = skin.top[0];
-                    const sat = skin.top[1];
-                    const light = skin.top[2] + (index % 5);
+                const sc = getSkinColors();
+                if (sc) {
                     return {
-                        top: `hsl(${hue}, ${sat}%, ${Math.min(light + 5, 80)}%)`,
-                        bottom: `hsl(${hue}, ${sat}%, ${skin.bottom[2] + (index % 3)}%)`,
-                        stroke: `hsl(${hue}, ${skin.stroke[1]}%, ${skin.stroke[2]}%)`,
-                        glow: `hsl(${hue}, ${skin.stroke[1]}%, ${skin.stroke[2]}%)`
+                        top: `hsl(${sc.top[0]}, ${sc.top[1]}%, ${Math.min(sc.top[2] + (index % 5), 80)}%)`,
+                        bottom: `hsl(${sc.top[0]}, ${sc.top[1]}%, ${sc.bottom[2] + (index % 3)}%)`,
+                        stroke: `hsl(${sc.top[0]}, ${sc.stroke[1]}%, ${sc.stroke[2]}%)`,
+                        glow: `hsl(${sc.top[0]}, ${sc.stroke[1]}%, ${sc.stroke[2]}%)`
                     };
                 }
-                const hue = (200 + index * 6) % 360;
-                return {
-                    top: `hsl(${hue}, 65%, 55%)`,
-                    bottom: `hsl(${hue}, 65%, 30%)`,
-                    stroke: `hsl(${hue}, 75%, 70%)`,
-                    glow: `hsl(${hue}, 75%, 60%)`
-                };
+                const h = (200 + index * 6) % 360;
+                return { top: `hsl(${h},65%,55%)`, bottom: `hsl(${h},65%,30%)`, stroke: `hsl(${h},75%,70%)`, glow: `hsl(${h},75%,60%)` };
             }
 
             function spawnFloor() {
-                if (floors.length === 0) return;
-                
-                const lastFloor = floors[floors.length - 1];
-                const newWidth = lastFloor.w;
-                
-                let startX;
-                if (direction > 0) {
-                    startX = -newWidth + 20;
-                } else {
-                    startX = W - 20;
-                }
-                
-                currentFloor = {
-                    x: startX,
-                    y: lastFloor.y - FLOOR_HEIGHT,
-                    w: newWidth
-                };
-                
+                if (!floors.length) return;
+                const lf = floors[floors.length - 1];
+                const sx = direction > 0 ? -lf.w + 20 : W - 20;
+                currentFloor = { x: sx, y: lf.y - FLOOR_HEIGHT, w: lf.w };
                 recalculateSpeed();
             }
 
             function placeFloor() {
-    if (!currentFloor || gameState !== 'playing') return;
-    
-    const lastFloor = floors[floors.length - 1];
-    
-    const overlapLeft = Math.max(currentFloor.x, lastFloor.x);
-    const overlapRight = Math.min(currentFloor.x + currentFloor.w, lastFloor.x + lastFloor.w);
-    const overlapWidth = overlapRight - overlapLeft;
-    
-    if (overlapWidth <= 0) {
-        triggerGameOver();
-        return;
-    }
-    
-    const newFloor = {
-        x: overlapLeft,
-        y: currentFloor.y,
-        w: overlapWidth
-    };
-    
-    floors.push(newFloor);
-    
-    const floorIndex = floors.length - 1;
-    if (residentFloors[floorIndex]) {
-        const resident = ALL_RESIDENTS.find(r => r.id === residentFloors[floorIndex]);
-        if (resident && !isResidentCollected(resident.id)) {
-            collectResident(resident);
-        }
-    }
-    
-    const accuracy = overlapWidth / lastFloor.w;
-    const archBonus = getArchitectBonus();
-    const collectionBonus = 1 + getCollectionBonus() / 100;
-    
-    let earnedCoins = 0;
-    if (accuracy > 1 - 0.04 * archBonus) {
-        comboCount++;
-        if (comboCount > bestCombo) bestCombo = comboCount;
-        earnedCoins = Math.floor(floors.length * (3 + comboCount * 2) * collectionBonus);
-        showCombo(comboCount);
-    } else if (accuracy > 1 - 0.25 * archBonus) {
-        comboCount = 0;
-        earnedCoins = Math.floor(floors.length * 1.5 * collectionBonus);
-        showCombo(0);
-    } else {
-        comboCount = 0;
-        earnedCoins = Math.floor((floors.length / 2) * collectionBonus);
-        hideCombo();
-    }
-    
-    if (Math.random() < Math.min(getGoldrushChance(), 0.99)) {
-        earnedCoins *= 2;
-        showGoldrush();
-    }
-    
-    coins += earnedCoins;
-    
-    // Обновляем рекорд
-    if (floors.length > bestFloors) {
-        bestFloors = floors.length;
-    }
-    
-    currentFloor = null;
-    
-    if (floors.length > 6) {
-        targetCameraY = (floors.length - 6) * FLOOR_HEIGHT;
-    }
-    
-    updateUI();
-    
-    direction *= -1;
-    spawnFloor();
-    hintText.style.display = 'none';
-    
-    // Сохраняем после каждого этажа
-    autoSave();
-}
+                if (!currentFloor || gameState !== 'playing') return;
+                const lf = floors[floors.length - 1];
+                const ol = Math.max(currentFloor.x, lf.x), or = Math.min(currentFloor.x + currentFloor.w, lf.x + lf.w);
+                const ow = or - ol;
+                if (ow <= 0) { triggerGameOver(); return; }
+                const nf = { x: ol, y: currentFloor.y, w: ow };
+                floors.push(nf);
+                const fi = floors.length - 1;
+                if (residentFloors[fi]) {
+                    const res = ALL_RESIDENTS.find(r => r.id === residentFloors[fi]);
+                    if (res && !isResidentCollected(res.id)) collectResident(res);
+                }
+                const acc = ow / lf.w, ab = getArchitectBonus(), cb = 1 + getCollectionBonus() / 100;
+                let earned = 0;
+                if (acc > 1 - 0.04 * ab) {
+                    comboCount++; if (comboCount > bestCombo) bestCombo = comboCount;
+                    earned = Math.floor(floors.length * (3 + comboCount * 2) * cb); showCombo(comboCount);
+                } else if (acc > 1 - 0.25 * ab) { comboCount = 0; earned = Math.floor(floors.length * 1.5 * cb); showCombo(0); }
+                else { comboCount = 0; earned = Math.floor((floors.length / 2) * cb); hideCombo(); }
+                if (Math.random() < Math.min(getGoldrushChance(), 0.99)) { earned *= 2; showGoldrush(); }
+                coins += earned;
+                if (floors.length > bestFloors) bestFloors = floors.length;
+                currentFloor = null;
+                if (floors.length > 6) targetCameraY = (floors.length - 6) * FLOOR_HEIGHT;
+                updateUI(); direction *= -1; spawnFloor();
+                hintText.style.display = 'none'; autoSave();
+                
+                const ni = floors.length;
+                if (ni > 1 && ni % 5 === 0 && !residentFloors[ni]) {
+                    if (Math.random() < Math.min(0.6 + getMagnetBonus(), 1.0)) residentFloors[ni] = getRandomResident().id;
+                }
+            }
 
             function showGoldrush() {
-                comboPopup.textContent = '💰 ЗОЛОТО! ×2';
-                comboPopup.style.color = '#ffd700';
-                comboPopup.style.opacity = '1';
-                comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
-                
+                comboPopup.textContent = '💰 ЗОЛОТО! ×2'; comboPopup.style.color = '#ffd700';
+                comboPopup.style.opacity = '1'; comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
                 clearTimeout(comboPopup._timeout);
-                comboPopup._timeout = setTimeout(() => {
-                    comboPopup.style.opacity = '0';
-                    comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)';
-                }, 700);
+                comboPopup._timeout = setTimeout(() => { comboPopup.style.opacity = '0'; comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 700);
             }
 
-            function showCombo(combo) {
-                if (combo > 1) {
-                    comboPopup.textContent = `ИДЕАЛЬНО! x${combo} 🔥`;
-                    comboPopup.style.color = '#ffd700';
-                } else if (combo === 0 && floors.length > 1) {
-                    comboPopup.textContent = 'Отлично! ✨';
-                    comboPopup.style.color = '#ffffff';
-                } else {
-                    return;
-                }
-                
-                comboPopup.style.opacity = '1';
-                comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
-                
+            function showCombo(c) {
+                if (c > 1) { comboPopup.textContent = `ИДЕАЛЬНО! x${c} 🔥`; comboPopup.style.color = '#ffd700'; }
+                else if (c === 0 && floors.length > 1) { comboPopup.textContent = 'Отлично! ✨'; comboPopup.style.color = '#fff'; }
+                else return;
+                comboPopup.style.opacity = '1'; comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
                 clearTimeout(comboPopup._timeout);
-                comboPopup._timeout = setTimeout(() => {
-                    comboPopup.style.opacity = '0';
-                    comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)';
-                }, 500);
+                comboPopup._timeout = setTimeout(() => { comboPopup.style.opacity = '0'; comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 500);
             }
 
-            function hideCombo() {
-                comboPopup.style.opacity = '0';
-            }
+            function hideCombo() { comboPopup.style.opacity = '0'; }
 
             function triggerGameOver() {
-                gameState = 'gameover';
-                currentFloor = null;
-                
-                const totalFloors = floors.length - 1;
-                const collectionBonus = 1 + getCollectionBonus() / 100;
-                const bonusCoins = Math.floor(totalFloors * 5 * collectionBonus);
-                coins += bonusCoins;
-                
-                if (totalFloors > bestFloors) {
-                    bestFloors = totalFloors;
-                }
-                
-                goFloorsEl.textContent = totalFloors;
-                goComboEl.textContent = bestCombo;
-                goCoinsEl.textContent = bonusCoins;
-                gameoverPanel.style.display = 'flex';
-                hintText.style.display = 'none';
+                gameState = 'gameover'; currentFloor = null;
+                const tf = floors.length - 1, cb = 1 + getCollectionBonus() / 100;
+                const bc = Math.floor(tf * 5 * cb); coins += bc;
+                if (tf > bestFloors) bestFloors = tf;
+                goFloorsEl.textContent = tf; goComboEl.textContent = bestCombo; goCoinsEl.textContent = bc;
+                gameoverPanel.style.display = 'flex'; hintText.style.display = 'none';
                 document.getElementById('bottom-buttons').style.display = 'none';
-                
-                updateUI();
-                saveGame();
+                updateUI(); saveGame();
             }
 
             function updateUI() {
                 floorCountEl.textContent = Math.max(1, floors.length);
-                comboTextEl.textContent = comboCount;
-                coinDisplayEl.textContent = coins;
+                comboTextEl.textContent = comboCount; coinDisplayEl.textContent = coins;
             }
 
             // === МАГАЗИН ===
-            
-            function getUpgradeCost(upgrade) {
-                const level = upgrade.level;
-                if (level <= 20) return upgrade.baseCost + (level - 1) * upgrade.baseCost;
-                return upgrade.baseCost * 20 + (level - 20) * upgrade.baseCost * 2;
+            function getUpgradeCost(u) {
+                const l = u.level;
+                return l <= 20 ? u.baseCost + (l - 1) * u.baseCost : u.baseCost * 20 + (l - 20) * u.baseCost * 2;
             }
             
             function updateShopUI() {
-                updateShopItem(upgrades.foundation, buyFoundation, foundationLvlEl, foundationCostEl);
-                updateShopItem(upgrades.architect, buyArchitect, architectLvlEl, architectCostEl);
-                updateShopItem(upgrades.brakes, buyBrakes, brakesLvlEl, brakesCostEl);
-                updateShopItem(upgrades.goldrush, buyGoldrush, goldrushLvlEl, goldrushCostEl);
-                updateShopItem(upgrades.magnet, buyMagnet, magnetLvlEl, magnetCostEl);
+                [['foundation', buyFoundation, foundationLvlEl, foundationCostEl],
+                 ['architect', buyArchitect, architectLvlEl, architectCostEl],
+                 ['brakes', buyBrakes, brakesLvlEl, brakesCostEl],
+                 ['goldrush', buyGoldrush, goldrushLvlEl, goldrushCostEl],
+                 ['magnet', buyMagnet, magnetLvlEl, magnetCostEl]].forEach(([name, btn, lvl, cost]) => {
+                    const u = upgrades[name], c = getUpgradeCost(u);
+                    lvl.textContent = u.level; cost.textContent = c;
+                    btn.textContent = '🪙 ' + c;
+                    btn.classList.toggle('cant-afford', coins < c);
+                });
             }
             
-            function updateShopItem(upgrade, button, levelEl, costEl) {
-                levelEl.textContent = upgrade.level;
-                const cost = getUpgradeCost(upgrade);
-                costEl.textContent = cost;
-                
-                if (coins < cost) {
-                    button.textContent = '🪙 ' + cost;
-                    button.classList.add('cant-afford');
-                } else {
-                    button.textContent = '🪙 ' + cost;
-                    button.classList.remove('cant-afford');
-                }
+            function buyUpgrade(name) {
+                const u = upgrades[name], c = getUpgradeCost(u);
+                if (coins < c) return;
+                coins -= c; u.level++;
+                updateIncrement(); recalculateSpeed();
+                updateUI(); updateShopUI(); autoSave();
             }
             
-            function buyUpgrade(upgradeName) {
-                const upgrade = upgrades[upgradeName];
-                const cost = getUpgradeCost(upgrade);
-                if (coins < cost) return;
-                
-                coins -= cost;
-                upgrade.level++;
-                
-                updateIncrement();
-                recalculateSpeed();
-                
-                updateUI();
-                updateShopUI();
-                autoSave();
-            }
-            
-            function openShop() {
-                if (gameState === 'gameover') return;
-                panelOpen = true;
-                shopPanel.classList.add('open');
-                overlay.classList.add('show');
-                document.getElementById('bottom-buttons').style.display = 'none';
-                updateShopUI();
-            }
-            
-            function openSkinShop() {
-                if (gameState === 'gameover') return;
-                panelOpen = true;
-                skinPanel.classList.add('open');
-                overlay.classList.add('show');
-                document.getElementById('bottom-buttons').style.display = 'none';
-                renderSkinShop();
-            }
-            
-            function openCollection() {
-                if (gameState === 'gameover') return;
-                panelOpen = true;
-                collectionPanel.classList.add('open');
-                overlay.classList.add('show');
-                document.getElementById('bottom-buttons').style.display = 'none';
-                renderCollection();
-            }
-            
-            function closePanels() {
-                panelOpen = false;
-                shopPanel.classList.remove('open');
-                skinPanel.classList.remove('open');
-                collectionPanel.classList.remove('open');
-                overlay.classList.remove('show');
-                if (gameState !== 'gameover') {
-                    document.getElementById('bottom-buttons').style.display = 'flex';
-                }
-            }
+            function openShop() { if (gameState === 'gameover') return; panelOpen = true; shopPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; updateShopUI(); }
+            function openSkinShop() { if (gameState === 'gameover') return; panelOpen = true; skinPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderSkinShop(); }
+            function openBgSkinShop() { if (gameState === 'gameover') return; panelOpen = true; bgSkinPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderBgSkinShop(); }
+            function openCollection() { if (gameState === 'gameover') return; panelOpen = true; collectionPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderCollection(); }
+            function closePanels() { panelOpen = false; shopPanel.classList.remove('open'); skinPanel.classList.remove('open'); bgSkinPanel.classList.remove('open'); collectionPanel.classList.remove('open'); overlay.classList.remove('show'); if (gameState !== 'gameover') document.getElementById('bottom-buttons').style.display = 'flex'; }
 
             function update() {
-                if (gameState !== 'playing') return;
-                if (panelOpen) return;
-                
+                if (gameState !== 'playing' || panelOpen) return;
                 if (currentFloor) {
                     currentFloor.x += moveSpeed * direction;
-                    
-                    if (currentFloor.x <= 0) {
-                        currentFloor.x = 0;
-                        direction = 1;
-                    } else if (currentFloor.x + currentFloor.w >= W) {
-                        currentFloor.x = W - currentFloor.w;
-                        direction = -1;
-                    }
+                    if (currentFloor.x <= 0) { currentFloor.x = 0; direction = 1; }
+                    else if (currentFloor.x + currentFloor.w >= W) { currentFloor.x = W - currentFloor.w; direction = -1; }
                 }
-                
                 cameraY += (targetCameraY - cameraY) * 0.1;
+                // Молния для грозы
+                if (activeBgSkin === 'storm') {
+                    lightningTimer--;
+                    if (lightningTimer <= 0 && Math.random() < 0.02) lightningTimer = 5;
+                }
             }
 
             function draw() {
                 ctx.clearRect(0, 0, W, H);
-                
                 drawBackground();
-                
-                ctx.save();
-                ctx.translate(0, cameraY);
-                
-                for (let i = 0; i < floors.length; i++) {
-                    drawFloor(floors[i], i, false);
-                }
-                
-                if (currentFloor && gameState === 'playing' && !panelOpen) {
-                    drawFloor(currentFloor, floors.length, true);
-                }
-                
+                ctx.save(); ctx.translate(0, cameraY);
+                for (let i = 0; i < floors.length; i++) drawFloor(floors[i], i, false);
+                if (currentFloor && gameState === 'playing' && !panelOpen) drawFloor(currentFloor, floors.length, true);
                 ctx.restore();
             }
 
             function drawBackground() {
-                const skyGrad = ctx.createLinearGradient(0, 0, 0, H);
-                skyGrad.addColorStop(0, '#0a0a1a');
-                skyGrad.addColorStop(0.5, '#1a1a3e');
-                skyGrad.addColorStop(1, '#0f2040');
-                ctx.fillStyle = skyGrad;
-                ctx.fillRect(0, 0, W, H);
+                const bg = getBgSkin();
+                const grad = ctx.createLinearGradient(0, 0, 0, H);
+                if (bg.id === 'rainbow') {
+                    bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
+                } else {
+                    bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
+                }
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
                 
-                if (!drawBackground.stars) {
-                    drawBackground.stars = [];
-                    for (let i = 0; i < 60; i++) {
-                        drawBackground.stars.push({
-                            x: Math.random() * 420,
-                            y: Math.random() * 750,
-                            r: Math.random() * 1.5 + 0.3,
-                            twinkle: Math.random() * Math.PI * 2
-                        });
+                // Эффекты фона
+                if (bg.id === 'aurora') {
+                    // Северное сияние — волны
+                    const t = Date.now() / 3000;
+                    for (let i = 0; i < 3; i++) {
+                        ctx.fillStyle = `rgba(${100 + i*30}, ${200 + i*20}, ${150 + i*30}, 0.15)`;
+                        ctx.beginPath();
+                        ctx.moveTo(0, H);
+                        for (let x = 0; x <= W; x += 20) {
+                            ctx.lineTo(x, H * 0.3 + Math.sin(x * 0.02 + t + i) * 40 + Math.sin(x * 0.05 + t * 2) * 20);
+                        }
+                        ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
                     }
                 }
                 
-                const time = Date.now() / 1000;
-                drawBackground.stars.forEach(star => {
-                    const alpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.2;
-                    ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-                    ctx.beginPath();
-                    ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-                    ctx.fill();
-                });
+                if (bg.id === 'ocean') {
+                    // Пузырьки
+                    if (!drawBackground.bubbles) drawBackground.bubbles = Array.from({length: 15}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 2+Math.random()*6, s: 0.2+Math.random()*0.5 }));
+                    const bt = Date.now() / 1000;
+                    drawBackground.bubbles.forEach(b => {
+                        b.y -= b.s;
+                        if (b.y < -10) { b.y = H + 10; b.x = Math.random() * W; }
+                        ctx.fillStyle = `rgba(200,240,255,${0.2 + Math.sin(bt + b.x) * 0.1})`;
+                        ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
+                    });
+                }
+                
+                if (bg.id === 'hell') {
+                    // Искры
+                    if (!drawBackground.sparks) drawBackground.sparks = Array.from({length: 40}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, s: 0.3+Math.random()*1.5 }));
+                    const st = Date.now() / 1000;
+                    drawBackground.sparks.forEach(sp => {
+                        sp.y -= sp.s; if (sp.y < -10) { sp.y = H + 10; sp.x = Math.random() * W; }
+                        ctx.fillStyle = `rgba(255,${100 + Math.floor(Math.random()*100)},0,${0.4 + Math.sin(st + sp.x) * 0.2})`;
+                        ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); ctx.fill();
+                    });
+                }
+                
+                // Молния для грозы
+                if (bg.id === 'storm' && lightningTimer > 0) {
+                    ctx.fillStyle = 'rgba(255,255,255,0.6)';
+                    ctx.fillRect(0, 0, W, H);
+                    lightningTimer--;
+                }
+                
+                // Звёзды
+                if (bg.starColor && bg.starCount > 0) {
+                    if (!drawBackground.stars) {
+                        drawBackground.stars = Array.from({length: 100}, () => ({
+                            x: Math.random()*420, y: Math.random()*750, r: 0.3+Math.random()*1.5, twinkle: Math.random()*Math.PI*2
+                        }));
+                    }
+                    const time = Date.now() / 1000;
+                    for (let i = 0; i < Math.min(bg.starCount, drawBackground.stars.length); i++) {
+                        const star = drawBackground.stars[i];
+                        const alpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.2;
+                        let color = bg.starColor;
+                        if (bg.id === 'space') {
+                            const colors = ['rgba(255,255,255,', 'rgba(200,220,255,', 'rgba(255,255,200,', 'rgba(255,200,200,'];
+                            color = colors[Math.floor(Math.random() * 4)] + alpha + ')';
+                        } else {
+                            color = color.replace('{alpha}', alpha).replace('{color}', '255,255,255');
+                        }
+                        ctx.fillStyle = color;
+                        ctx.beginPath(); ctx.arc(star.x, star.y, star.r, 0, Math.PI*2); ctx.fill();
+                    }
+                }
+                
+                // Утро — облачка
+                if (bg.id === 'morning') {
+                    if (!drawBackground.clouds) drawBackground.clouds = Array.from({length: 5}, () => ({ x: Math.random()*W, y: 50+Math.random()*H*0.4, w: 40+Math.random()*80 }));
+                    const ct = Date.now() / 10000;
+                    drawBackground.clouds.forEach(c => {
+                        c.x += 0.2; if (c.x > W + 100) c.x = -100;
+                        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+                        ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w, c.w*0.3, 0, 0, Math.PI*2); ctx.fill();
+                        ctx.beginPath(); ctx.ellipse(c.x - c.w*0.3, c.y + 5, c.w*0.6, c.w*0.2, 0, 0, Math.PI*2); ctx.fill();
+                    });
+                }
             }
 
             function drawFloor(floor, index, isCurrent) {
                 const color = getColor(index);
-                
-                ctx.fillStyle = 'rgba(0,0,0,0.3)';
-                ctx.fillRect(floor.x + 2, floor.y + 2, floor.w, FLOOR_HEIGHT);
-                
+                ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(floor.x + 2, floor.y + 2, floor.w, FLOOR_HEIGHT);
                 const grad = ctx.createLinearGradient(floor.x, floor.y, floor.x, floor.y + FLOOR_HEIGHT);
-                grad.addColorStop(0, color.top);
-                grad.addColorStop(1, color.bottom);
-                ctx.fillStyle = grad;
-                ctx.fillRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
-                
-                if (isCurrent) {
-                    ctx.shadowColor = color.glow;
-                    ctx.shadowBlur = 12;
-                    ctx.strokeStyle = color.stroke;
-                    ctx.lineWidth = 2.5;
-                } else {
-                    ctx.shadowBlur = 0;
-                    ctx.strokeStyle = color.stroke;
-                    ctx.lineWidth = 1.5;
-                }
-                ctx.strokeRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
-                ctx.shadowBlur = 0;
-                
-                ctx.fillStyle = 'rgba(255,255,255,0.12)';
-                ctx.fillRect(floor.x, floor.y, floor.w, 3);
-                
+                grad.addColorStop(0, color.top); grad.addColorStop(1, color.bottom);
+                ctx.fillStyle = grad; ctx.fillRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
+                if (isCurrent) { ctx.shadowColor = color.glow; ctx.shadowBlur = 12; ctx.strokeStyle = color.stroke; ctx.lineWidth = 2.5; }
+                else { ctx.shadowBlur = 0; ctx.strokeStyle = color.stroke; ctx.lineWidth = 1.5; }
+                ctx.strokeRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT); ctx.shadowBlur = 0;
+                ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(floor.x, floor.y, floor.w, 3);
                 if (floor.w > 20) {
-                    const winSize = Math.min(7, floor.w / 4);
-                    const winGap = Math.max(15, winSize * 3);
-                    const winY = floor.y + 9;
-                    
-                    for (let wx = floor.x + 8; wx < floor.x + floor.w - 8; wx += winGap) {
-                        if (wx + winSize > floor.x + floor.w - 4) break;
-                        
-                        const residentId = residentFloors[index];
-                        const hasResident = residentId && !isResidentCollected(residentId);
-                        
-                        if (hasResident && wx === floor.x + 8) {
-                            const resident = ALL_RESIDENTS.find(r => r.id === residentId);
-                            ctx.font = `${winSize + 4}px Arial`;
-                            ctx.fillText(resident.emoji, wx - 2, winY + winSize - 1);
+                    const ws = Math.min(7, floor.w / 4), wg = Math.max(15, ws * 3), wy = floor.y + 9;
+                    for (let wx = floor.x + 8; wx < floor.x + floor.w - 8; wx += wg) {
+                        if (wx + ws > floor.x + floor.w - 4) break;
+                        const rid = residentFloors[index], hasR = rid && !isResidentCollected(rid);
+                        if (hasR && wx === floor.x + 8) {
+                            const r = ALL_RESIDENTS.find(x => x.id === rid);
+                            ctx.font = `${ws + 4}px Arial`; ctx.fillText(r.emoji, wx - 2, wy + ws - 1);
                         } else {
-                            ctx.fillStyle = 'rgba(255,255,220,0.6)';
-                            ctx.fillRect(wx, winY, winSize, winSize);
-                            
-                            ctx.strokeStyle = 'rgba(0,0,0,0.3)';
-                            ctx.lineWidth = 0.5;
-                            ctx.beginPath();
-                            ctx.moveTo(wx + winSize/2, winY);
-                            ctx.lineTo(wx + winSize/2, winY + winSize);
-                            ctx.moveTo(wx, winY + winSize/2);
-                            ctx.lineTo(wx + winSize, winY + winSize/2);
-                            ctx.stroke();
+                            ctx.fillStyle = 'rgba(255,255,220,0.6)'; ctx.fillRect(wx, wy, ws, ws);
+                            ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 0.5;
+                            ctx.beginPath(); ctx.moveTo(wx + ws/2, wy); ctx.lineTo(wx + ws/2, wy + ws);
+                            ctx.moveTo(wx, wy + ws/2); ctx.lineTo(wx + ws, wy + ws/2); ctx.stroke();
                         }
                     }
                 }
@@ -1346,144 +1117,45 @@
 
             function handleTap(e) {
                 e.preventDefault();
-                if (gameState === 'gameover') return;
-                if (panelOpen) return;
-                if (gameState === 'playing' && currentFloor) {
-                    placeFloor();
-                    
-                    const nextFloorIndex = floors.length;
-                    if (nextFloorIndex > 1 && nextFloorIndex % 5 === 0 && !residentFloors[nextFloorIndex]) {
-                        const magnetBonus = getMagnetBonus();
-                        const spawnChance = 0.6 + magnetBonus;
-                        if (Math.random() < Math.min(spawnChance, 1.0)) {
-                            const resident = getRandomResident();
-                            residentFloors[nextFloorIndex] = resident.id;
-                        }
-                    }
-                }
+                if (gameState === 'gameover' || panelOpen || gameState !== 'playing' || !currentFloor) return;
+                placeFloor();
             }
 
-            function restartGame() {
-                initGame();
-            }
+            function restartGame() { initGame(); }
 
             // События
             canvas.addEventListener('pointerdown', handleTap);
-            restartBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                restartGame();
-            });
-            
-            shopBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                openShop();
-            });
-            
-            skinBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                openSkinShop();
-            });
-            
-            collectionBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                openCollection();
-            });
-            
-            resetBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                resetProgress();
-            });
-            
-            closeShopBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                closePanels();
-            });
-            
-            closeSkinBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                closePanels();
-            });
-            
-            closeCollectionBtn.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                closePanels();
-            });
-            
-            overlay.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                closePanels();
-            });
-            
-            buyFoundation.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                buyUpgrade('foundation');
-                updateShopUI();
-            });
-            
-            buyArchitect.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                buyUpgrade('architect');
-                updateShopUI();
-            });
-            
-            buyBrakes.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                buyUpgrade('brakes');
-                updateShopUI();
-            });
-            
-            buyGoldrush.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                buyUpgrade('goldrush');
-                updateShopUI();
-            });
-            
-            buyMagnet.addEventListener('pointerdown', (e) => {
-                e.stopPropagation();
-                buyUpgrade('magnet');
-                updateShopUI();
-            });
-            
+            restartBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); restartGame(); });
+            shopBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openShop(); });
+            skinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openSkinShop(); });
+            bgSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openBgSkinShop(); });
+            collectionBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openCollection(); });
+            resetBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); resetProgress(); });
+            closeShopBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
+            closeSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
+            closeBgSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
+            closeCollectionBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
+            overlay.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
+            buyFoundation.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('foundation'); updateShopUI(); });
+            buyArchitect.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('architect'); updateShopUI(); });
+            buyBrakes.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('brakes'); updateShopUI(); });
+            buyGoldrush.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('goldrush'); updateShopUI(); });
+            buyMagnet.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('magnet'); updateShopUI(); });
             document.addEventListener('gesturestart', (e) => e.preventDefault());
             document.addEventListener('gesturechange', (e) => e.preventDefault());
             document.addEventListener('gestureend', (e) => e.preventDefault());
-
             window.addEventListener('resize', () => {
-                const oldW = W;
-                resize();
-                const scaleX = W / oldW;
-                floors.forEach((f, i) => {
-                    f.x *= scaleX;
-                    f.w *= scaleX;
-                    f.y = H - FLOOR_HEIGHT - 20 - (i * FLOOR_HEIGHT);
-                });
-                if (currentFloor) {
-                    currentFloor.x *= scaleX;
-                    currentFloor.w *= scaleX;
-                }
+                const ow = W; resize(); const sx = W / ow;
+                floors.forEach((f, i) => { f.x *= sx; f.w *= sx; f.y = H - FLOOR_HEIGHT - 20 - (i * FLOOR_HEIGHT); });
+                if (currentFloor) { currentFloor.x *= sx; currentFloor.w *= sx; }
             });
 
-            function gameLoop() {
-                update();
-                draw();
-                requestAnimationFrame(gameLoop);
-            }
+            function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
 
-            // === ЗАПУСК ===
-            resize();
-            updateIncrement();
-            
-            // Загружаем сохранение
+            resize(); updateIncrement();
             const loaded = loadGame();
-            
-            initGame();
-            updateShopUI();
-            gameLoop();
-            
-            if (loaded) {
-                updateUI();
-                updateShopUI();
-            }
+            initGame(); updateShopUI(); gameLoop();
+            if (loaded) { updateUI(); updateShopUI(); }
         })();
     </script>
 </body>
