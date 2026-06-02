@@ -808,7 +808,10 @@
             }
             function getMagnetBonus() {
                 const l = upgrades.magnet.level;
-                return l <= 10 ? (l - 1) * 0.08 : 0.72 + (l - 10) * 0.02;
+    if (l <= 5) return (l - 1) * 0.04;       // по 4% за уровень
+    if (l <= 10) return 0.16 + (l - 5) * 0.03; // по 3%
+    if (l <= 15) return 0.31 + (l - 10) * 0.02; // по 2%
+    return 0.41 + (l - 15) * 0.01; 
             }
             function updateIncrement() {
                 const l = upgrades.brakes.level;
@@ -1007,7 +1010,7 @@ else { comboCount = 0; earned = Math.floor((floors.length / 4) * cb); hideCombo(
                 
                 const ni = floors.length;
                 if (ni > 1 && ni % 5 === 0 && !residentFloors[ni]) {
-                    if (Math.random() < Math.min(0.6 + getMagnetBonus(), 1.0)) residentFloors[ni] = getRandomResident().id;
+                    if (Math.random() < Math.min(0.25 + getMagnetBonus(), 0.5)) residentFloors[ni] = getRandomResident().id;
                 }
             }
             function showGoldrush() {
@@ -1061,12 +1064,20 @@ else { comboCount = 0; earned = Math.floor((floors.length / 4) * cb); hideCombo(
                 });
             }
             function buyUpgrade(name) {
-                const u = upgrades[name], c = getUpgradeCost(u);
-                if (coins < c) return;
-                coins -= c; u.level++;
-                updateIncrement(); recalculateSpeed();
-                updateUI(); updateShopUI(); autoSave();
-            }
+    const u = upgrades[name], c = getUpgradeCost(u);
+    if (coins < c) return;
+    coins -= c; u.level++;
+    
+    // Если купили фундамент — сразу расширяем текущий этаж
+    if (name === 'foundation' && currentFloor) {
+        const bonus = getWidthBonus() - (upgrades.foundation.level - 2) * 3;
+        currentFloor.w += 3;
+        currentFloor.x -= 1.5;
+    }
+    
+    updateIncrement(); recalculateSpeed();
+    updateUI(); updateShopUI(); autoSave();
+}
             
             function openShop() { if (gameState === 'gameover') return; panelOpen = true; shopPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; updateShopUI(); }
             function openSkinShop() { if (gameState === 'gameover') return; panelOpen = true; skinPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderSkinShop(); }
