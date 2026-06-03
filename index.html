@@ -159,7 +159,7 @@
         }
         #overlay.show { display:block; }
     </style>
-	<!-- Иконка через Canvas -->
+	
 <!-- PWA мета-теги -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Этаж">
@@ -180,11 +180,9 @@
     bg.addColorStop(0, '#1a1a3e');
     bg.addColorStop(1, '#0f2040');
     ctx.fillStyle = bg;
-    ctx.beginPath();
-    ctx.roundRect(0, 0, 180, 180, 30);
-    ctx.fill();
+    ctx.fillRect(0, 0, 180, 180);
     
-    // Звёзды на фоне
+    // Звёзды
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     for (let i = 0; i < 15; i++) {
         ctx.beginPath();
@@ -192,48 +190,30 @@
         ctx.fill();
     }
     
-    // Этажи башни
+    // Этажи
     const floors = [
-        { y: 120, w: 120, x: 30, color: '#4CAF50' },
-        { y: 88,  w: 100, x: 40, color: '#FF9800' },
-        { y: 56,  w: 80,  x: 50, color: '#2196F3' },
-        { y: 24,  w: 60,  x: 60, color: '#E91E63' },
+        { y: 120, w: 120, x: 30, c: '#4CAF50' },
+        { y: 88,  w: 100, x: 40, c: '#FF9800' },
+        { y: 56,  w: 80,  x: 50, c: '#2196F3' },
+        { y: 24,  w: 60,  x: 60, c: '#E91E63' },
     ];
     
     floors.forEach(f => {
-        // Тень
         ctx.fillStyle = 'rgba(0,0,0,0.3)';
-        ctx.beginPath();
-        ctx.roundRect(f.x + 2, f.y + 2, f.w, 28, 8);
-        ctx.fill();
+        ctx.fillRect(f.x + 2, f.y + 2, f.w, 26);
         
-        // Этаж
-        const grad = ctx.createLinearGradient(f.x, f.y, f.x, f.y + 28);
-        grad.addColorStop(0, f.color);
-        grad.addColorStop(1, f.color + '88');
-        ctx.fillStyle = grad;
-        ctx.beginPath();
-        ctx.roundRect(f.x, f.y, f.w, 28, 8);
-        ctx.fill();
+        ctx.fillStyle = f.c;
+        ctx.fillRect(f.x, f.y, f.w, 26);
         
-        // Окантовка
         ctx.strokeStyle = 'rgba(255,255,255,0.3)';
         ctx.lineWidth = 1;
-        ctx.stroke();
+        ctx.strokeRect(f.x, f.y, f.w, 26);
         
-        // Окна
         ctx.fillStyle = 'rgba(255,255,200,0.7)';
-        for (let wx = f.x + 10; wx < f.x + f.w - 8; wx += 22) {
-            ctx.beginPath();
-            ctx.roundRect(wx, f.y + 7, 12, 14, 3);
-            ctx.fill();
+        for (let wx = f.x + 8; wx < f.x + f.w - 8; wx += 22) {
+            ctx.fillRect(wx, f.y + 7, 10, 12);
         }
     });
-    
-    // Звезда
-    ctx.fillStyle = '#FFD700';
-    ctx.font = '36px Arial';
-    ctx.fillText('⭐', 70, 38);
     
     const dataUrl = canvas.toDataURL();
     document.getElementById('favicon').href = dataUrl;
