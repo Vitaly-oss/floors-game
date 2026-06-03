@@ -729,6 +729,10 @@ function closePanels() {
     if(loaded){updateMenuStats();}
     showMenu();
     gameLoop();
+    // Офлайн-режим (только для GitHub Pages)
+if ('serviceWorker' in navigator && location.hostname.includes('github.io')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+}
 })();
 </script>
 </body>
