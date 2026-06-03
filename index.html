@@ -5,353 +5,224 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Этаж — Строй свою башню</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            background: #1a1a2e;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            touch-action: none;
-            font-family: 'Arial', sans-serif;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            background:#1a1a2e; display:flex; justify-content:center; align-items:center;
+            height:100vh; overflow:hidden; touch-action:none;
+            font-family:'Arial',sans-serif; user-select:none; -webkit-user-select:none;
+            -webkit-tap-highlight-color:transparent;
         }
         #gameContainer {
-            position: relative;
-            width: 100%;
-            max-width: 420px;
-            height: 100vh;
-            max-height: 750px;
-            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
-            overflow: hidden;
+            position:relative; width:100%; max-width:420px; height:100vh; max-height:750px;
+            background:linear-gradient(180deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); overflow:hidden;
         }
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
+        canvas { display:block; width:100%; height:100%; }
         #ui-layer {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            pointer-events: none;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            text-shadow: 2px 2px 8px rgba(0,0,0,0.6);
-            z-index: 5;
-            flex-wrap: wrap;
-            gap: 4px;
+            position:absolute; top:20px; left:15px; right:15px; display:flex;
+            justify-content:space-between; align-items:center; pointer-events:none;
+            color:white; font-size:13px; font-weight:bold;
+            text-shadow:2px 2px 8px rgba(0,0,0,0.6); z-index:5; gap:3px;
         }
         .ui-item {
-            background: rgba(0,0,0,0.6);
-            backdrop-filter: blur(10px);
-            padding: 6px 10px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: 13px;
+            background:rgba(0,0,0,0.6); backdrop-filter:blur(10px);
+            padding:6px 9px; border-radius:20px; display:flex; align-items:center; gap:3px; font-size:12px;
         }
         #bottom-buttons {
-            position: absolute;
-            bottom: 30px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 6;
+            position:absolute; bottom:30px; right:20px; display:flex;
+            flex-direction:column; gap:10px; z-index:6;
         }
-        #shop-btn, #collection-btn, #skin-btn, #bg-skin-btn, #achievement-btn, #reset-btn {
-            width: 50px;
-            height: 50px;
-            border: none;
-            border-radius: 50%;
-            font-size: 24px;
-            cursor: pointer;
-            transition: 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        #shop-btn, #collection-btn, #reset-btn {
+            width:42px; height:42px; border:2px solid rgba(255,255,255,0.25); border-radius:50%;
+            font-size:20px; cursor:pointer; transition:0.2s; display:flex;
+            align-items:center; justify-content:center; background:transparent;
         }
-        #shop-btn { background: linear-gradient(135deg, #ffd700, #ffaa00); }
-        #collection-btn { background: linear-gradient(135deg, #e94560, #c23152); }
-        #skin-btn { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
-        #bg-skin-btn { background: linear-gradient(135deg, #06b6d4, #0891b2); }
-        #achievement-btn { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        #reset-btn { background: linear-gradient(135deg, #666, #333); font-size: 14px; }
-        #shop-btn:active, #collection-btn:active, #skin-btn:active, #bg-skin-btn:active, #achievement-btn:active, #reset-btn:active {
-            transform: scale(0.9);
+        #shop-btn { color:#ffd700; }
+        #collection-btn { color:#e94560; }
+        #reset-btn { color:#aaa; font-size:16px; }
+        #shop-btn:active, #collection-btn:active, #reset-btn:active {
+            transform:scale(0.9); background:rgba(255,255,255,0.1);
         }
         .combo-popup {
-            position: absolute;
-            top: 35%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ffd700;
-            font-size: 32px;
-            font-weight: bold;
-            pointer-events: none;
-            text-shadow: 0 0 20px rgba(255,215,0,0.9);
-            opacity: 0;
-            transition: all 0.5s ease-out;
-            z-index: 6;
+            position:absolute; top:35%; left:50%; transform:translate(-50%,-50%);
+            color:#ffd700; font-size:32px; font-weight:bold; pointer-events:none;
+            text-shadow:0 0 20px rgba(255,215,0,0.9); opacity:0; transition:all 0.5s ease-out; z-index:6;
         }
         .collect-popup {
-            position: absolute;
-            top: 25%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: #ff69b4;
-            font-size: 22px;
-            font-weight: bold;
-            pointer-events: none;
-            text-shadow: 0 0 15px rgba(255,105,180,0.8);
-            opacity: 0;
-            transition: all 0.5s ease-out;
-            z-index: 6;
-            text-align: center;
-            line-height: 1.4;
+            position:absolute; top:25%; left:50%; transform:translate(-50%,-50%);
+            color:#ff69b4; font-size:22px; font-weight:bold; pointer-events:none;
+            text-shadow:0 0 15px rgba(255,105,180,0.8); opacity:0; transition:all 0.5s ease-out;
+            z-index:6; text-align:center; line-height:1.4;
         }
-        /* Достижение */
         #achievement-popup {
-            position: absolute;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(135deg, #1a1a3e, #0f0f2e);
-            border: 2px solid #f59e0b;
-            border-radius: 16px;
-            padding: 12px 20px;
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            z-index: 11;
-            text-align: center;
-            opacity: 0;
-            transition: all 0.5s ease-out;
-            pointer-events: none;
-            box-shadow: 0 8px 30px rgba(245,158,11,0.4);
-            white-space: nowrap;
+            position:absolute; top:100px; left:50%; transform:translateX(-50%);
+            background:linear-gradient(135deg,#1a1a3e,#0f0f2e); border:2px solid #f59e0b;
+            border-radius:16px; padding:12px 20px; color:white; font-size:14px; font-weight:bold;
+            z-index:11; text-align:center; opacity:0; transition:all 0.5s ease-out;
+            pointer-events:none; box-shadow:0 8px 30px rgba(245,158,11,0.4); white-space:nowrap;
         }
-        #shop-panel, #collection-panel, #skin-panel, #bg-skin-panel, #achievement-panel {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(15, 15, 35, 0.97);
-            border-top: 2px solid #ffd700;
-            border-radius: 24px 24px 0 0;
-            padding: 20px;
-            z-index: 8;
-            transform: translateY(110%);
-            transition: transform 0.3s ease-out;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            backdrop-filter: blur(20px);
-            max-height: 70vh;
-            overflow-y: auto;
+        #shop-panel, #collection-panel {
+            position:absolute; bottom:0; left:0; right:0;
+            background:rgba(15,15,35,0.97); border-radius:24px 24px 0 0;
+            padding:20px; z-index:8; transform:translateY(110%); transition:transform 0.3s ease-out;
+            display:flex; flex-direction:column; gap:10px; backdrop-filter:blur(20px);
+            max-height:70vh; overflow-y:auto;
         }
-        #collection-panel { border-top: 2px solid #e94560; }
-        #skin-panel { border-top: 2px solid #7c3aed; }
-        #bg-skin-panel { border-top: 2px solid #06b6d4; }
-        #achievement-panel { border-top: 2px solid #f59e0b; }
-        #shop-panel.open, #collection-panel.open, #skin-panel.open, #bg-skin-panel.open, #achievement-panel.open {
-            transform: translateY(0);
+        #shop-panel { border-top:2px solid #ffd700; }
+        #collection-panel { border-top:2px solid #e94560; }
+        #shop-panel.open, #collection-panel.open { transform:translateY(0); }
+        
+        /* Табы */
+        .tab-buttons { display:flex; gap:8px; margin-bottom:5px; }
+        .tab-btn {
+            flex:1; padding:8px; border:none; border-radius:12px; font-size:13px;
+            font-weight:bold; cursor:pointer; transition:0.2s; color:white;
+            background:rgba(255,255,255,0.08); text-align:center;
         }
-        #shop-panel h3, #collection-panel h3, #skin-panel h3, #bg-skin-panel h3, #achievement-panel h3 {
-            text-align: center;
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-        #shop-panel h3 { color: #ffd700; }
-        #collection-panel h3 { color: #e94560; }
-        #skin-panel h3 { color: #a78bfa; }
-        #bg-skin-panel h3 { color: #67e8f9; }
-        #achievement-panel h3 { color: #f59e0b; }
+        .tab-btn.active { background:rgba(255,255,255,0.2); }
+        .tab-content { display:none; flex-direction:column; gap:10px; }
+        .tab-content.active { display:flex; }
+        
+        h3 { text-align:center; font-size:18px; margin:0; }
+        #shop-panel h3 { color:#ffd700; }
+        #collection-panel h3 { color:#e94560; }
+        
         .shop-item, .achievement-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 16px;
-            padding: 12px 14px;
-            gap: 12px;
+            display:flex; align-items:center; justify-content:space-between;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15);
+            border-radius:16px; padding:10px 12px; gap:10px;
         }
-        .shop-icon {
-            font-size: 30px;
-            min-width: 38px;
-            text-align: center;
-        }
-        .shop-info {
-            flex: 1;
-            color: white;
-        }
-        .shop-info .name {
-            font-weight: bold;
-            font-size: 14px;
-        }
-        .shop-info .desc {
-            font-size: 11px;
-            color: #aaa;
-            margin-top: 2px;
-        }
-        .shop-info .level {
-            font-size: 10px;
-            color: #ffd700;
-            margin-top: 2px;
-        }
+        .shop-icon { font-size:28px; min-width:36px; text-align:center; }
+        .shop-info { flex:1; color:white; }
+        .shop-info .name { font-weight:bold; font-size:13px; }
+        .shop-info .desc { font-size:10px; color:#aaa; margin-top:2px; }
+        .shop-info .level { font-size:10px; color:#ffd700; margin-top:2px; }
         .shop-buy {
-            background: linear-gradient(135deg, #4CAF50, #2E7D32);
-            color: white;
-            border: none;
-            padding: 8px 14px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 12px;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: 0.2s;
-            min-width: 65px;
-            text-align: center;
+            background:linear-gradient(135deg,#4CAF50,#2E7D32); color:white;
+            border:none; padding:7px 12px; border-radius:20px; font-weight:bold;
+            font-size:11px; cursor:pointer; white-space:nowrap; transition:0.2s;
+            min-width:60px; text-align:center;
         }
-        .shop-buy:active { transform: scale(0.95); }
-        .shop-buy.cant-afford { background: #666; opacity: 0.6; }
-        .shop-buy.owned { background: linear-gradient(135deg, #7c3aed, #5b21b6); }
-        .shop-buy.active-skin { background: linear-gradient(135deg, #ffd700, #ffaa00); color: #000; }
-        .achievement-item.locked { opacity: 0.4; }
-        .achievement-item.unlocked { border-color: #f59e0b; }
-        .achievement-item .reward {
-            color: #f59e0b;
-            font-size: 11px;
-            margin-top: 2px;
+        .shop-buy:active { transform:scale(0.95); }
+        .shop-buy.cant-afford { background:#666; opacity:0.6; }
+        .shop-buy.owned { background:linear-gradient(135deg,#7c3aed,#5b21b6); }
+        .shop-buy.active-skin { background:linear-gradient(135deg,#ffd700,#ffaa00); color:#000; }
+        .shop-buy.maxed { background:#555; cursor:default; }
+        .achievement-item.locked { opacity:0.4; }
+        .achievement-item.unlocked { border-color:#f59e0b; }
+        .achievement-item .reward { color:#f59e0b; font-size:10px; margin-top:2px; }
+        
+        .close-btn {
+            display:block; margin:5px auto 0; background:rgba(255,255,255,0.1);
+            color:white; border:none; padding:10px 30px; border-radius:20px;
+            font-size:14px; cursor:pointer;
         }
-        #close-shop, #close-collection, #close-skin, #close-bg-skin, #close-achievement {
-            display: block;
-            margin: 5px auto 0;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: none;
-            padding: 10px 30px;
-            border-radius: 20px;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .collection-stats {
-            text-align: center;
-            color: #ccc;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-        .collection-stats span { color: #ffd700; font-weight: bold; }
-        .collection-category {
-            color: #aaa;
-            font-size: 14px;
-            font-weight: bold;
-            margin-top: 5px;
-            margin-bottom: 2px;
-        }
-        .collection-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: flex-start;
-        }
+        .collection-stats { text-align:center; color:#ccc; font-size:13px; margin-bottom:5px; }
+        .collection-stats span { color:#ffd700; font-weight:bold; }
+        .collection-category { color:#aaa; font-size:13px; font-weight:bold; margin-top:5px; margin-bottom:2px; }
+        .collection-grid { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-start; }
         .collection-slot {
-            width: 50px;
-            height: 50px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            position: relative;
+            width:44px; height:44px; background:rgba(255,255,255,0.05);
+            border:1px solid rgba(255,255,255,0.2); border-radius:10px;
+            display:flex; align-items:center; justify-content:center; font-size:24px; position:relative;
         }
-        .collection-slot.locked { opacity: 0.3; filter: grayscale(1); }
+        .collection-slot.locked { opacity:0.3; filter:grayscale(1); }
         .collection-slot .bonus-badge {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            background: #ffd700;
-            color: #000;
-            font-size: 9px;
-            font-weight: bold;
-            padding: 1px 4px;
-            border-radius: 6px;
+            position:absolute; bottom:-2px; right:-2px; background:#ffd700; color:#000;
+            font-size:8px; font-weight:bold; padding:1px 3px; border-radius:5px;
         }
         #gameover-panel {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(15, 15, 30, 0.95);
-            border: 2px solid #e94560;
-            border-radius: 24px;
-            padding: 30px 25px;
-            text-align: center;
-            color: white;
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            min-width: 260px;
-            backdrop-filter: blur(20px);
-            z-index: 10;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+            background:rgba(15,15,30,0.95); border:2px solid #e94560;
+            border-radius:24px; padding:25px 20px; text-align:center; color:white;
+            display:none; flex-direction:column; gap:10px; min-width:240px;
+            backdrop-filter:blur(20px); z-index:10; box-shadow:0 20px 60px rgba(0,0,0,0.5);
         }
-        #gameover-panel h2 { color: #e94560; font-size: 24px; margin: 0; }
-        #gameover-panel .emoji { font-size: 45px; }
-        #gameover-panel .stats { font-size: 16px; color: #ccc; line-height: 1.5; }
-        #gameover-panel .coins { font-size: 24px; color: #ffd700; font-weight: bold; }
+        #gameover-panel h2 { color:#e94560; font-size:22px; margin:0; }
+        #gameover-panel .emoji { font-size:40px; }
+        #gameover-panel .stats { font-size:14px; color:#ccc; line-height:1.5; }
+        #gameover-panel .coins { font-size:22px; color:#ffd700; font-weight:bold; }
         #restart-btn {
-            background: linear-gradient(135deg, #e94560, #c23152);
-            color: white;
-            border: none;
-            padding: 14px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 8px 25px rgba(233,69,96,0.4);
+            background:linear-gradient(135deg,#e94560,#c23152); color:white;
+            border:none; padding:12px 25px; font-size:16px; font-weight:bold;
+            border-radius:30px; cursor:pointer; transition:0.2s;
+            box-shadow:0 8px 25px rgba(233,69,96,0.4);
         }
-        #restart-btn:active { transform: scale(0.95); }
+        #restart-btn:active { transform:scale(0.95); }
         .hint-text {
-            position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255,255,255,0.7);
-            font-size: 16px;
-            pointer-events: none;
-            text-align: center;
-            z-index: 5;
-            transition: opacity 0.3s;
+            position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+            color:rgba(255,255,255,0.7); font-size:14px; pointer-events:none;
+            text-align:center; z-index:5; transition:opacity 0.3s;
         }
         #overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 7;
-            display: none;
+            position:absolute; inset:0; background:rgba(0,0,0,0.5);
+            z-index:7; display:none;
         }
-        #overlay.show { display: block; }
+        #overlay.show { display:block; }
     </style>
+	<!-- Иконка через Canvas -->
+<link rel="icon" id="favicon" href="data:image/png;base64,iVBORw0KGgo=">
+<script>
+(function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    
+    // Фон — тёмный градиент
+    const bg = ctx.createLinearGradient(0, 0, 0, 64);
+    bg.addColorStop(0, '#1a1a3e');
+    bg.addColorStop(1, '#0f2040');
+    ctx.fillStyle = bg;
+    ctx.beginPath();
+    ctx.roundRect(0, 0, 64, 64, 12);
+    ctx.fill();
+    
+    // Башня из трёх этажей
+    const floors = [
+        { y: 42, w: 44, x: 10, color: '#4CAF50' },
+        { y: 28, w: 36, x: 14, color: '#FF9800' },
+        { y: 14, w: 28, x: 18, color: '#2196F3' },
+    ];
+    
+    floors.forEach(f => {
+        // Тень
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.beginPath();
+        ctx.roundRect(f.x + 1, f.y + 1, f.w, 10, 3);
+        ctx.fill();
+        
+        // Этаж
+        const grad = ctx.createLinearGradient(f.x, f.y, f.x, f.y + 10);
+        grad.addColorStop(0, f.color);
+        grad.addColorStop(1, f.color + '88');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.roundRect(f.x, f.y, f.w, 10, 3);
+        ctx.fill();
+        
+        // Окантовка
+        ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+        ctx.lineWidth = 0.5;
+        ctx.stroke();
+        
+        // Окна
+        ctx.fillStyle = 'rgba(255,255,200,0.7)';
+        for (let wx = f.x + 5; wx < f.x + f.w - 4; wx += 9) {
+            ctx.beginPath();
+            ctx.roundRect(wx, f.y + 2.5, 5, 5, 1);
+            ctx.fill();
+        }
+    });
+    
+    // Звезда сверху
+    ctx.fillStyle = '#FFD700';
+    ctx.font = '16px Arial';
+    ctx.fillText('⭐', 22, 12);
+    
+    // Устанавливаем favicon
+    document.getElementById('favicon').href = canvas.toDataURL();
+})();
+</script>
 </head>
 <body>
     <div id="gameContainer">
@@ -370,96 +241,42 @@
         
         <div id="bottom-buttons">
             <button id="shop-btn">🛒</button>
-            <button id="skin-btn">🎨</button>
-            <button id="bg-skin-btn">🌌</button>
-            <button id="achievement-btn">🏅</button>
             <button id="collection-btn">📖</button>
-            <button id="reset-btn">🔄</button>
+            <button id="reset-btn">🧹</button>
         </div>
         
         <div id="overlay"></div>
         
-        <!-- Магазин улучшений -->
+        <!-- Магазин -->
         <div id="shop-panel">
-            <h3>🏪 Улучшения</h3>
-            <div class="shop-item" id="shop-foundation">
-                <span class="shop-icon">🏛️</span>
-                <div class="shop-info">
-                    <div class="name">Усиленный фундамент</div>
-                    <div class="desc">Все этажи шире на +3 пикс. за уровень</div>
-                    <div class="level">Уровень: <span id="foundation-lvl">1</span></div>
-                </div>
-                <button class="shop-buy" id="buy-foundation">🪙 <span id="foundation-cost">100</span></button>
+            <h3>🏪 Магазин</h3>
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="upgrades">⚡ Улучшения</button>
+                <button class="tab-btn" data-tab="floor-skins">🎨 Этажи</button>
+                <button class="tab-btn" data-tab="bg-skins">🌌 Фон</button>
             </div>
-            <div class="shop-item" id="shop-architect">
-                <span class="shop-icon">📐</span>
-                <div class="shop-info">
-                    <div class="name">Точный архитектор</div>
-                    <div class="desc">Зона идеального попадания шире</div>
-                    <div class="level">Уровень: <span id="architect-lvl">1</span></div>
-                </div>
-                <button class="shop-buy" id="buy-architect">🪙 <span id="architect-cost">150</span></button>
-            </div>
-            <div class="shop-item" id="shop-brakes">
-                <span class="shop-icon">🐌</span>
-                <div class="shop-info">
-                    <div class="name">Замедление времени</div>
-                    <div class="desc">Скорость растёт медленнее</div>
-                    <div class="level">Уровень: <span id="brakes-lvl">1</span></div>
-                </div>
-                <button class="shop-buy" id="buy-brakes">🪙 <span id="brakes-cost">200</span></button>
-            </div>
-            <div class="shop-item" id="shop-goldrush">
-                <span class="shop-icon">💰</span>
-                <div class="shop-info">
-                    <div class="name">Золотая лихорадка</div>
-                    <div class="desc">Шанс ×2 монет за этаж</div>
-                    <div class="level">Уровень: <span id="goldrush-lvl">1</span></div>
-                </div>
-                <button class="shop-buy" id="buy-goldrush">🪙 <span id="goldrush-cost">250</span></button>
-            </div>
-            <div class="shop-item" id="shop-magnet">
-                <span class="shop-icon">🧲</span>
-                <div class="shop-info">
-                    <div class="name">Магнит для жильцов</div>
-                    <div class="desc">Жильцы появляются чаще</div>
-                    <div class="level">Уровень: <span id="magnet-lvl">1</span></div>
-                </div>
-                <button class="shop-buy" id="buy-magnet">🪙 <span id="magnet-cost">250</span></button>
-            </div>
-            <button id="close-shop">✕ Закрыть</button>
-        </div>
-        
-        <!-- Магазин скинов этажей -->
-        <div id="skin-panel">
-            <h3>🎨 Скины этажей</h3>
-            <div id="skin-list"></div>
-            <button id="close-skin">✕ Закрыть</button>
-        </div>
-        
-        <!-- Магазин скинов фона -->
-        <div id="bg-skin-panel">
-            <h3>🌌 Скины фона</h3>
-            <div id="bg-skin-list"></div>
-            <button id="close-bg-skin">✕ Закрыть</button>
-        </div>
-        
-        <!-- Достижения -->
-        <div id="achievement-panel">
-            <h3>🏅 Достижения</h3>
-            <div id="achievement-list"></div>
-            <button id="close-achievement">✕ Закрыть</button>
+            <div class="tab-content active" id="tab-upgrades"></div>
+            <div class="tab-content" id="tab-floor-skins"></div>
+            <div class="tab-content" id="tab-bg-skins"></div>
+            <button class="close-btn" id="close-shop">✕ Закрыть</button>
         </div>
         
         <!-- Коллекция -->
         <div id="collection-panel">
-            <h3>📖 Коллекция жильцов</h3>
-            <div class="collection-stats">
-                Собрано: <span id="collected-count">0</span> / <span id="total-count">36</span> | 
-                Бонус к монетам: <span id="bonus-percent">+0%</span>
+            <h3>📖 Коллекция</h3>
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="residents">👥 Жильцы</button>
+                <button class="tab-btn" data-tab="achievements">🏅 Достижения</button>
             </div>
-            <div id="collection-content"></div>
-            <button id="close-collection">✕ Закрыть</button>
+            <div class="tab-content active" id="tab-residents">
+                <div class="collection-stats">
+                    Собрано: <span id="collected-count">0</span> / <span id="total-count">36</span> | 
+                    Бонус: <span id="bonus-percent">+0%</span>
+                </div>
+                <div id="collection-content"></div>
+            </div>
+            <div class="tab-content" id="tab-achievements"></div>
+            <button class="close-btn" id="close-collection">✕ Закрыть</button>
         </div>
         
         <!-- Game Over -->
@@ -477,6 +294,9 @@
 
     <script>
         (function() {
+            // =============================================
+            // 1. DOM-ЭЛЕМЕНТЫ
+            // =============================================
             const canvas = document.getElementById('gameCanvas');
             const ctx = canvas.getContext('2d');
 
@@ -496,45 +316,17 @@
             const overlay = document.getElementById('overlay');
             
             const shopBtn = document.getElementById('shop-btn');
-            const skinBtn = document.getElementById('skin-btn');
-            const bgSkinBtn = document.getElementById('bg-skin-btn');
-            const achievementBtn = document.getElementById('achievement-btn');
             const collectionBtn = document.getElementById('collection-btn');
             const resetBtn = document.getElementById('reset-btn');
             const shopPanel = document.getElementById('shop-panel');
-            const skinPanel = document.getElementById('skin-panel');
-            const bgSkinPanel = document.getElementById('bg-skin-panel');
-            const achievementPanel = document.getElementById('achievement-panel');
             const collectionPanel = document.getElementById('collection-panel');
             const closeShopBtn = document.getElementById('close-shop');
-            const closeSkinBtn = document.getElementById('close-skin');
-            const closeBgSkinBtn = document.getElementById('close-bg-skin');
-            const closeAchievementBtn = document.getElementById('close-achievement');
             const closeCollectionBtn = document.getElementById('close-collection');
-            const collectionContent = document.getElementById('collection-content');
-            const skinList = document.getElementById('skin-list');
-            const bgSkinList = document.getElementById('bg-skin-list');
-            const achievementList = document.getElementById('achievement-list');
-            
-            const buyFoundation = document.getElementById('buy-foundation');
-            const buyArchitect = document.getElementById('buy-architect');
-            const buyBrakes = document.getElementById('buy-brakes');
-            const buyGoldrush = document.getElementById('buy-goldrush');
-            const buyMagnet = document.getElementById('buy-magnet');
-            
-            const foundationLvlEl = document.getElementById('foundation-lvl');
-            const architectLvlEl = document.getElementById('architect-lvl');
-            const brakesLvlEl = document.getElementById('brakes-lvl');
-            const goldrushLvlEl = document.getElementById('goldrush-lvl');
-            const magnetLvlEl = document.getElementById('magnet-lvl');
-            const foundationCostEl = document.getElementById('foundation-cost');
-            const architectCostEl = document.getElementById('architect-cost');
-            const brakesCostEl = document.getElementById('brakes-cost');
-            const goldrushCostEl = document.getElementById('goldrush-cost');
-            const magnetCostEl = document.getElementById('magnet-cost');
 
+            // =============================================
+            // 2. ПЕРЕМЕННЫЕ ИГРЫ
+            // =============================================
             let W, H;
-            
             const FLOOR_HEIGHT = 28;
             const BASE_WIDTH = 160;
             const START_SPEED = 1.2;
@@ -558,287 +350,223 @@
             let panelOpen = false;
             let currentIncrement = BASE_SPEED_INCREMENT;
             let saveTimeout = null;
-            let lightningTimer = 0;
             
+            // =============================================
+            // 3. УЛУЧШЕНИЯ (макс 20 уровней)
+            // =============================================
             let upgrades = {
-                foundation: { level: 1, baseCost: 100 },
-                architect:  { level: 1, baseCost: 150 },
-                brakes:     { level: 1, baseCost: 200 },
-                goldrush:   { level: 1, baseCost: 250 },
-                magnet:     { level: 1, baseCost: 250 }
+                foundation: { level: 1, maxLevel: 20, baseCost: 150 },
+                architect:  { level: 1, maxLevel: 20, baseCost: 200 },
+                brakes:     { level: 1, maxLevel: 20, baseCost: 250 },
+                goldrush:   { level: 1, maxLevel: 20, baseCost: 300 },
+                magnet:     { level: 1, maxLevel: 20, baseCost: 300 }
             };
             
-            // === ДОСТИЖЕНИЯ ===
+            // =============================================
+            // 4. ДОСТИЖЕНИЯ
+            // =============================================
             const ACHIEVEMENTS = [
-                { id: 'floors10', name: 'Строитель', desc: 'Построить 10 этажей за игру', emoji: '🔨', check: () => floors.length - 1 >= 10, reward: 500 },
-                { id: 'floors25', name: 'Архитектор', desc: 'Построить 25 этажей', emoji: '📐', check: () => floors.length - 1 >= 25, reward: 1500 },
-                { id: 'floors50', name: 'Небоскрёб', desc: 'Построить 50 этажей', emoji: '🏙️', check: () => floors.length - 1 >= 50, reward: 5000 },
-                { id: 'floors100', name: 'До небес', desc: 'Построить 100 этажей', emoji: '🚀', check: () => floors.length - 1 >= 100, reward: 20000 },
-                { id: 'combo5', name: 'В ударе', desc: 'Сделать комбо ×5', emoji: '🔥', check: () => comboCount >= 5, reward: 2000 },
-                { id: 'combo10', name: 'Мастер точности', desc: 'Сделать комбо ×10', emoji: '🎯', check: () => comboCount >= 10, reward: 10000 },
-                { id: 'collector5', name: 'Коллекционер', desc: 'Собрать 5 жильцов', emoji: '📖', check: () => collectedResidents.length >= 5, reward: 3000 },
-                { id: 'collector20', name: 'Охотник', desc: 'Собрать 20 жильцов', emoji: '🏹', check: () => collectedResidents.length >= 20, reward: 15000 },
-                { id: 'coins10k', name: 'Капитал', desc: 'Накопить 10 000 монет', emoji: '💰', check: () => coins >= 10000, reward: 5000 },
-                { id: 'coins100k', name: 'Миллионер', desc: 'Накопить 100 000 монет', emoji: '💎', check: () => coins >= 100000, reward: 50000 },
-                { id: 'all_common', name: 'Простые радости', desc: 'Собрать всех обычных жильцов', emoji: '🟢', check: () => ALL_RESIDENTS.filter(r => r.rarity === 'common').every(r => collectedResidents.includes(r.id)), reward: 10000 },
-                { id: 'first_legendary', name: 'Легенда', desc: 'Найти первого легендарного жильца', emoji: '👑', check: () => ALL_RESIDENTS.filter(r => r.rarity === 'legendary').some(r => collectedResidents.includes(r.id)), reward: 25000 },
+                { id:'floors10',name:'Строитель',desc:'Построить 10 этажей',emoji:'🔨',check:()=>floors.length-1>=10,reward:200 },
+                { id:'floors25',name:'Архитектор',desc:'Построить 25 этажей',emoji:'📐',check:()=>floors.length-1>=25,reward:300 },
+                { id:'floors50',name:'Небоскрёб',desc:'Построить 50 этажей',emoji:'🏙️',check:()=>floors.length-1>=50,reward:400 },
+                { id:'floors100',name:'До небес',desc:'Построить 100 этажей',emoji:'🚀',check:()=>floors.length-1>=100,reward:500 },
+                { id:'floors150',name:'Высота',desc:'Построить 150 этажей',emoji:'🦅',check:()=>floors.length-1>=150,reward:600 },
+                { id:'combo5',name:'В ударе',desc:'Сделать комбо ×5',emoji:'🔥',check:()=>comboCount>=5,reward:100 },
+                { id:'combo10',name:'Мастер точности',desc:'Сделать комбо ×10',emoji:'🎯',check:()=>comboCount>=10,reward:300 },
+                { id:'combo15',name:'Смертельная точность',desc:'Сделать комбо ×15',emoji:'💀',check:()=>comboCount>=15,reward:500 },
+                { id:'sniper',name:'Снайпер',desc:'Лучшее комбо ≥5',emoji:'🎯',check:()=>bestCombo>=5,reward:500 },
+                { id:'collector5',name:'Коллекционер',desc:'Собрать 5 жильцов',emoji:'📖',check:()=>collectedResidents.length>=5,reward:200 },
+                { id:'collector20',name:'Охотник',desc:'Собрать 20 жильцов',emoji:'🏹',check:()=>collectedResidents.length>=20,reward:300 },
+                { id:'collector30',name:'Коллекционер 30',desc:'Собрать 30 жильцов',emoji:'🌈',check:()=>collectedResidents.length>=30,reward:400 },
+                { id:'all_residents',name:'Полная коллекция',desc:'Собрать всех 36 жильцов',emoji:'🏆',check:()=>collectedResidents.length>=36,reward:800 },
+                { id:'first_legendary',name:'Легенда',desc:'Найти легендарного жильца',emoji:'👑',check:()=>ALL_RESIDENTS.filter(r=>r.rarity==='legendary').some(r=>collectedResidents.includes(r.id)),reward:300 },
+                { id:'games10',name:'Полуночник',desc:'Сыграть 10 игр',emoji:'🌙',check:()=>gamesPlayed>=10,reward:100 },
+                { id:'first_floor_skin',name:'Новосёл',desc:'Купить первый скин этажа',emoji:'🏠',check:()=>ownedSkins.length>=2,reward:1000 },
+                { id:'all_floor_skins',name:'Империя',desc:'Купить все скины этажей',emoji:'🏰',check:()=>ownedSkins.length>=SKINS.length,reward:2000 },
+                { id:'first_bg_skin',name:'Мечтатель',desc:'Купить первый скин фона',emoji:'🌌',check:()=>ownedBgSkins.length>=2,reward:1000 },
+                { id:'all_bg_skins',name:'Мир',desc:'Купить все скины фона',emoji:'🌍',check:()=>ownedBgSkins.length>=BG_SKINS.length,reward:2000 },
             ];
             
             let unlockedAchievements = [];
             let achievementQueue = [];
             let showingAchievement = false;
             
-            function checkAchievements() {
-                ACHIEVEMENTS.forEach(ach => {
-                    if (!unlockedAchievements.includes(ach.id) && ach.check()) {
-                        unlockedAchievements.push(ach.id);
-                        achievementQueue.push(ach);
-                        coins += ach.reward;
-                        updateUI();
-                    }
-                });
-                
-                if (!showingAchievement && achievementQueue.length > 0) {
-                    showNextAchievement();
-                }
-            }
-            
-            function showNextAchievement() {
-                if (achievementQueue.length === 0) {
-                    showingAchievement = false;
-                    return;
-                }
-                showingAchievement = true;
-                const ach = achievementQueue.shift();
-                achievementPopup.innerHTML = `${ach.emoji} <b>${ach.name}</b> +${ach.reward}🪙`;
-                achievementPopup.style.opacity = '1';
-                achievementPopup.style.top = '100px';
-                
-                clearTimeout(achievementPopup._timeout);
-                achievementPopup._timeout = setTimeout(() => {
-                    achievementPopup.style.opacity = '0';
-                    achievementPopup.style.top = '80px';
-                    setTimeout(() => showNextAchievement(), 400);
-                }, 2000);
-            }
-            
-            function renderAchievements() {
-                let html = '';
-                ACHIEVEMENTS.forEach(ach => {
-                    const unlocked = unlockedAchievements.includes(ach.id);
-                    html += `
-                        <div class="achievement-item ${unlocked ? 'unlocked' : 'locked'}">
-                            <span class="shop-icon">${unlocked ? ach.emoji : '🔒'}</span>
-                            <div class="shop-info">
-                                <div class="name">${ach.name}</div>
-                                <div class="desc">${ach.desc}</div>
-                                <div class="reward">${unlocked ? '✅ Получено' : 'Награда: ' + ach.reward + '🪙'}</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                achievementList.innerHTML = html;
-            }
-            
-            // Скины этажей
+            // =============================================
+            // 5. СКИНЫ ЭТАЖЕЙ
+            // =============================================
             const SKINS = [
-                { id: 'classic', name: 'Классический', emoji: '🧱', cost: 0, colors: null },
-                { id: 'forest', name: 'Лесной', emoji: '🌿', cost: 5000, colors: { top: [120, 60, 40], bottom: [120, 60, 20], stroke: [120, 70, 50] } },
-                { id: 'ice', name: 'Ледяной', emoji: '🧊', cost: 10000, colors: { top: [200, 70, 70], bottom: [200, 70, 40], stroke: [200, 80, 85] } },
-                { id: 'lava', name: 'Лавовый', emoji: '🔥', cost: 20000, colors: { top: [10, 90, 55], bottom: [10, 90, 25], stroke: [10, 100, 70] } },
-                { id: 'ghost', name: 'Призрачный', emoji: '👻', cost: 50000, colors: { top: [0, 0, 80], bottom: [0, 0, 50], stroke: [0, 0, 95] } },
-                { id: 'halloween', name: 'Хэллоуин', emoji: '🎃', cost: 75000, colors: { top: [30, 85, 55], bottom: [30, 85, 25], stroke: [30, 90, 70] } },
-                { id: 'crystal', name: 'Кристальный', emoji: '💎', cost: 100000, colors: { top: [190, 50, 85], bottom: [190, 50, 50], stroke: [190, 60, 95] } },
-                { id: 'shadow', name: 'Теневой', emoji: '🖤', cost: 150000, colors: { top: [260, 30, 25], bottom: [260, 30, 10], stroke: [260, 50, 60] } },
-                { id: 'gold', name: 'Золотой', emoji: '🏆', cost: 250000, colors: { top: [48, 90, 65], bottom: [48, 90, 35], stroke: [48, 100, 85] } },
+                { id:'classic',name:'Классический',emoji:'🧱',cost:0,colors:null },
+                { id:'forest',name:'Лесной',emoji:'🌿',cost:5000,colors:{top:[120,60,40],bottom:[120,60,20],stroke:[120,70,50]} },
+                { id:'ice',name:'Ледяной',emoji:'🧊',cost:7500,colors:{top:[200,70,70],bottom:[200,70,40],stroke:[200,80,85]} },
+                { id:'lava',name:'Лавовый',emoji:'🔥',cost:9000,colors:{top:[10,90,55],bottom:[10,90,25],stroke:[10,100,70]} },
+                { id:'ghost',name:'Призрачный',emoji:'👻',cost:10000,colors:{top:[0,0,80],bottom:[0,0,50],stroke:[0,0,95]} },
+                { id:'halloween',name:'Хэллоуин',emoji:'🎃',cost:12000,colors:{top:[30,85,55],bottom:[30,85,25],stroke:[30,90,70]} },
+                { id:'crystal',name:'Кристальный',emoji:'💎',cost:14000,colors:{top:[190,50,85],bottom:[190,50,50],stroke:[190,60,95]} },
+                { id:'shadow',name:'Теневой',emoji:'🖤',cost:15000,colors:{top:[260,30,25],bottom:[260,30,10],stroke:[260,50,60]} },
+                { id:'gold',name:'Золотой',emoji:'🏆',cost:17000,colors:{top:[48,90,65],bottom:[48,90,35],stroke:[48,100,85]} },
             ];
             
             let ownedSkins = ['classic'];
             let activeSkin = 'classic';
             
-            // Скины фона
+            // =============================================
+            // 6. СКИНЫ ФОНА
+            // =============================================
             const BG_SKINS = [
-    { id: 'night', name: 'Ночное небо', emoji: '🌙', cost: 0,
-      gradient: ['#0a0a1a', '#1a1a3e', '#0f2040'],
-      starColor: 'rgba(255,255,255,{alpha})', starCount: 60 },
-    { id: 'sunset', name: 'Закат', emoji: '🌅', cost: 5000,
-      gradient: ['#ff6b35', '#e94560', '#1a1a2e'],
-      starColor: 'rgba(255,215,0,{alpha})', starCount: 40 },
-    { id: 'morning', name: 'Утро', emoji: '🌤️', cost: 5000,
-      gradient: ['#87CEEB', '#ffcccb', '#b8d4e3'],
-      starColor: null, starCount: 0 },
-    { id: 'space', name: 'Космос', emoji: '🌌', cost: 15000,
-      gradient: ['#000011', '#1a0033', '#0d004d'],
-      starColor: 'rgba({color}, {alpha})', starCount: 100 },
-    { id: 'aurora', name: 'Северное сияние', emoji: '🌠', cost: 25000,
-      gradient: ['#001a33', '#003322', '#001a33'],
-      starColor: 'rgba(100,255,200,{alpha})', starCount: 50 },
-    { id: 'storm', name: 'Гроза', emoji: '⛈️', cost: 35000,
-      gradient: ['#1a1a2e', '#2d2d44', '#0a0a1a'],
-      starColor: null, starCount: 0 },
-    { id: 'ocean', name: 'Подводный мир', emoji: '🌊', cost: 50000,
-      gradient: ['#0077b6', '#023e8a', '#001d3d'],
-      starColor: 'rgba(200,240,255,{alpha})', starCount: 30 },
-    { id: 'hell', name: 'Огненный ад', emoji: '🔥', cost: 75000,
-      gradient: ['#ff4500', '#8b0000', '#1a0000'],
-      starColor: 'rgba(255,100,0,{alpha})', starCount: 70 },
-    { id: 'sakura', name: 'Сакура', emoji: '🌸', cost: 100000,
-      gradient: ['#ffccd5', '#ffb3c6', '#ff8fa3'],
-      starColor: 'rgba(255,200,200,{alpha})', starCount: 20 },
-    { id: 'volcano', name: 'Вулкан', emoji: '🌋', cost: 120000,
-      gradient: ['#2d0000', '#6b0000', '#1a0000'],
-      starColor: 'rgba(255,150,0,{alpha})', starCount: 50 },
-];
+                { id:'night',name:'Ночное небо',emoji:'🌙',cost:0,gradient:['#0a0a1a','#1a1a3e','#0f2040'],starColor:'rgba(255,255,255,{alpha})',starCount:60 },
+                { id:'sunset',name:'Закат',emoji:'🌅',cost:3000,gradient:['#ff6b35','#e94560','#1a1a2e'],starColor:'rgba(255,215,0,{alpha})',starCount:40 },
+                { id:'morning',name:'Утро',emoji:'🌤️',cost:5000,gradient:['#87CEEB','#ffcccb','#b8d4e3'],starColor:null,starCount:0 },
+                { id:'space',name:'Космос',emoji:'🌌',cost:7500,gradient:['#000011','#1a0033','#0d004d'],starColor:'rgba({color},{alpha})',starCount:100 },
+                { id:'aurora',name:'Северное сияние',emoji:'🌠',cost:9000,gradient:['#001a33','#003322','#001a33'],starColor:'rgba(100,255,200,{alpha})',starCount:50 },
+                { id:'storm',name:'Гроза',emoji:'⛈️',cost:10000,gradient:['#1a1a2e','#2d2d44','#0a0a1a'],starColor:null,starCount:0 },
+                { id:'ocean',name:'Подводный мир',emoji:'🌊',cost:11000,gradient:['#0077b6','#023e8a','#001d3d'],starColor:'rgba(200,240,255,{alpha})',starCount:30 },
+                { id:'hell',name:'Огненный ад',emoji:'🔥',cost:12000,gradient:['#ff4500','#8b0000','#1a0000'],starColor:'rgba(255,100,0,{alpha})',starCount:70 },
+                { id:'sakura',name:'Сакура',emoji:'🌸',cost:14000,gradient:['#ffccd5','#ffb3c6','#ff8fa3'],starColor:'rgba(255,200,200,{alpha})',starCount:20 },
+                { id:'volcano',name:'Вулкан',emoji:'🌋',cost:15000,gradient:['#2d0000','#6b0000','#1a0000'],starColor:'rgba(255,150,0,{alpha})',starCount:50 },
+            ];
             
             let ownedBgSkins = ['night'];
             let activeBgSkin = 'night';
             
-            // Жильцы
+            // =============================================
+            // 7. ЖИЛЬЦЫ
+            // =============================================
             const ALL_RESIDENTS = [
-                { id: 'cat', emoji: '🐱', name: 'Кот', rarity: 'common', bonus: 2 },
-                { id: 'chef', emoji: '👨‍🍳', name: 'Повар', rarity: 'common', bonus: 2 },
-                { id: 'student', emoji: '📚', name: 'Студент', rarity: 'common', bonus: 2 },
-                { id: 'dj', emoji: '🎧', name: 'Диджей', rarity: 'common', bonus: 2 },
-                { id: 'taco', emoji: '🌮', name: 'Тако-шеф', rarity: 'common', bonus: 2 },
-                { id: 'sleeper', emoji: '💤', name: 'Соня', rarity: 'common', bonus: 2 },
-                { id: 'plant', emoji: '🌵', name: 'Кактусовод', rarity: 'common', bonus: 2 },
-                { id: 'gamer', emoji: '🎮', name: 'Геймер', rarity: 'common', bonus: 2 },
-                { id: 'artist', emoji: '🎨', name: 'Художник', rarity: 'common', bonus: 2 },
-                { id: 'coffee', emoji: '☕', name: 'Бариста', rarity: 'common', bonus: 2 },
-                { id: 'biker', emoji: '🏍️', name: 'Байкер', rarity: 'common', bonus: 2 },
-                { id: 'robot', emoji: '🤖', name: 'Робот', rarity: 'common', bonus: 2 },
-                { id: 'grandma', emoji: '👵', name: 'Бабушка с геранью', rarity: 'rare', bonus: 5 },
-                { id: 'hacker', emoji: '💻', name: 'Хакер', rarity: 'rare', bonus: 5 },
-                { id: 'neighbor', emoji: '🔧', name: 'Сосед с дрелью', rarity: 'rare', bonus: 5 },
-                { id: 'detective', emoji: '🕵️', name: 'Детектив', rarity: 'rare', bonus: 5 },
-                { id: 'wizard', emoji: '🧙‍♂️', name: 'Волшебник', rarity: 'rare', bonus: 5 },
-                { id: 'ninja', emoji: '🥷', name: 'Ниндзя', rarity: 'rare', bonus: 5 },
-                { id: 'mermaid', emoji: '🧜‍♀️', name: 'Русалка', rarity: 'rare', bonus: 5 },
-                { id: 'vampire', emoji: '🧛', name: 'Вампир', rarity: 'rare', bonus: 5 },
-                { id: 'astronaut', emoji: '👨‍🚀', name: 'Космонавт', rarity: 'rare', bonus: 5 },
-                { id: 'cowboy', emoji: '🤠', name: 'Ковбой', rarity: 'rare', bonus: 5 },
-                { id: 'ghost', emoji: '👻', name: 'Призрак', rarity: 'epic', bonus: 10 },
-                { id: 'alien', emoji: '👽', name: 'Инопланетянин', rarity: 'epic', bonus: 10 },
-                { id: 'superhero', emoji: '🦸', name: 'Супергерой', rarity: 'epic', bonus: 10 },
-                { id: 'phoenix', emoji: '🦅', name: 'Феникс', rarity: 'epic', bonus: 10 },
-                { id: 'djinn', emoji: '🧞', name: 'Джинн', rarity: 'epic', bonus: 10 },
-                { id: 'samurai', emoji: '⚔️', name: 'Самурай', rarity: 'epic', bonus: 10 },
-                { id: 'mermaid_king', emoji: '🧜‍♂️', name: 'Царь морей', rarity: 'epic', bonus: 10 },
-                { id: 'time_lord', emoji: '⏳', name: 'Повелитель времени', rarity: 'epic', bonus: 10 },
-                { id: 'dragon', emoji: '🐉', name: 'Дракон', rarity: 'legendary', bonus: 20 },
-                { id: 'pirate_king', emoji: '🏴‍☠️', name: 'Король пиратов', rarity: 'legendary', bonus: 20 },
-                { id: 'president', emoji: '🎩', name: 'Президент', rarity: 'legendary', bonus: 20 },
-                { id: 'unicorn', emoji: '🦄', name: 'Единорог', rarity: 'legendary', bonus: 20 },
-                { id: 'cthulhu', emoji: '🐙', name: 'Ктулху', rarity: 'legendary', bonus: 20 },
-                { id: 'zeus', emoji: '⚡', name: 'Зевс', rarity: 'legendary', bonus: 20 },
+                { id:'cat',emoji:'🐱',name:'Кот',rarity:'common',bonus:2 },
+                { id:'chef',emoji:'👨‍🍳',name:'Повар',rarity:'common',bonus:2 },
+                { id:'student',emoji:'📚',name:'Студент',rarity:'common',bonus:2 },
+                { id:'dj',emoji:'🎧',name:'Диджей',rarity:'common',bonus:2 },
+                { id:'taco',emoji:'🌮',name:'Тако-шеф',rarity:'common',bonus:2 },
+                { id:'sleeper',emoji:'💤',name:'Соня',rarity:'common',bonus:2 },
+                { id:'plant',emoji:'🌵',name:'Кактусовод',rarity:'common',bonus:2 },
+                { id:'gamer',emoji:'🎮',name:'Геймер',rarity:'common',bonus:2 },
+                { id:'artist',emoji:'🎨',name:'Художник',rarity:'common',bonus:2 },
+                { id:'coffee',emoji:'☕',name:'Бариста',rarity:'common',bonus:2 },
+                { id:'biker',emoji:'🏍️',name:'Байкер',rarity:'common',bonus:2 },
+                { id:'robot',emoji:'🤖',name:'Робот',rarity:'common',bonus:2 },
+                { id:'grandma',emoji:'👵',name:'Бабушка с геранью',rarity:'rare',bonus:5 },
+                { id:'hacker',emoji:'💻',name:'Хакер',rarity:'rare',bonus:5 },
+                { id:'neighbor',emoji:'🔧',name:'Сосед с дрелью',rarity:'rare',bonus:5 },
+                { id:'detective',emoji:'🕵️',name:'Детектив',rarity:'rare',bonus:5 },
+                { id:'wizard',emoji:'🧙‍♂️',name:'Волшебник',rarity:'rare',bonus:5 },
+                { id:'ninja',emoji:'🥷',name:'Ниндзя',rarity:'rare',bonus:5 },
+                { id:'mermaid',emoji:'🧜‍♀️',name:'Русалка',rarity:'rare',bonus:5 },
+                { id:'vampire',emoji:'🧛',name:'Вампир',rarity:'rare',bonus:5 },
+                { id:'astronaut',emoji:'👨‍🚀',name:'Космонавт',rarity:'rare',bonus:5 },
+                { id:'cowboy',emoji:'🤠',name:'Ковбой',rarity:'rare',bonus:5 },
+                { id:'ghost',emoji:'👻',name:'Призрак',rarity:'epic',bonus:10 },
+                { id:'alien',emoji:'👽',name:'Инопланетянин',rarity:'epic',bonus:10 },
+                { id:'superhero',emoji:'🦸',name:'Супергерой',rarity:'epic',bonus:10 },
+                { id:'phoenix',emoji:'🦅',name:'Феникс',rarity:'epic',bonus:10 },
+                { id:'djinn',emoji:'🧞',name:'Джинн',rarity:'epic',bonus:10 },
+                { id:'samurai',emoji:'⚔️',name:'Самурай',rarity:'epic',bonus:10 },
+                { id:'mermaid_king',emoji:'🧜‍♂️',name:'Царь морей',rarity:'epic',bonus:10 },
+                { id:'time_lord',emoji:'⏳',name:'Повелитель времени',rarity:'epic',bonus:10 },
+                { id:'dragon',emoji:'🐉',name:'Дракон',rarity:'legendary',bonus:20 },
+                { id:'pirate_king',emoji:'🏴‍☠️',name:'Король пиратов',rarity:'legendary',bonus:20 },
+                { id:'president',emoji:'🎩',name:'Президент',rarity:'legendary',bonus:20 },
+                { id:'unicorn',emoji:'🦄',name:'Единорог',rarity:'legendary',bonus:20 },
+                { id:'cthulhu',emoji:'🐙',name:'Ктулху',rarity:'legendary',bonus:20 },
+                { id:'zeus',emoji:'⚡',name:'Зевс',rarity:'legendary',bonus:20 },
             ];
             
             let collectedResidents = [];
             let residentFloors = {};
             
-            // === СОХРАНЕНИЕ ===
-            const SAVE_KEY = 'floors_game_save';
+            // =============================================
+            // 8. СОХРАНЕНИЕ
+            // =============================================
+            const SAVE_KEY = 'floors_game_save_v2';
             
             function saveGame() {
                 const data = {
                     coins, bestFloors, bestCombo, totalFloorsBuilt, totalCoinsEarned, gamesPlayed,
                     upgrades: {
-                        foundation: upgrades.foundation.level,
-                        architect: upgrades.architect.level,
-                        brakes: upgrades.brakes.level,
-                        goldrush: upgrades.goldrush.level,
-                        magnet: upgrades.magnet.level
+                        foundation:upgrades.foundation.level, architect:upgrades.architect.level,
+                        brakes:upgrades.brakes.level, goldrush:upgrades.goldrush.level, magnet:upgrades.magnet.level
                     },
-                    collectedResidents, ownedSkins, activeSkin,
-                    ownedBgSkins, activeBgSkin,
-                    unlockedAchievements
+                    collectedResidents, ownedSkins, activeSkin, ownedBgSkins, activeBgSkin, unlockedAchievements
                 };
-                try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch (e) {}
+                try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
             }
             
             function loadGame() {
                 try {
                     const raw = localStorage.getItem(SAVE_KEY);
-                    if (!raw) return false;
+                    if(!raw) return false;
                     const data = JSON.parse(raw);
-                    coins = data.coins || 0;
-                    bestFloors = data.bestFloors || 0;
-                    bestCombo = data.bestCombo || 0;
-                    totalFloorsBuilt = data.totalFloorsBuilt || 0;
-                    totalCoinsEarned = data.totalCoinsEarned || 0;
-                    gamesPlayed = data.gamesPlayed || 0;
-                    if (data.upgrades) {
-                        upgrades.foundation.level = data.upgrades.foundation || 1;
-                        upgrades.architect.level = data.upgrades.architect || 1;
-                        upgrades.brakes.level = data.upgrades.brakes || 1;
-                        upgrades.goldrush.level = data.upgrades.goldrush || 1;
-                        upgrades.magnet.level = data.upgrades.magnet || 1;
+                    coins=data.coins||0; bestFloors=data.bestFloors||0; bestCombo=data.bestCombo||0;
+                    totalFloorsBuilt=data.totalFloorsBuilt||0; totalCoinsEarned=data.totalCoinsEarned||0;
+                    gamesPlayed=data.gamesPlayed||0;
+                    if(data.upgrades){
+                        upgrades.foundation.level=data.upgrades.foundation||1;
+                        upgrades.architect.level=data.upgrades.architect||1;
+                        upgrades.brakes.level=data.upgrades.brakes||1;
+                        upgrades.goldrush.level=data.upgrades.goldrush||1;
+                        upgrades.magnet.level=data.upgrades.magnet||1;
                     }
-                    collectedResidents = data.collectedResidents || [];
-                    ownedSkins = data.ownedSkins || ['classic'];
-                    activeSkin = data.activeSkin || 'classic';
-                    ownedBgSkins = data.ownedBgSkins || ['night'];
-                    activeBgSkin = data.activeBgSkin || 'night';
-                    unlockedAchievements = data.unlockedAchievements || [];
+                    collectedResidents=data.collectedResidents||[];
+                    ownedSkins=data.ownedSkins||['classic']; activeSkin=data.activeSkin||'classic';
+                    ownedBgSkins=data.ownedBgSkins||['night']; activeBgSkin=data.activeBgSkin||'night';
+                    unlockedAchievements=data.unlockedAchievements||[];
                     return true;
-                } catch (e) { return false; }
+                } catch(e) { return false; }
             }
             
             function resetProgress() {
-                if (confirm('Точно сбросить ВЕСЬ прогресс?')) {
-                    localStorage.removeItem(SAVE_KEY);
-                    location.reload();
+                if(confirm('Точно сбросить ВЕСЬ прогресс?')){
+                    localStorage.removeItem(SAVE_KEY); location.reload();
                 }
             }
             
-            function autoSave() {
-                clearTimeout(saveTimeout);
-                saveTimeout = setTimeout(saveGame, 500);
-            }
+            function autoSave() { clearTimeout(saveTimeout); saveTimeout = setTimeout(saveGame, 500); }
             
-            // === БОНУСЫ ===
-            function getWidthBonus() { return (upgrades.foundation.level - 1) * 3; }
+            // =============================================
+            // 9. БОНУСЫ ОТ УЛУЧШЕНИЙ
+            // =============================================
+            function getWidthBonus() { return (upgrades.foundation.level-1)*3; }
             function getArchitectBonus() {
-                const l = upgrades.architect.level;
-                return l <= 20 ? 1 + (l - 1) * 0.06 : 1 + 19 * 0.06 + (l - 20) * 0.01;
+                const l=upgrades.architect.level;
+                return l<=20?1+(l-1)*0.06:1+19*0.06+(l-20)*0.01;
             }
-            function getGoldrushChance() {
-                const l = upgrades.goldrush.level;
-                return l <= 20 ? (l - 1) * 0.03 : 0.57 + (l - 20) * 0.003;
-            }
+            function getGoldrushChance() { const l=upgrades.goldrush.level; return (l-1)*0.03; }
             function getMagnetBonus() {
-                const l = upgrades.magnet.level;
-    if (l <= 5) return (l - 1) * 0.04;       // по 4% за уровень
-    if (l <= 10) return 0.16 + (l - 5) * 0.03; // по 3%
-    if (l <= 15) return 0.31 + (l - 10) * 0.02; // по 2%
-    return 0.41 + (l - 15) * 0.01; 
+                const l=upgrades.magnet.level;
+                if(l<=5) return (l-1)*0.04;
+                if(l<=10) return 0.16+(l-5)*0.03;
+                if(l<=15) return 0.31+(l-10)*0.02;
+                return 0.41+(l-15)*0.01;
             }
             function updateIncrement() {
-                const l = upgrades.brakes.level;
-                const reduction = l <= 20 ? Math.max(0.10, 1 - (l - 1) * 0.04) : Math.max(0.05, 0.24 - (l - 20) * 0.005);
-                currentIncrement = BASE_SPEED_INCREMENT * reduction;
+                const l=upgrades.brakes.level;
+                const reduction=l<=20?Math.max(0.10,1-(l-1)*0.04):Math.max(0.05,0.24-(l-20)*0.005);
+                currentIncrement=BASE_SPEED_INCREMENT*reduction;
             }
             function recalculateSpeed() {
                 updateIncrement();
-                moveSpeed = Math.min(START_SPEED + Math.max(0, floors.length - 1) * currentIncrement, BASE_MAX_SPEED);
+                moveSpeed=Math.min(START_SPEED+Math.max(0,floors.length-1)*currentIncrement,BASE_MAX_SPEED);
             }
+            
+            // =============================================
+            // 10. ЖИЛЬЦЫ — ЛОГИКА
+            // =============================================
             function getRandomResident() {
-                const r = Math.random() * 100;
-                const pool = r < 55 ? ALL_RESIDENTS.filter(x => x.rarity === 'common') :
-                             r < 80 ? ALL_RESIDENTS.filter(x => x.rarity === 'rare') :
-                             r < 95 ? ALL_RESIDENTS.filter(x => x.rarity === 'epic') :
-                                       ALL_RESIDENTS.filter(x => x.rarity === 'legendary');
-                return pool[Math.floor(Math.random() * pool.length)];
+                const r=Math.random()*100;
+                const pool=r<55?ALL_RESIDENTS.filter(x=>x.rarity==='common'):
+                          r<80?ALL_RESIDENTS.filter(x=>x.rarity==='rare'):
+                          r<95?ALL_RESIDENTS.filter(x=>x.rarity==='epic'):
+                                ALL_RESIDENTS.filter(x=>x.rarity==='legendary');
+                return pool[Math.floor(Math.random()*pool.length)];
             }
             function getCollectionBonus() {
-                return collectedResidents.reduce((sum, id) => {
-                    const r = ALL_RESIDENTS.find(x => x.id === id);
-                    return sum + (r ? r.bonus : 0);
-                }, 0);
+                return collectedResidents.reduce((sum,id)=>{
+                    const r=ALL_RESIDENTS.find(x=>x.id===id);
+                    return sum+(r?r.bonus:0);
+                },0);
             }
             function isResidentCollected(id) { return collectedResidents.includes(id); }
             function collectResident(resident) {
-                if (!isResidentCollected(resident.id)) {
+                if(!isResidentCollected(resident.id)){
                     collectedResidents.push(resident.id);
                     showCollectPopup(resident);
                     autoSave();
@@ -846,447 +574,644 @@
                 }
             }
             function showCollectPopup(resident) {
-                const colors = { common: '#aaa', rare: '#4da6ff', epic: '#c044ff', legendary: '#ffd700' };
-                collectPopup.innerHTML = `${resident.emoji}<br><span style="color:${colors[resident.rarity]};font-size:16px;">${resident.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${resident.bonus}% к монетам</span>`;
-                collectPopup.style.opacity = '1'; collectPopup.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                const colors={common:'#aaa',rare:'#4da6ff',epic:'#c044ff',legendary:'#ffd700'};
+                collectPopup.innerHTML=`${resident.emoji}<br><span style="color:${colors[resident.rarity]};font-size:16px;">${resident.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${resident.bonus}% к монетам</span>`;
+                collectPopup.style.opacity='1';
+                collectPopup.style.transform='translate(-50%,-50%) scale(1.1)';
                 clearTimeout(collectPopup._timeout);
-                collectPopup._timeout = setTimeout(() => { collectPopup.style.opacity = '0'; collectPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 2000);
+                collectPopup._timeout=setTimeout(()=>{
+                    collectPopup.style.opacity='0';
+                    collectPopup.style.transform='translate(-50%,-50%) scale(0.8)';
+                },2000);
             }
             function renderCollection() {
-                const cats = [
-                    { rarity: 'legendary', name: '🟡 Легендарные', color: '#ffd700' },
-                    { rarity: 'epic', name: '🟣 Эпические', color: '#c044ff' },
-                    { rarity: 'rare', name: '🔵 Редкие', color: '#4da6ff' },
-                    { rarity: 'common', name: '🟢 Обычные', color: '#aaa' },
+                const cats=[
+                    {rarity:'legendary',name:'🟡 Легендарные',color:'#ffd700'},
+                    {rarity:'epic',name:'🟣 Эпические',color:'#c044ff'},
+                    {rarity:'rare',name:'🔵 Редкие',color:'#4da6ff'},
+                    {rarity:'common',name:'🟢 Обычные',color:'#aaa'}
                 ];
-                let html = '';
-                cats.forEach(cat => {
-                    const residents = ALL_RESIDENTS.filter(r => r.rarity === cat.rarity);
-                    html += `<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r => isResidentCollected(r.id)).length}/${residents.length})</div><div class="collection-grid">`;
-                    residents.forEach(r => {
-                        const collected = isResidentCollected(r.id);
-                        html += `<div class="collection-slot ${collected ? '' : 'locked'}">${collected ? r.emoji : '❓'}${collected ? `<span class="bonus-badge">+${r.bonus}%</span>` : ''}</div>`;
+                let html='';
+                cats.forEach(cat=>{
+                    const residents=ALL_RESIDENTS.filter(r=>r.rarity===cat.rarity);
+                    html+=`<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r=>isResidentCollected(r.id)).length}/${residents.length})</div><div class="collection-grid">`;
+                    residents.forEach(r=>{
+                        const collected=isResidentCollected(r.id);
+                        html+=`<div class="collection-slot ${collected?'':'locked'}">${collected?r.emoji:'❓'}${collected?`<span class="bonus-badge">+${r.bonus}%</span>`:''}</div>`;
                     });
-                    html += '</div>';
+                    html+='</div>';
                 });
-                collectionContent.innerHTML = html;
-                document.getElementById('collected-count').textContent = collectedResidents.length;
-                document.getElementById('total-count').textContent = ALL_RESIDENTS.length;
-                document.getElementById('bonus-percent').textContent = `+${getCollectionBonus()}%`;
+                document.getElementById('collection-content').innerHTML=html;
+                document.getElementById('collected-count').textContent=collectedResidents.length;
+                document.getElementById('total-count').textContent=ALL_RESIDENTS.length;
+                document.getElementById('bonus-percent').textContent=`+${getCollectionBonus()}%`;
             }
             
-            // === СКИНЫ ЭТАЖЕЙ ===
+            // =============================================
+            // 11. ДОСТИЖЕНИЯ — ЛОГИКА
+            // =============================================
+            function checkAchievements() {
+                ACHIEVEMENTS.forEach(ach=>{
+                    if(!unlockedAchievements.includes(ach.id)&&ach.check()){
+                        unlockedAchievements.push(ach.id);
+                        achievementQueue.push(ach);
+                        coins+=ach.reward;
+                        updateUI();
+                    }
+                });
+                if(!showingAchievement&&achievementQueue.length>0) showNextAchievement();
+            }
+            function showNextAchievement() {
+                if(achievementQueue.length===0){ showingAchievement=false; return; }
+                showingAchievement=true;
+                const ach=achievementQueue.shift();
+                achievementPopup.innerHTML=`${ach.emoji} <b>${ach.name}</b> +${ach.reward}🪙`;
+                achievementPopup.style.opacity='1';
+                achievementPopup.style.top='100px';
+                clearTimeout(achievementPopup._timeout);
+                achievementPopup._timeout=setTimeout(()=>{
+                    achievementPopup.style.opacity='0';
+                    achievementPopup.style.top='80px';
+                    setTimeout(()=>showNextAchievement(),400);
+                },2000);
+            }
+            function renderAchievements() {
+                let html='';
+                ACHIEVEMENTS.forEach(ach=>{
+                    const unlocked=unlockedAchievements.includes(ach.id);
+                    html+=`<div class="achievement-item ${unlocked?'unlocked':'locked'}">
+                        <span class="shop-icon">${unlocked?ach.emoji:'🔒'}</span>
+                        <div class="shop-info"><div class="name">${ach.name}</div><div class="desc">${ach.desc}</div>
+                        <div class="reward">${unlocked?'✅ Получено':'Награда: '+ach.reward+'🪙'}</div></div></div>`;
+                });
+                document.getElementById('tab-achievements').innerHTML=html;
+            }
+            
+            // =============================================
+            // 12. СКИНЫ — ЛОГИКА
+            // =============================================
             function getSkinColors() {
-                const s = SKINS.find(x => x.id === activeSkin);
-                return s && s.colors ? s.colors : null;
+                const s=SKINS.find(x=>x.id===activeSkin);
+                return s&&s.colors?s.colors:null;
             }
-            function renderSkinShop() {
-                let html = '';
-                SKINS.forEach(skin => {
-                    const owned = ownedSkins.includes(skin.id);
-                    const active = activeSkin === skin.id;
-                    let btnText = active ? '✅ Надет' : owned ? '👕 Надеть' : '🪙 ' + skin.cost;
-                    let btnClass = active ? 'active-skin' : owned ? 'owned' : (coins >= skin.cost ? '' : 'cant-afford');
-                    html += `<div class="shop-item"><span class="shop-icon">${skin.emoji}</span><div class="shop-info"><div class="name">${skin.name}</div><div class="desc">${skin.id === 'classic' ? 'Стандартный стиль' : 'Уникальный дизайн этажей'}</div></div><button class="shop-buy ${btnClass}" data-skin="${skin.id}">${btnText}</button></div>`;
+            function renderFloorSkins() {
+                let html='';
+                SKINS.forEach(skin=>{
+                    const owned=ownedSkins.includes(skin.id);
+                    const active=activeSkin===skin.id;
+                    let btnText=active?'✅ Надет':owned?'👕 Надеть':'🪙 '+skin.cost;
+                    let btnClass=active?'active-skin':owned?'owned':(coins>=skin.cost?'':'cant-afford');
+                    html+=`<div class="shop-item"><span class="shop-icon">${skin.emoji}</span><div class="shop-info"><div class="name">${skin.name}</div></div><button class="shop-buy ${btnClass}" data-skin="${skin.id}">${btnText}</button></div>`;
                 });
-                skinList.innerHTML = html;
-                skinList.querySelectorAll('.shop-buy').forEach(btn => {
-                    btn.addEventListener('pointerdown', (e) => {
+                document.getElementById('tab-floor-skins').innerHTML=html;
+                document.getElementById('tab-floor-skins').querySelectorAll('.shop-buy').forEach(btn=>{
+                    btn.addEventListener('pointerdown',(e)=>{
                         e.stopPropagation();
-                        const sid = btn.dataset.skin;
-                        if (activeSkin === sid) return;
-                        if (ownedSkins.includes(sid)) { activeSkin = sid; }
-                        else {
-                            const s = SKINS.find(x => x.id === sid);
-                            if (!s || coins < s.cost) return;
-                            coins -= s.cost; ownedSkins.push(sid); activeSkin = sid; updateUI();
+                        const sid=btn.dataset.skin;
+                        if(activeSkin===sid) return;
+                        if(ownedSkins.includes(sid)){ activeSkin=sid; }
+                        else{
+                            const s=SKINS.find(x=>x.id===sid);
+                            if(!s||coins<s.cost) return;
+                            coins-=s.cost; ownedSkins.push(sid); activeSkin=sid; updateUI();
                         }
-                        renderSkinShop(); autoSave();
+                        renderFloorSkins(); autoSave();
+                    });
+                });
+            }
+            function getBgSkin() { return BG_SKINS.find(x=>x.id===activeBgSkin)||BG_SKINS[0]; }
+            function renderBgSkins() {
+                let html='';
+                BG_SKINS.forEach(skin=>{
+                    const owned=ownedBgSkins.includes(skin.id);
+                    const active=activeBgSkin===skin.id;
+                    let btnText=active?'✅ Надет':owned?'🌌 Надеть':'🪙 '+skin.cost;
+                    let btnClass=active?'active-skin':owned?'owned':(coins>=skin.cost?'':'cant-afford');
+                    html+=`<div class="shop-item"><span class="shop-icon">${skin.emoji}</span><div class="shop-info"><div class="name">${skin.name}</div></div><button class="shop-buy ${btnClass}" data-bgskin="${skin.id}">${btnText}</button></div>`;
+                });
+                document.getElementById('tab-bg-skins').innerHTML=html;
+                document.getElementById('tab-bg-skins').querySelectorAll('.shop-buy').forEach(btn=>{
+                    btn.addEventListener('pointerdown',(e)=>{
+                        e.stopPropagation();
+                        const sid=btn.dataset.bgskin;
+                        if(activeBgSkin===sid) return;
+                        if(ownedBgSkins.includes(sid)){ activeBgSkin=sid; }
+                        else{
+                            const s=BG_SKINS.find(x=>x.id===sid);
+                            if(!s||coins<s.cost) return;
+                            coins-=s.cost; ownedBgSkins.push(sid); activeBgSkin=sid; updateUI();
+                        }
+                        renderBgSkins(); autoSave();
                     });
                 });
             }
             
-            // === СКИНЫ ФОНА ===
-            function getBgSkin() { return BG_SKINS.find(x => x.id === activeBgSkin) || BG_SKINS[0]; }
-            function renderBgSkinShop() {
-                let html = '';
-                BG_SKINS.forEach(skin => {
-                    const owned = ownedBgSkins.includes(skin.id);
-                    const active = activeBgSkin === skin.id;
-                    let btnText = active ? '✅ Надет' : owned ? '🌌 Надеть' : '🪙 ' + skin.cost;
-                    let btnClass = active ? 'active-skin' : owned ? 'owned' : (coins >= skin.cost ? '' : 'cant-afford');
-                    html += `<div class="shop-item"><span class="shop-icon">${skin.emoji}</span><div class="shop-info"><div class="name">${skin.name}</div><div class="desc">${skin.id === 'night' ? 'Стандартное небо' : 'Атмосферный фон'}</div></div><button class="shop-buy ${btnClass}" data-bgskin="${skin.id}">${btnText}</button></div>`;
-                });
-                bgSkinList.innerHTML = html;
-                bgSkinList.querySelectorAll('.shop-buy').forEach(btn => {
-                    btn.addEventListener('pointerdown', (e) => {
-                        e.stopPropagation();
-                        const sid = btn.dataset.bgskin;
-                        if (activeBgSkin === sid) return;
-                        if (ownedBgSkins.includes(sid)) { activeBgSkin = sid; }
-                        else {
-                            const s = BG_SKINS.find(x => x.id === sid);
-                            if (!s || coins < s.cost) return;
-                            coins -= s.cost; ownedBgSkins.push(sid); activeBgSkin = sid; updateUI();
+            // =============================================
+            // 13. МАГАЗИН УЛУЧШЕНИЙ
+            // =============================================
+            function generateUpgradeHTML() {
+                const items = [
+                    {key:'foundation',icon:'🏛️',name:'Усиленный фундамент',desc:'Все этажи шире на +3 пикс.'},
+                    {key:'architect',icon:'📐',name:'Точный архитектор',desc:'Зона идеального попадания шире'},
+                    {key:'brakes',icon:'🐌',name:'Замедление времени',desc:'Скорость растёт медленнее'},
+                    {key:'goldrush',icon:'💰',name:'Золотая лихорадка',desc:'Шанс ×2 монет за этаж'},
+                    {key:'magnet',icon:'🧲',name:'Магнит для жильцов',desc:'Жильцы появляются чаще'},
+                ];
+                return items.map(u=>`
+                    <div class="shop-item" id="shop-${u.key}">
+                        <span class="shop-icon">${u.icon}</span>
+                        <div class="shop-info">
+                            <div class="name">${u.name}</div>
+                            <div class="desc">${u.desc}</div>
+                            <div class="level">Уровень: <span id="${u.key}-lvl">1</span>/20</div>
+                        </div>
+                        <button class="shop-buy" id="buy-${u.key}">🪙 <span id="${u.key}-cost">0</span></button>
+                    </div>
+                `).join('');
+            }
+            
+            function getUpgradeCost(u) {
+                const l=u.level;
+                if(l>=u.maxLevel) return Infinity;
+                return l<=20?u.baseCost+(l-1)*u.baseCost:u.baseCost*20+(l-20)*u.baseCost*3;
+            }
+            
+            function updateShopUI() {
+                ['foundation','architect','brakes','goldrush','magnet'].forEach(key=>{
+                    const u=upgrades[key];
+                    const c=getUpgradeCost(u);
+                    const lvlEl=document.getElementById(`${key}-lvl`);
+                    const costEl=document.getElementById(`${key}-cost`);
+                    const btn=document.getElementById(`buy-${key}`);
+                    if(lvlEl) lvlEl.textContent=u.level;
+                    if(costEl) costEl.textContent=u.level>=u.maxLevel?'MAX':c;
+                    if(btn){
+                        if(u.level>=u.maxLevel){
+                            btn.textContent='✅ MAX'; btn.classList.add('maxed'); btn.classList.remove('cant-afford');
+                        } else {
+                            btn.textContent='🪙 '+c;
+                            btn.classList.toggle('cant-afford',coins<c);
+                            btn.classList.remove('maxed');
                         }
-                        renderBgSkinShop(); autoSave();
-                    });
+                    }
                 });
             }
             
-            // === ИГРА ===
+            function buyUpgrade(name) {
+                const u=upgrades[name];
+                if(u.level>=u.maxLevel) return;
+                const c=getUpgradeCost(u);
+                if(coins<c) return;
+                coins-=c; u.level++;
+                if(name==='foundation'&&currentFloor){ currentFloor.w+=3; currentFloor.x-=1.5; }
+                updateIncrement(); recalculateSpeed(); updateUI(); updateShopUI(); autoSave();
+            }
+            
+            // Инициализация улучшений при первом открытии
+            let upgradesInitialized = false;
+            function initUpgrades() {
+                if(upgradesInitialized) return;
+                document.getElementById('tab-upgrades').innerHTML = generateUpgradeHTML();
+                document.getElementById('buy-foundation').addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade('foundation');updateShopUI();});
+                document.getElementById('buy-architect').addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade('architect');updateShopUI();});
+                document.getElementById('buy-brakes').addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade('brakes');updateShopUI();});
+                document.getElementById('buy-goldrush').addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade('goldrush');updateShopUI();});
+                document.getElementById('buy-magnet').addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade('magnet');updateShopUI();});
+                upgradesInitialized = true;
+            }
+            
+            // =============================================
+            // 14. ПАНЕЛИ
+            // =============================================
+            function openShop() {
+                if(gameState==='gameover') return;
+                panelOpen=true;
+                initUpgrades();
+                shopPanel.classList.add('open'); overlay.classList.add('show');
+                document.getElementById('bottom-buttons').style.display='none';
+                updateShopUI(); renderFloorSkins(); renderBgSkins();
+                switchTab('shop-panel','upgrades');
+            }
+            
+            function openCollection() {
+                if(gameState==='gameover') return;
+                panelOpen=true;
+                collectionPanel.classList.add('open'); overlay.classList.add('show');
+                document.getElementById('bottom-buttons').style.display='none';
+                renderCollection(); renderAchievements();
+                switchTab('collection-panel','residents');
+            }
+            
+            function closePanels() {
+                panelOpen=false;
+                shopPanel.classList.remove('open'); collectionPanel.classList.remove('open');
+                overlay.classList.remove('show');
+                if(gameState!=='gameover') document.getElementById('bottom-buttons').style.display='flex';
+            }
+            
+            function switchTab(panelId,tabId) {
+                const panel=document.getElementById(panelId);
+                panel.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+                panel.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+                panel.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            }
+            
+            document.querySelectorAll('.tab-btn').forEach(btn=>{
+                btn.addEventListener('pointerdown',(e)=>{
+                    e.stopPropagation();
+                    const panelId=btn.closest('#shop-panel')?'shop-panel':'collection-panel';
+                    switchTab(panelId,btn.dataset.tab);
+                });
+            });
+            
+            // =============================================
+            // 15. ИГРОВОЙ ЦИКЛ
+            // =============================================
             function resize() {
-                const c = document.getElementById('gameContainer');
-                const r = c.getBoundingClientRect();
-                W = r.width; H = r.height;
-                canvas.width = W * devicePixelRatio; canvas.height = H * devicePixelRatio;
-                canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
-                ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio, devicePixelRatio);
+                const c=document.getElementById('gameContainer');
+                const r=c.getBoundingClientRect();
+                W=r.width; H=r.height;
+                canvas.width=W*devicePixelRatio; canvas.height=H*devicePixelRatio;
+                canvas.style.width=W+'px'; canvas.style.height=H+'px';
+                ctx.setTransform(1,0,0,1,0,0); ctx.scale(devicePixelRatio,devicePixelRatio);
             }
-            function getStartWidth() { return BASE_WIDTH + getWidthBonus(); }
+            function getStartWidth() { return BASE_WIDTH+getWidthBonus(); }
+            
             function initGame() {
-                floors = []; comboCount = 0; direction = 1; cameraY = 0; targetCameraY = 0;
-                residentFloors = {}; lightningTimer = 0;
-                updateIncrement();
-                const sw = getStartWidth();
-                floors.push({ x: W/2 - sw/2, y: H - FLOOR_HEIGHT - 20, w: sw });
-                gameState = 'playing'; gameoverPanel.style.display = 'none';
-                comboPopup.style.opacity = '0'; collectPopup.style.opacity = '0';
-                hintText.style.display = 'block';
-                document.getElementById('bottom-buttons').style.display = 'flex';
-                gamesPlayed++;
-                spawnFloor(); updateUI();
+                floors=[]; comboCount=0; direction=1; cameraY=0; targetCameraY=0;
+                residentFloors={}; updateIncrement();
+                const sw=getStartWidth();
+                floors.push({x:W/2-sw/2,y:H-FLOOR_HEIGHT-20,w:sw});
+                gameState='playing'; gameoverPanel.style.display='none';
+                comboPopup.style.opacity='0'; collectPopup.style.opacity='0';
+                hintText.style.display='block';
+                document.getElementById('bottom-buttons').style.display='flex';
+                gamesPlayed++; spawnFloor(); updateUI();
             }
+            
             function getColor(index) {
-                const sc = getSkinColors();
-                if (sc) {
-                    return {
-                        top: `hsl(${sc.top[0]}, ${sc.top[1]}%, ${Math.min(sc.top[2] + (index % 5), 80)}%)`,
-                        bottom: `hsl(${sc.top[0]}, ${sc.top[1]}%, ${sc.bottom[2] + (index % 3)}%)`,
-                        stroke: `hsl(${sc.top[0]}, ${sc.stroke[1]}%, ${sc.stroke[2]}%)`,
-                        glow: `hsl(${sc.top[0]}, ${sc.stroke[1]}%, ${sc.stroke[2]}%)`
+                const sc=getSkinColors();
+                if(sc){
+                    return{
+                        top:`hsl(${sc.top[0]},${sc.top[1]}%,${Math.min(sc.top[2]+(index%5),80)}%)`,
+                        bottom:`hsl(${sc.top[0]},${sc.top[1]}%,${sc.bottom[2]+(index%3)}%)`,
+                        stroke:`hsl(${sc.top[0]},${sc.stroke[1]}%,${sc.stroke[2]}%)`,
+                        glow:`hsl(${sc.top[0]},${sc.stroke[1]}%,${sc.stroke[2]}%)`
                     };
                 }
-                const h = (200 + index * 6) % 360;
-                return { top: `hsl(${h},65%,55%)`, bottom: `hsl(${h},65%,30%)`, stroke: `hsl(${h},75%,70%)`, glow: `hsl(${h},75%,60%)` };
+                const h=(200+index*6)%360;
+                return{
+                    top:`hsl(${h},65%,55%)`, bottom:`hsl(${h},65%,30%)`,
+                    stroke:`hsl(${h},75%,70%)`, glow:`hsl(${h},75%,60%)`
+                };
             }
+            
             function spawnFloor() {
-                if (!floors.length) return;
-                const lf = floors[floors.length - 1];
-                const sx = direction > 0 ? -lf.w + 20 : W - 20;
-                currentFloor = { x: sx, y: lf.y - FLOOR_HEIGHT, w: lf.w };
+                if(!floors.length) return;
+                const lf=floors[floors.length-1];
+                const sx=direction>0?-lf.w+20:W-20;
+                currentFloor={x:sx,y:lf.y-FLOOR_HEIGHT,w:lf.w};
                 recalculateSpeed();
             }
+            
             function placeFloor() {
-                if (!currentFloor || gameState !== 'playing') return;
-                const lf = floors[floors.length - 1];
-                const ol = Math.max(currentFloor.x, lf.x), or = Math.min(currentFloor.x + currentFloor.w, lf.x + lf.w);
-                const ow = or - ol;
-                if (ow <= 0) { triggerGameOver(); return; }
-                const nf = { x: ol, y: currentFloor.y, w: ow };
+                if(!currentFloor||gameState!=='playing') return;
+                const lf=floors[floors.length-1];
+                const ol=Math.max(currentFloor.x,lf.x), or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);
+                const ow=or-ol;
+                if(ow<=0){ triggerGameOver(); return; }
+                
+                const nf={x:ol,y:currentFloor.y,w:ow};
                 floors.push(nf);
                 totalFloorsBuilt++;
-                const fi = floors.length - 1;
-                if (residentFloors[fi]) {
-                    const res = ALL_RESIDENTS.find(r => r.id === residentFloors[fi]);
-                    if (res && !isResidentCollected(res.id)) collectResident(res);
-                }
-                const acc = ow / lf.w, ab = getArchitectBonus(), cb = 1 + getCollectionBonus() / 100;
-                let earned = 0;
-                if (acc > 1 - 0.04 * ab) {
-    comboCount++; if (comboCount > bestCombo) bestCombo = comboCount;
-    earned = Math.floor(floors.length * (1 + comboCount * 1.5) * cb); showCombo(comboCount);
-} else if (acc > 1 - 0.25 * ab) { comboCount = 0; earned = Math.floor(floors.length * 0.8 * cb); showCombo(0); }
-else { comboCount = 0; earned = Math.floor((floors.length / 4) * cb); hideCombo(); }
-                if (Math.random() < Math.min(getGoldrushChance(), 0.99)) { earned *= 2; showGoldrush(); }
-                coins += earned;
-                totalCoinsEarned += earned;
-                if (floors.length > bestFloors) bestFloors = floors.length;
-                currentFloor = null;
-                if (floors.length > 6) targetCameraY = (floors.length - 6) * FLOOR_HEIGHT;
-                updateUI(); direction *= -1; spawnFloor();
-                hintText.style.display = 'none'; autoSave();
-                checkAchievements();
                 
-                const ni = floors.length;
-                if (ni > 1 && ni % 5 === 0 && !residentFloors[ni]) {
-                    if (Math.random() < Math.min(0.25 + getMagnetBonus(), 0.5)) residentFloors[ni] = getRandomResident().id;
+                const fi=floors.length-1;
+                if(residentFloors[fi]){
+                    const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);
+                    if(res&&!isResidentCollected(res.id)) collectResident(res);
+                }
+                
+                const acc=ow/lf.w, ab=getArchitectBonus(), cb=1+getCollectionBonus()/100;
+                let earned=0;
+                if(acc>1-0.04*ab){
+                    comboCount++;
+                    if(comboCount>bestCombo) bestCombo=comboCount;
+                    earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);
+                    showCombo(comboCount);
+                } else if(acc>1-0.25*ab){
+                    comboCount=0;
+                    earned=Math.floor(floors.length*0.5*cb);
+                    showCombo(0);
+                } else {
+                    comboCount=0;
+                    earned=Math.floor((floors.length/6)*cb);
+                    hideCombo();
+                }
+                
+                if(Math.random()<Math.min(getGoldrushChance(),0.57)){
+                    earned*=2; showGoldrush();
+                }
+                
+                coins+=earned;
+                totalCoinsEarned+=earned;
+                if(floors.length>bestFloors) bestFloors=floors.length;
+                currentFloor=null;
+                
+                if(floors.length>6) targetCameraY=(floors.length-6)*FLOOR_HEIGHT;
+                updateUI(); direction*=-1; spawnFloor();
+                hintText.style.display='none'; autoSave(); checkAchievements();
+                
+                const ni=floors.length;
+                if(ni>1&&ni%10===0&&!residentFloors[ni]){
+                    if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){
+                        residentFloors[ni]=getRandomResident().id;
+                    }
                 }
             }
+            
             function showGoldrush() {
-                comboPopup.textContent = '💰 ЗОЛОТО! ×2'; comboPopup.style.color = '#ffd700';
-                comboPopup.style.opacity = '1'; comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                comboPopup.textContent='💰 ЗОЛОТО! ×2';
+                comboPopup.style.color='#ffd700';
+                comboPopup.style.opacity='1';
+                comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';
                 clearTimeout(comboPopup._timeout);
-                comboPopup._timeout = setTimeout(() => { comboPopup.style.opacity = '0'; comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 700);
+                comboPopup._timeout=setTimeout(()=>{
+                    comboPopup.style.opacity='0';
+                    comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';
+                },700);
             }
+            
             function showCombo(c) {
-                if (c > 1) { comboPopup.textContent = `ИДЕАЛЬНО! x${c} 🔥`; comboPopup.style.color = '#ffd700'; }
-                else if (c === 0 && floors.length > 1) { comboPopup.textContent = 'Отлично! ✨'; comboPopup.style.color = '#fff'; }
+                if(c>1){ comboPopup.textContent=`ИДЕАЛЬНО! x${c} 🔥`; comboPopup.style.color='#ffd700'; }
+                else if(c===0&&floors.length>1){ comboPopup.textContent='Отлично! ✨'; comboPopup.style.color='#fff'; }
                 else return;
-                comboPopup.style.opacity = '1'; comboPopup.style.transform = 'translate(-50%, -50%) scale(1.2)';
+                comboPopup.style.opacity='1';
+                comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';
                 clearTimeout(comboPopup._timeout);
-                comboPopup._timeout = setTimeout(() => { comboPopup.style.opacity = '0'; comboPopup.style.transform = 'translate(-50%, -50%) scale(0.8)'; }, 500);
+                comboPopup._timeout=setTimeout(()=>{
+                    comboPopup.style.opacity='0';
+                    comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';
+                },500);
             }
-            function hideCombo() { comboPopup.style.opacity = '0'; }
+            
+            function hideCombo() { comboPopup.style.opacity='0'; }
+            
             function triggerGameOver() {
-                gameState = 'gameover'; currentFloor = null;
-                const tf = floors.length - 1, cb = 1 + getCollectionBonus() / 100;
-                const bc = Math.floor(tf * 2 * cb); coins += bc;
-                totalCoinsEarned += bc;
-                if (tf > bestFloors) { bestFloors = tf; bestDisplay.textContent = bestFloors; }
-                goFloorsEl.textContent = tf; goComboEl.textContent = bestCombo; goCoinsEl.textContent = bc;
-                gameoverPanel.style.display = 'flex'; hintText.style.display = 'none';
-                document.getElementById('bottom-buttons').style.display = 'none';
+                gameState='gameover'; currentFloor=null;
+                const tf=floors.length-1, cb=1+getCollectionBonus()/100;
+                const bc=Math.floor(tf*1*cb);
+                coins+=bc; totalCoinsEarned+=bc;
+                if(tf>bestFloors){ bestFloors=tf; bestDisplay.textContent=bestFloors; }
+                goFloorsEl.textContent=tf; goComboEl.textContent=bestCombo; goCoinsEl.textContent=bc;
+                gameoverPanel.style.display='flex'; hintText.style.display='none';
+                document.getElementById('bottom-buttons').style.display='none';
                 updateUI(); saveGame(); checkAchievements();
             }
+            
             function updateUI() {
-                floorCountEl.textContent = Math.max(1, floors.length);
-                bestDisplay.textContent = bestFloors;
-                comboTextEl.textContent = comboCount;
-                coinDisplayEl.textContent = coins;
+                floorCountEl.textContent=Math.max(1,floors.length);
+                bestDisplay.textContent=bestFloors;
+                comboTextEl.textContent=comboCount;
+                coinDisplayEl.textContent=coins;
             }
             
-            // === МАГАЗИН ===
-            function getUpgradeCost(u) {
-                const l = u.level;
-                return l <= 20 ? u.baseCost + (l - 1) * u.baseCost : u.baseCost * 20 + (l - 20) * u.baseCost * 3;
-            }
-            function updateShopUI() {
-                [['foundation', buyFoundation, foundationLvlEl, foundationCostEl],
-                 ['architect', buyArchitect, architectLvlEl, architectCostEl],
-                 ['brakes', buyBrakes, brakesLvlEl, brakesCostEl],
-                 ['goldrush', buyGoldrush, goldrushLvlEl, goldrushCostEl],
-                 ['magnet', buyMagnet, magnetLvlEl, magnetCostEl]].forEach(([name, btn, lvl, cost]) => {
-                    const u = upgrades[name], c = getUpgradeCost(u);
-                    lvl.textContent = u.level; cost.textContent = c;
-                    btn.textContent = '🪙 ' + c;
-                    btn.classList.toggle('cant-afford', coins < c);
-                });
-            }
-            function buyUpgrade(name) {
-    const u = upgrades[name], c = getUpgradeCost(u);
-    if (coins < c) return;
-    coins -= c; u.level++;
-    
-    // Если купили фундамент — сразу расширяем текущий этаж
-    if (name === 'foundation' && currentFloor) {
-        const bonus = getWidthBonus() - (upgrades.foundation.level - 2) * 3;
-        currentFloor.w += 3;
-        currentFloor.x -= 1.5;
-    }
-    
-    updateIncrement(); recalculateSpeed();
-    updateUI(); updateShopUI(); autoSave();
-}
-            
-            function openShop() { if (gameState === 'gameover') return; panelOpen = true; shopPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; updateShopUI(); }
-            function openSkinShop() { if (gameState === 'gameover') return; panelOpen = true; skinPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderSkinShop(); }
-            function openBgSkinShop() { if (gameState === 'gameover') return; panelOpen = true; bgSkinPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderBgSkinShop(); }
-            function openAchievement() { if (gameState === 'gameover') return; panelOpen = true; achievementPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderAchievements(); }
-            function openCollection() { if (gameState === 'gameover') return; panelOpen = true; collectionPanel.classList.add('open'); overlay.classList.add('show'); document.getElementById('bottom-buttons').style.display = 'none'; renderCollection(); }
-            function closePanels() { panelOpen = false; shopPanel.classList.remove('open'); skinPanel.classList.remove('open'); bgSkinPanel.classList.remove('open'); achievementPanel.classList.remove('open'); collectionPanel.classList.remove('open'); overlay.classList.remove('show'); if (gameState !== 'gameover') document.getElementById('bottom-buttons').style.display = 'flex'; }
-
+            // =============================================
+            // 16. ОТРИСОВКА
+            // =============================================
             function update() {
-                if (gameState !== 'playing' || panelOpen) return;
-                if (currentFloor) {
-                    currentFloor.x += moveSpeed * direction;
-                    if (currentFloor.x <= 0) { currentFloor.x = 0; direction = 1; }
-                    else if (currentFloor.x + currentFloor.w >= W) { currentFloor.x = W - currentFloor.w; direction = -1; }
+                if(gameState!=='playing'||panelOpen) return;
+                if(currentFloor){
+                    currentFloor.x+=moveSpeed*direction;
+                    if(currentFloor.x<=0){ currentFloor.x=0; direction=1; }
+                    else if(currentFloor.x+currentFloor.w>=W){ currentFloor.x=W-currentFloor.w; direction=-1; }
                 }
-                cameraY += (targetCameraY - cameraY) * 0.1;
-                if (activeBgSkin === 'storm') {
-                    lightningTimer--;
-                    if (lightningTimer <= 0 && Math.random() < 0.02) lightningTimer = 5;
-                }
+                cameraY+=(targetCameraY-cameraY)*0.1;
             }
-
+            
             function draw() {
-                ctx.clearRect(0, 0, W, H);
+                ctx.clearRect(0,0,W,H);
                 drawBackground();
-                ctx.save(); ctx.translate(0, cameraY);
-                for (let i = 0; i < floors.length; i++) drawFloor(floors[i], i, false);
-                if (currentFloor && gameState === 'playing' && !panelOpen) drawFloor(currentFloor, floors.length, true);
+                ctx.save(); ctx.translate(0,cameraY);
+                for(let i=0;i<floors.length;i++) drawFloor(floors[i],i,false);
+                if(currentFloor&&gameState==='playing'&&!panelOpen) drawFloor(currentFloor,floors.length,true);
                 ctx.restore();
             }
-
+            
             function drawBackground() {
-    const bg = getBgSkin();
-    const grad = ctx.createLinearGradient(0, 0, 0, H);
-    bg.gradient.forEach((c, i) => grad.addColorStop(i / (bg.gradient.length - 1), c));
-    ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
-    
-    // Северное сияние
-    if (bg.id === 'aurora') {
-        const t = Date.now() / 3000;
-        for (let i = 0; i < 3; i++) {
-            ctx.fillStyle = `rgba(${100 + i*30}, ${200 + i*20}, ${150 + i*30}, 0.15)`;
-            ctx.beginPath(); ctx.moveTo(0, H);
-            for (let x = 0; x <= W; x += 20) ctx.lineTo(x, H * 0.3 + Math.sin(x * 0.02 + t + i) * 40 + Math.sin(x * 0.05 + t * 2) * 20);
-            ctx.lineTo(W, H); ctx.closePath(); ctx.fill();
-        }
-    }
-    
-    // Подводный мир — пузырьки
-    if (bg.id === 'ocean') {
-        if (!drawBackground.bubbles) drawBackground.bubbles = Array.from({length: 15}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 2+Math.random()*6, s: 0.2+Math.random()*0.5 }));
-        drawBackground.bubbles.forEach(b => {
-            b.y -= b.s; if (b.y < -10) { b.y = H + 10; b.x = Math.random() * W; }
-            ctx.fillStyle = `rgba(200,240,255,${0.2 + Math.sin(Date.now()/1000 + b.x) * 0.1})`;
-            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fill();
-        });
-    }
-    
-    // Огненный ад — искры
-    if (bg.id === 'hell') {
-        if (!drawBackground.sparks) drawBackground.sparks = Array.from({length: 40}, () => ({ x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, s: 0.3+Math.random()*1.5 }));
-        drawBackground.sparks.forEach(sp => {
-            sp.y -= sp.s; if (sp.y < -10) { sp.y = H + 10; sp.x = Math.random() * W; }
-            ctx.fillStyle = `rgba(255,${100 + Math.floor(Math.random()*100)},0,${0.4 + Math.sin(Date.now()/1000 + sp.x) * 0.2})`;
-            ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); ctx.fill();
-        });
-    }
-    
-    // Гроза — молния
-    if (bg.id === 'storm' && lightningTimer > 0) {
-        ctx.fillStyle = 'rgba(255,255,255,0.6)'; ctx.fillRect(0, 0, W, H);
-        lightningTimer--;
-    }
-    
-    // Сакура — падающие лепестки
-    if (bg.id === 'sakura') {
-        if (!drawBackground.petals) drawBackground.petals = Array.from({length: 25}, () => ({ 
-            x: Math.random()*W, y: Math.random()*H, r: 2+Math.random()*3, 
-            s: 0.3+Math.random()*0.8, wobble: Math.random()*Math.PI*2 
-        }));
-        const pt = Date.now() / 1000;
-        drawBackground.petals.forEach(p => {
-            p.y += p.s; p.x += Math.sin(pt + p.wobble) * 0.5;
-            if (p.y > H + 10) { p.y = -10; p.x = Math.random() * W; }
-            ctx.fillStyle = `rgba(255,${180 + Math.floor(Math.random()*40)},${200 + Math.floor(Math.random()*30)},0.7)`;
-            ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r, p.r*0.6, Math.sin(pt + p.wobble)*0.5, 0, Math.PI*2); ctx.fill();
-        });
-    }
-    
-    // Вулкан — пепел и лавовое свечение
-    if (bg.id === 'volcano') {
-        if (!drawBackground.ash) drawBackground.ash = Array.from({length: 35}, () => ({ 
-            x: Math.random()*W, y: Math.random()*H, r: 1+Math.random()*3, 
-            s: 0.2+Math.random()*1, drift: Math.random()*2-1 
-        }));
-        const at = Date.now() / 1000;
-        drawBackground.ash.forEach(a => {
-            a.y -= a.s; a.x += a.drift * 0.3;
-            if (a.y < -10) { a.y = H + 10; a.x = Math.random() * W; }
-            const alpha = 0.3 + Math.sin(at + a.x) * 0.2;
-            ctx.fillStyle = `rgba(${80 + Math.floor(Math.random()*40)},${20 + Math.floor(Math.random()*20)},${5},${alpha})`;
-            ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, Math.PI*2); ctx.fill();
-        });
-        // Лавовое свечение снизу
-        const lavaGrad = ctx.createLinearGradient(0, H*0.8, 0, H);
-        lavaGrad.addColorStop(0, 'rgba(255,50,0,0)');
-        lavaGrad.addColorStop(1, 'rgba(255,100,0,0.3)');
-        ctx.fillStyle = lavaGrad; ctx.fillRect(0, H*0.8, W, H*0.2);
-    }
-    
-    // Звёзды
-    if (bg.starColor && bg.starCount > 0) {
-        if (!drawBackground.stars) drawBackground.stars = Array.from({length: 100}, () => ({ x: Math.random()*420, y: Math.random()*750, r: 0.3+Math.random()*1.5, twinkle: Math.random()*Math.PI*2 }));
-        const time = Date.now() / 1000;
-        for (let i = 0; i < Math.min(bg.starCount, drawBackground.stars.length); i++) {
-            const star = drawBackground.stars[i];
-            const alpha = 0.3 + Math.sin(time * 2 + star.twinkle) * 0.2;
-            let color = bg.starColor.replace('{alpha}', alpha).replace('{color}', '255,255,255');
-            if (bg.id === 'space') {
-                const colors = ['rgba(255,255,255,', 'rgba(200,220,255,', 'rgba(255,255,200,', 'rgba(255,200,200,'];
-                color = colors[Math.floor(Math.random() * 4)] + alpha + ')';
+                const bg=getBgSkin();
+                const grad=ctx.createLinearGradient(0,0,0,H);
+                bg.gradient.forEach((c,i)=>grad.addColorStop(i/(bg.gradient.length-1),c));
+                ctx.fillStyle=grad; ctx.fillRect(0,0,W,H);
+                
+                // Северное сияние
+                if(bg.id==='aurora'){
+                    const t=Date.now()/3000;
+                    for(let i=0;i<3;i++){
+                        ctx.fillStyle=`rgba(${100+i*30},${200+i*20},${150+i*30},0.15)`;
+                        ctx.beginPath(); ctx.moveTo(0,H);
+                        for(let x=0;x<=W;x+=20) ctx.lineTo(x,H*0.3+Math.sin(x*0.02+t+i)*40+Math.sin(x*0.05+t*2)*20);
+                        ctx.lineTo(W,H); ctx.closePath(); ctx.fill();
+                    }
+                }
+                // Подводный мир
+                if(bg.id==='ocean'){
+                    if(!drawBackground.bubbles) drawBackground.bubbles=Array.from({length:15},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*6,s:0.2+Math.random()*0.5}));
+                    drawBackground.bubbles.forEach(b=>{
+                        b.y-=b.s; if(b.y<-10){b.y=H+10;b.x=Math.random()*W;}
+                        ctx.fillStyle=`rgba(200,240,255,${0.2+Math.sin(Date.now()/1000+b.x)*0.1})`;
+                        ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+                    });
+                }
+                // Огненный ад
+                if(bg.id==='hell'){
+                    if(!drawBackground.sparks) drawBackground.sparks=Array.from({length:40},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.3+Math.random()*1.5}));
+                    drawBackground.sparks.forEach(sp=>{
+                        sp.y-=sp.s; if(sp.y<-10){sp.y=H+10;sp.x=Math.random()*W;}
+                        ctx.fillStyle=`rgba(255,${100+Math.floor(Math.random()*100)},0,${0.4+Math.sin(Date.now()/1000+sp.x)*0.2})`;
+                        ctx.beginPath(); ctx.arc(sp.x,sp.y,sp.r,0,Math.PI*2); ctx.fill();
+                    });
+                }
+                // Гроза — анимированные молнии
+                if(bg.id==='storm'){
+                    if(!drawBackground.lightnings){
+                        drawBackground.lightnings=[];
+                        for(let i=0;i<3;i++){
+                            drawBackground.lightnings.push({
+                                x:50+Math.random()*(W-100), startY:0,
+                                segments:4+Math.floor(Math.random()*6),
+                                opacity:0, timer:60+Math.random()*200, maxTimer:0
+                            });
+                        }
+                    }
+                    const lt=Date.now()/1000;
+                    drawBackground.lightnings.forEach(l=>{
+                        l.timer--;
+                        if(l.timer<=0){
+                            l.x=30+Math.random()*(W-60);
+                            l.segments=5+Math.floor(Math.random()*8);
+                            l.opacity=0.7+Math.random()*0.3;
+                            l.maxTimer=4+Math.floor(Math.random()*8);
+                            l.timer=l.maxTimer;
+                        }
+                        if(l.timer<l.maxTimer){
+                            const progress=1-(l.timer/l.maxTimer);
+                            const alpha=l.opacity*(1-progress)*(0.6+Math.sin(lt*60)*0.4);
+                            ctx.strokeStyle=`rgba(255,255,255,${alpha})`;
+                            ctx.lineWidth=2;
+                            ctx.shadowColor=`rgba(200,220,255,${alpha})`;
+                            ctx.shadowBlur=8;
+                            ctx.beginPath();
+                            let y=l.startY, x=l.x;
+                            ctx.moveTo(x,y);
+                            for(let s=0;s<l.segments;s++){
+                                y+=(H/l.segments)*(0.5+Math.random()*0.5);
+                                x+=(Math.random()-0.5)*60;
+                                if(x<0) x=5; if(x>W) x=W-5;
+                                ctx.lineTo(x,y);
+                            }
+                            ctx.stroke(); ctx.shadowBlur=0;
+                            if(Math.random()<0.4){
+                                ctx.strokeStyle=`rgba(255,255,255,${alpha*0.5})`;
+                                ctx.lineWidth=1;
+                                ctx.beginPath();
+                                const bx=x+(Math.random()-0.5)*40, by=y+Math.random()*30;
+                                ctx.moveTo(x,y); ctx.lineTo(bx,by); ctx.stroke();
+                            }
+                        }
+                    });
+                }
+                // Сакура
+                if(bg.id==='sakura'){
+                    if(!drawBackground.petals) drawBackground.petals=Array.from({length:25},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*3,s:0.3+Math.random()*0.8,wobble:Math.random()*Math.PI*2}));
+                    const pt=Date.now()/1000;
+                    drawBackground.petals.forEach(p=>{
+                        p.y+=p.s; p.x+=Math.sin(pt+p.wobble)*0.5;
+                        if(p.y>H+10){p.y=-10;p.x=Math.random()*W;}
+                        ctx.fillStyle=`rgba(255,${180+Math.floor(Math.random()*40)},${200+Math.floor(Math.random()*30)},0.7)`;
+                        ctx.beginPath(); ctx.ellipse(p.x,p.y,p.r,p.r*0.6,Math.sin(pt+p.wobble)*0.5,0,Math.PI*2); ctx.fill();
+                    });
+                }
+                // Вулкан
+                if(bg.id==='volcano'){
+                    if(!drawBackground.ash) drawBackground.ash=Array.from({length:35},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.2+Math.random()*1,drift:Math.random()*2-1}));
+                    const at=Date.now()/1000;
+                    drawBackground.ash.forEach(a=>{
+                        a.y-=a.s; a.x+=a.drift*0.3;
+                        if(a.y<-10){a.y=H+10;a.x=Math.random()*W;}
+                        const alpha=0.3+Math.sin(at+a.x)*0.2;
+                        ctx.fillStyle=`rgba(${80+Math.floor(Math.random()*40)},${20+Math.floor(Math.random()*20)},${5},${alpha})`;
+                        ctx.beginPath(); ctx.arc(a.x,a.y,a.r,0,Math.PI*2); ctx.fill();
+                    });
+                    const lavaGrad=ctx.createLinearGradient(0,H*0.8,0,H);
+                    lavaGrad.addColorStop(0,'rgba(255,50,0,0)');
+                    lavaGrad.addColorStop(1,'rgba(255,100,0,0.3)');
+                    ctx.fillStyle=lavaGrad; ctx.fillRect(0,H*0.8,W,H*0.2);
+                }
+                // Звёзды
+                if(bg.starColor&&bg.starCount>0){
+                    if(!drawBackground.stars) drawBackground.stars=Array.from({length:100},()=>({x:Math.random()*420,y:Math.random()*750,r:0.3+Math.random()*1.5,twinkle:Math.random()*Math.PI*2}));
+                    const time=Date.now()/1000;
+                    for(let i=0;i<Math.min(bg.starCount,drawBackground.stars.length);i++){
+                        const star=drawBackground.stars[i];
+                        const alpha=0.3+Math.sin(time*2+star.twinkle)*0.2;
+                        let color=bg.starColor.replace('{alpha}',alpha).replace('{color}','255,255,255');
+                        if(bg.id==='space'){
+                            const colors=['rgba(255,255,255,','rgba(200,220,255,','rgba(255,255,200,','rgba(255,200,200,'];
+                            color=colors[Math.floor(Math.random()*4)]+alpha+')';
+                        }
+                        ctx.fillStyle=color;
+                        ctx.beginPath(); ctx.arc(star.x,star.y,star.r,0,Math.PI*2); ctx.fill();
+                    }
+                }
+                // Утро
+                if(bg.id==='morning'){
+                    if(!drawBackground.clouds) drawBackground.clouds=Array.from({length:5},()=>({x:Math.random()*W,y:50+Math.random()*H*0.4,w:40+Math.random()*80}));
+                    drawBackground.clouds.forEach(c=>{
+                        c.x+=0.2; if(c.x>W+100) c.x=-100;
+                        ctx.fillStyle='rgba(255,255,255,0.25)';
+                        ctx.beginPath(); ctx.ellipse(c.x,c.y,c.w,c.w*0.3,0,0,Math.PI*2); ctx.fill();
+                        ctx.beginPath(); ctx.ellipse(c.x-c.w*0.3,c.y+5,c.w*0.6,c.w*0.2,0,0,Math.PI*2); ctx.fill();
+                    });
+                }
             }
-            ctx.fillStyle = color;
-            ctx.beginPath(); ctx.arc(star.x, star.y, star.r, 0, Math.PI*2); ctx.fill();
-        }
-    }
-    
-    // Утро — облачка
-    if (bg.id === 'morning') {
-        if (!drawBackground.clouds) drawBackground.clouds = Array.from({length: 5}, () => ({ x: Math.random()*W, y: 50+Math.random()*H*0.4, w: 40+Math.random()*80 }));
-        drawBackground.clouds.forEach(c => {
-            c.x += 0.2; if (c.x > W + 100) c.x = -100;
-            ctx.fillStyle = 'rgba(255,255,255,0.25)';
-            ctx.beginPath(); ctx.ellipse(c.x, c.y, c.w, c.w*0.3, 0, 0, Math.PI*2); ctx.fill();
-            ctx.beginPath(); ctx.ellipse(c.x - c.w*0.3, c.y + 5, c.w*0.6, c.w*0.2, 0, 0, Math.PI*2); ctx.fill();
-        });
-    }
-}
-
-            function drawFloor(floor, index, isCurrent) {
-                const color = getColor(index);
-                ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(floor.x + 2, floor.y + 2, floor.w, FLOOR_HEIGHT);
-                const grad = ctx.createLinearGradient(floor.x, floor.y, floor.x, floor.y + FLOOR_HEIGHT);
-                grad.addColorStop(0, color.top); grad.addColorStop(1, color.bottom);
-                ctx.fillStyle = grad; ctx.fillRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
-                if (isCurrent) { ctx.shadowColor = color.glow; ctx.shadowBlur = 12; ctx.strokeStyle = color.stroke; ctx.lineWidth = 2.5; }
-                else { ctx.shadowBlur = 0; ctx.strokeStyle = color.stroke; ctx.lineWidth = 1.5; }
-                ctx.strokeRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT); ctx.shadowBlur = 0;
-                ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(floor.x, floor.y, floor.w, 3);
-                if (floor.w > 20) {
-                    const ws = Math.min(7, floor.w / 4), wg = Math.max(15, ws * 3), wy = floor.y + 9;
-                    for (let wx = floor.x + 8; wx < floor.x + floor.w - 8; wx += wg) {
-                        if (wx + ws > floor.x + floor.w - 4) break;
-                        const rid = residentFloors[index], hasR = rid && !isResidentCollected(rid);
-                        if (hasR && wx === floor.x + 8) {
-                            const r = ALL_RESIDENTS.find(x => x.id === rid);
-                            ctx.font = `${ws + 4}px Arial`; ctx.fillText(r.emoji, wx - 2, wy + ws - 1);
+            
+            function drawFloor(floor,index,isCurrent) {
+                const color=getColor(index);
+                ctx.fillStyle='rgba(0,0,0,0.3)'; ctx.fillRect(floor.x+2,floor.y+2,floor.w,FLOOR_HEIGHT);
+                const grad=ctx.createLinearGradient(floor.x,floor.y,floor.x,floor.y+FLOOR_HEIGHT);
+                grad.addColorStop(0,color.top); grad.addColorStop(1,color.bottom);
+                ctx.fillStyle=grad; ctx.fillRect(floor.x,floor.y,floor.w,FLOOR_HEIGHT);
+                if(isCurrent){
+                    ctx.shadowColor=color.glow; ctx.shadowBlur=12;
+                    ctx.strokeStyle=color.stroke; ctx.lineWidth=2.5;
+                } else {
+                    ctx.shadowBlur=0; ctx.strokeStyle=color.stroke; ctx.lineWidth=1.5;
+                }
+                ctx.strokeRect(floor.x,floor.y,floor.w,FLOOR_HEIGHT); ctx.shadowBlur=0;
+                ctx.fillStyle='rgba(255,255,255,0.12)'; ctx.fillRect(floor.x,floor.y,floor.w,3);
+                
+                if(floor.w>20){
+                    const ws=Math.min(7,floor.w/4), wg=Math.max(15,ws*3), wy=floor.y+9;
+                    for(let wx=floor.x+8;wx<floor.x+floor.w-8;wx+=wg){
+                        if(wx+ws>floor.x+floor.w-4) break;
+                        const rid=residentFloors[index], hasR=rid&&!isResidentCollected(rid);
+                        if(hasR&&wx===floor.x+8){
+                            const r=ALL_RESIDENTS.find(x=>x.id===rid);
+                            ctx.font=`${ws+4}px Arial`; ctx.fillText(r.emoji,wx-2,wy+ws-1);
                         } else {
-                            ctx.fillStyle = 'rgba(255,255,220,0.6)'; ctx.fillRect(wx, wy, ws, ws);
-                            ctx.strokeStyle = 'rgba(0,0,0,0.3)'; ctx.lineWidth = 0.5;
-                            ctx.beginPath(); ctx.moveTo(wx + ws/2, wy); ctx.lineTo(wx + ws/2, wy + ws);
-                            ctx.moveTo(wx, wy + ws/2); ctx.lineTo(wx + ws, wy + ws/2); ctx.stroke();
+                            ctx.fillStyle='rgba(255,255,220,0.6)'; ctx.fillRect(wx,wy,ws,ws);
+                            ctx.strokeStyle='rgba(0,0,0,0.3)'; ctx.lineWidth=0.5;
+                            ctx.beginPath();
+                            ctx.moveTo(wx+ws/2,wy); ctx.lineTo(wx+ws/2,wy+ws);
+                            ctx.moveTo(wx,wy+ws/2); ctx.lineTo(wx+ws,wy+ws/2);
+                            ctx.stroke();
                         }
                     }
                 }
             }
-
+            
             function handleTap(e) {
                 e.preventDefault();
-                if (gameState === 'gameover' || panelOpen || gameState !== 'playing' || !currentFloor) return;
+                if(gameState==='gameover'||panelOpen||gameState!=='playing'||!currentFloor) return;
                 placeFloor();
             }
-
+            
             function restartGame() { initGame(); }
-
-            canvas.addEventListener('pointerdown', handleTap);
-            restartBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); restartGame(); });
-            shopBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openShop(); });
-            skinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openSkinShop(); });
-            bgSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openBgSkinShop(); });
-            achievementBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openAchievement(); });
-            collectionBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); openCollection(); });
-            resetBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); resetProgress(); });
-            closeShopBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
-            closeSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
-            closeBgSkinBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
-            closeAchievementBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
-            closeCollectionBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
-            overlay.addEventListener('pointerdown', (e) => { e.stopPropagation(); closePanels(); });
-            buyFoundation.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('foundation'); updateShopUI(); });
-            buyArchitect.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('architect'); updateShopUI(); });
-            buyBrakes.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('brakes'); updateShopUI(); });
-            buyGoldrush.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('goldrush'); updateShopUI(); });
-            buyMagnet.addEventListener('pointerdown', (e) => { e.stopPropagation(); buyUpgrade('magnet'); updateShopUI(); });
-            document.addEventListener('gesturestart', (e) => e.preventDefault());
-            document.addEventListener('gesturechange', (e) => e.preventDefault());
-            document.addEventListener('gestureend', (e) => e.preventDefault());
-            window.addEventListener('resize', () => {
-                const ow = W; resize(); const sx = W / ow;
-                floors.forEach((f, i) => { f.x *= sx; f.w *= sx; f.y = H - FLOOR_HEIGHT - 20 - (i * FLOOR_HEIGHT); });
-                if (currentFloor) { currentFloor.x *= sx; currentFloor.w *= sx; }
+            
+            // =============================================
+            // 17. СОБЫТИЯ
+            // =============================================
+            canvas.addEventListener('pointerdown',handleTap);
+            restartBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();restartGame();});
+            shopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openShop();});
+            collectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openCollection();});
+            resetBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();resetProgress();});
+            closeShopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+            closeCollectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+            overlay.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+            
+            document.addEventListener('gesturestart',(e)=>e.preventDefault());
+            document.addEventListener('gesturechange',(e)=>e.preventDefault());
+            document.addEventListener('gestureend',(e)=>e.preventDefault());
+            
+            window.addEventListener('resize',()=>{
+                const ow=W; resize(); const sx=W/ow;
+                floors.forEach((f,i)=>{
+                    f.x*=sx; f.w*=sx; f.y=H-FLOOR_HEIGHT-20-(i*FLOOR_HEIGHT);
+                });
+                if(currentFloor){ currentFloor.x*=sx; currentFloor.w*=sx; }
             });
-
+            
+            // =============================================
+            // 18. ЗАПУСК
+            // =============================================
             function gameLoop() { update(); draw(); requestAnimationFrame(gameLoop); }
-
+            
             resize(); updateIncrement();
-            const loaded = loadGame();
-            initGame(); updateShopUI(); gameLoop();
-            if (loaded) { updateUI(); updateShopUI(); }
+            const loaded=loadGame();
+            initGame(); gameLoop();
+            if(loaded){ updateUI(); }
         })();
     </script>
 </body>
