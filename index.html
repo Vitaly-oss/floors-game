@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Этаж — Строй свою башню</title>
-
     
-    <!-- PWA мета-теги -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Этаж">
     <meta name="mobile-web-app-capable" content="yes">
@@ -64,7 +62,6 @@
         }
         canvas { display:block; width:100%; height:100%; }
         
-        /* UI */
         #ui-layer {
             position:absolute; top:20px; left:15px; right:15px; display:flex;
             justify-content:space-between; align-items:center; pointer-events:none;
@@ -79,15 +76,15 @@
             position:absolute; bottom:30px; right:20px; display:flex;
             flex-direction:column; gap:10px; z-index:6;
         }
-        #shop-btn, #collection-btn, #reset-btn {
+        #shop-btn, #collection-btn, #reset-btn, #sound-btn {
             width:42px; height:42px; border:2px solid rgba(255,255,255,0.25); border-radius:50%;
             font-size:20px; cursor:pointer; transition:0.2s; display:flex;
             align-items:center; justify-content:center; background:transparent;
         }
-        #shop-btn { color:#ffd700; } #collection-btn { color:#e94560; } #reset-btn { color:#aaa; font-size:16px; }
-        #shop-btn:active, #collection-btn:active, #reset-btn:active { transform:scale(0.9); background:rgba(255,255,255,0.1); }
+        #shop-btn { color:#ffd700; } #collection-btn { color:#e94560; } 
+        #reset-btn { color:#fff; font-size:16px; } #sound-btn { color:#fff; font-size:16px; }
+        #shop-btn:active, #collection-btn:active, #reset-btn:active, #sound-btn:active { transform:scale(0.9); background:rgba(255,255,255,0.1); }
         
-        /* Попапы */
         .combo-popup {
             position:absolute; top:35%; left:50%; transform:translate(-50%,-50%);
             color:#ffd700; font-size:32px; font-weight:bold; pointer-events:none;
@@ -107,18 +104,16 @@
             pointer-events:none; box-shadow:0 8px 30px rgba(245,158,11,0.4); white-space:nowrap;
         }
         
-        /* Панели */
         #shop-panel, #collection-panel {
-    position:absolute; bottom:0; left:0; right:0;
-    background:rgba(15,15,35,0.97); border-radius:24px 24px 0 0;
-    padding:20px; z-index:8; transition:transform 0.3s ease-out;
-    display:flex; flex-direction:column; gap:10px; backdrop-filter:blur(20px);
-    max-height:70vh; overflow-y:auto;
-    transform:translateY(100%);
-}
-#shop-panel { border-top:2px solid #ffd700; }
-#collection-panel { border-top:2px solid #e94560; }
-#shop-panel.open, #collection-panel.open { transform:translateY(0); }
+            position:absolute; bottom:0; left:0; right:0;
+            background:rgba(15,15,35,0.97); border-radius:24px 24px 0 0;
+            padding:20px; z-index:8; transform:translateY(100%); transition:transform 0.3s ease-out;
+            display:flex; flex-direction:column; gap:10px; backdrop-filter:blur(20px);
+            max-height:70vh; overflow-y:auto;
+        }
+        #shop-panel { border-top:2px solid #ffd700; }
+        #collection-panel { border-top:2px solid #e94560; }
+        #shop-panel.open, #collection-panel.open { transform:translateY(0); }
         
         .tab-buttons { display:flex; gap:8px; margin-bottom:5px; }
         .tab-btn {
@@ -178,7 +173,6 @@
             font-size:8px; font-weight:bold; padding:1px 3px; border-radius:5px;
         }
         
-        /* Game Over */
         #gameover-panel {
             position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
             background:rgba(15,15,30,0.95); border:2px solid #e94560;
@@ -198,7 +192,6 @@
         }
         #restart-btn:active { transform:scale(0.95); }
         
-        /* Главное меню */
         #main-menu {
             position:absolute; inset:0; z-index:20;
             background:linear-gradient(180deg,#0a0a1a 0%,#16213e 50%,#0f3460 100%);
@@ -211,9 +204,7 @@
             gap:20px; text-align:center; color:white; padding:20px;
         }
         .menu-emoji { font-size:60px; display:block; animation:bounce 1.5s infinite; }
-        @keyframes bounce {
-            0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);}
-        }
+        @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
         .menu-title h1 {
             font-size:36px; margin:5px 0 0;
             background:linear-gradient(135deg,#ffd700,#ffaa00);
@@ -267,11 +258,15 @@
                     <div class="menu-stat"><span>🪙</span> <span id="menu-coins">0</span></div>
                 </div>
                 <button id="play-btn" class="menu-btn primary">🎮 Играть</button>
+                <button id="resume-btn" class="menu-btn primary" style="display:none;">▶ Продолжить</button>
                 <div class="menu-buttons">
                     <button id="menu-shop-btn" class="menu-btn">🛒</button>
                     <button id="menu-collection-btn" class="menu-btn">📖</button>
                 </div>
-                <button id="menu-reset-btn" class="menu-btn small">🧹 Сброс</button>
+                <div class="menu-buttons">
+                    <button id="menu-sound-btn" class="menu-btn small">🔊</button>
+                    <button id="menu-reset-btn" class="menu-btn small">🧹 Сброс</button>
+                </div>
             </div>
         </div>
         
@@ -291,6 +286,7 @@
         <div id="bottom-buttons" style="display:none;">
             <button id="shop-btn">🛒</button>
             <button id="collection-btn">📖</button>
+            <button id="sound-btn">🔊</button>
             <button id="reset-btn">🏠</button>
         </div>
         
@@ -337,404 +333,499 @@
                 Лучшее комбо: <b><span id="goCombo">0</span></b>
             </div>
             <div class="coins">🪙 +<span id="goCoins">0</span></div>
-            <button id="restart-btn">🔄 Играть еще</button>
+            <button id="restart-btn">🔄 Играть ещё</button>
         </div>
     </div>
 
     <script>
-(function() {
-    // =============================================
-    // 1. DOM-ЭЛЕМЕНТЫ
-    // =============================================
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    const uiLayer = document.getElementById('ui-layer');
-    const bestDisplay = document.getElementById('bestDisplay');
-    const floorCountEl = document.getElementById('floorCount');
-    const comboTextEl = document.getElementById('comboText');
-    const coinDisplayEl = document.getElementById('coinDisplay');
-    const comboPopup = document.getElementById('comboPopup');
-    const collectPopup = document.getElementById('collectPopup');
-    const achievementPopup = document.getElementById('achievement-popup');
-    const hintText = document.getElementById('hintText');
-    const gameoverPanel = document.getElementById('gameover-panel');
-    const goFloorsEl = document.getElementById('goFloors');
-    const goComboEl = document.getElementById('goCombo');
-    const goCoinsEl = document.getElementById('goCoins');
-    const restartBtn = document.getElementById('restart-btn');
-    const overlay = document.getElementById('overlay');
-    const bottomButtons = document.getElementById('bottom-buttons');
-    
-    const shopBtn = document.getElementById('shop-btn');
-    const collectionBtn = document.getElementById('collection-btn');
-    const resetBtn = document.getElementById('reset-btn');
-    const shopPanel = document.getElementById('shop-panel');
-    const collectionPanel = document.getElementById('collection-panel');
-    const closeShopBtn = document.getElementById('close-shop');
-    const closeCollectionBtn = document.getElementById('close-collection');
-    
-    // Меню
-    const mainMenu = document.getElementById('main-menu');
-    const playBtn = document.getElementById('play-btn');
-    const menuShopBtn = document.getElementById('menu-shop-btn');
-    const menuCollectionBtn = document.getElementById('menu-collection-btn');
-    const menuResetBtn = document.getElementById('menu-reset-btn');
-    
-    // =============================================
-    // 2. ПЕРЕМЕННЫЕ ИГРЫ
-    // =============================================
-    let W, H;
-    const FLOOR_HEIGHT = 28;
-    const BASE_WIDTH = 160;
-    const START_SPEED = 1.2;
-    const BASE_MAX_SPEED = 7;
-    const BASE_SPEED_INCREMENT = 0.18;
-    
-    let floors = [];
-    let currentFloor = null;
-    let gameState = 'menu';
-    let coins = 0;
-    let comboCount = 0;
-    let bestCombo = 0;
-    let bestFloors = 0;
-    let totalFloorsBuilt = 0;
-    let totalCoinsEarned = 0;
-    let gamesPlayed = 0;
-    let direction = 1;
-    let moveSpeed = START_SPEED;
-    let cameraY = 0;
-    let targetCameraY = 0;
-    let panelOpen = false;
-    let currentIncrement = BASE_SPEED_INCREMENT;
-    let saveTimeout = null;
-    
-    // =============================================
-    // 3. УЛУЧШЕНИЯ
-    // =============================================
-    let upgrades = {
-        foundation: { level: 1, maxLevel: 20, baseCost: 150 },
-        architect:  { level: 1, maxLevel: 20, baseCost: 200 },
-        brakes:     { level: 1, maxLevel: 20, baseCost: 250 },
-        goldrush:   { level: 1, maxLevel: 20, baseCost: 300 },
-        magnet:     { level: 1, maxLevel: 20, baseCost: 300 }
-    };
-    
-    // =============================================
-    // 4. ДОСТИЖЕНИЯ
-    // =============================================
-    const ACHIEVEMENTS = [
-        { id:'floors10',name:'Строитель',desc:'Построить 10 этажей',emoji:'🔨',check:()=>floors.length-1>=10,reward:200 },
-        { id:'floors25',name:'Архитектор',desc:'Построить 25 этажей',emoji:'📐',check:()=>floors.length-1>=25,reward:300 },
-        { id:'floors50',name:'Небоскрёб',desc:'Построить 50 этажей',emoji:'🏙️',check:()=>floors.length-1>=50,reward:400 },
-        { id:'floors100',name:'До небес',desc:'Построить 100 этажей',emoji:'🚀',check:()=>floors.length-1>=100,reward:500 },
-        { id:'floors150',name:'Высота',desc:'Построить 150 этажей',emoji:'🦅',check:()=>floors.length-1>=150,reward:600 },
-        { id:'combo5',name:'В ударе',desc:'Сделать комбо ×5',emoji:'🔥',check:()=>comboCount>=5,reward:100 },
-        { id:'combo10',name:'Мастер точности',desc:'Сделать комбо ×10',emoji:'🎯',check:()=>comboCount>=10,reward:300 },
-        { id:'combo15',name:'Смертельная точность',desc:'Сделать комбо ×15',emoji:'💀',check:()=>comboCount>=15,reward:500 },
-        { id:'sniper',name:'Снайпер',desc:'Лучшее комбо ≥5',emoji:'🎯',check:()=>bestCombo>=5,reward:500 },
-        { id:'collector5',name:'Коллекционер',desc:'Собрать 5 жильцов',emoji:'📖',check:()=>collectedResidents.length>=5,reward:200 },
-        { id:'collector20',name:'Охотник',desc:'Собрать 20 жильцов',emoji:'🏹',check:()=>collectedResidents.length>=20,reward:300 },
-        { id:'collector30',name:'Коллекционер 30',desc:'Собрать 30 жильцов',emoji:'🌈',check:()=>collectedResidents.length>=30,reward:400 },
-        { id:'all_residents',name:'Полная коллекция',desc:'Собрать всех 36 жильцов',emoji:'🏆',check:()=>collectedResidents.length>=36,reward:800 },
-        { id:'first_legendary',name:'Легенда',desc:'Найти легендарного жильца',emoji:'👑',check:()=>ALL_RESIDENTS.filter(r=>r.rarity==='legendary').some(r=>collectedResidents.includes(r.id)),reward:300 },
-        { id:'games10',name:'Полуночник',desc:'Сыграть 10 игр',emoji:'🌙',check:()=>gamesPlayed>=10,reward:100 },
-        { id:'first_floor_skin',name:'Новосёл',desc:'Купить первый скин этажа',emoji:'🏠',check:()=>ownedSkins.length>=2,reward:1000 },
-        { id:'all_floor_skins',name:'Империя',desc:'Купить все скины этажей',emoji:'🏰',check:()=>ownedSkins.length>=SKINS.length,reward:2000 },
-        { id:'first_bg_skin',name:'Мечтатель',desc:'Купить первый скин фона',emoji:'🌌',check:()=>ownedBgSkins.length>=2,reward:1000 },
-        { id:'all_bg_skins',name:'Мир',desc:'Купить все скины фона',emoji:'🌍',check:()=>ownedBgSkins.length>=BG_SKINS.length,reward:2000 },
-    ];
-    
-    let unlockedAchievements = [];
-    let achievementQueue = [];
-    let showingAchievement = false;
-    
-    // =============================================
-    // 5-7. СКИНЫ, ФОНЫ, ЖИЛЬЦЫ
-    // =============================================
-    const SKINS = [
-        { id:'classic',name:'Классический',emoji:'🧱',cost:0,colors:null },
-        { id:'forest',name:'Лесной',emoji:'🌿',cost:5000,colors:{top:[120,60,40],bottom:[120,60,20],stroke:[120,70,50]} },
-        { id:'ice',name:'Ледяной',emoji:'🧊',cost:7500,colors:{top:[200,70,70],bottom:[200,70,40],stroke:[200,80,85]} },
-        { id:'lava',name:'Лавовый',emoji:'🔥',cost:9000,colors:{top:[10,90,55],bottom:[10,90,25],stroke:[10,100,70]} },
-        { id:'ghost',name:'Призрачный',emoji:'👻',cost:10000,colors:{top:[0,0,80],bottom:[0,0,50],stroke:[0,0,95]} },
-        { id:'halloween',name:'Хэллоуин',emoji:'🎃',cost:12000,colors:{top:[30,85,55],bottom:[30,85,25],stroke:[30,90,70]} },
-        { id:'crystal',name:'Кристальный',emoji:'💎',cost:14000,colors:{top:[190,50,85],bottom:[190,50,50],stroke:[190,60,95]} },
-        { id:'shadow',name:'Теневой',emoji:'🖤',cost:15000,colors:{top:[260,30,25],bottom:[260,30,10],stroke:[260,50,60]} },
-        { id:'gold',name:'Золотой',emoji:'🏆',cost:17000,colors:{top:[48,90,65],bottom:[48,90,35],stroke:[48,100,85]} },
-    ];
-    
-    let ownedSkins = ['classic'];
-    let activeSkin = 'classic';
-    
-    const BG_SKINS = [
-        { id:'night',name:'Ночное небо',emoji:'🌙',cost:0,gradient:['#0a0a1a','#1a1a3e','#0f2040'],starColor:'rgba(255,255,255,{alpha})',starCount:60 },
-        { id:'sunset',name:'Закат',emoji:'🌅',cost:3000,gradient:['#ff6b35','#e94560','#1a1a2e'],starColor:'rgba(255,215,0,{alpha})',starCount:40 },
-        { id:'morning',name:'Утро',emoji:'🌤️',cost:5000,gradient:['#87CEEB','#ffcccb','#b8d4e3'],starColor:null,starCount:0 },
-        { id:'space',name:'Космос',emoji:'🌌',cost:7500,gradient:['#000011','#1a0033','#0d004d'],starColor:'rgba({color},{alpha})',starCount:100 },
-        { id:'aurora',name:'Северное сияние',emoji:'🌠',cost:9000,gradient:['#001a33','#003322','#001a33'],starColor:'rgba(100,255,200,{alpha})',starCount:50 },
-        { id:'storm',name:'Гроза',emoji:'⛈️',cost:10000,gradient:['#1a1a2e','#2d2d44','#0a0a1a'],starColor:null,starCount:0 },
-        { id:'ocean',name:'Подводный мир',emoji:'🌊',cost:11000,gradient:['#0077b6','#023e8a','#001d3d'],starColor:'rgba(200,240,255,{alpha})',starCount:30 },
-        { id:'hell',name:'Огненный ад',emoji:'🔥',cost:12000,gradient:['#ff4500','#8b0000','#1a0000'],starColor:'rgba(255,100,0,{alpha})',starCount:70 },
-        { id:'sakura',name:'Сакура',emoji:'🌸',cost:14000,gradient:['#ffccd5','#ffb3c6','#ff8fa3'],starColor:'rgba(255,200,200,{alpha})',starCount:20 },
-        { id:'volcano',name:'Вулкан',emoji:'🌋',cost:15000,gradient:['#2d0000','#6b0000','#1a0000'],starColor:'rgba(255,150,0,{alpha})',starCount:50 },
-    ];
-    
-    let ownedBgSkins = ['night'];
-    let activeBgSkin = 'night';
-    
-    const ALL_RESIDENTS = [
-        { id:'cat',emoji:'🐱',name:'Кот',rarity:'common',bonus:2 },
-        { id:'chef',emoji:'👨‍🍳',name:'Повар',rarity:'common',bonus:2 },
-        { id:'student',emoji:'📚',name:'Студент',rarity:'common',bonus:2 },
-        { id:'dj',emoji:'🎧',name:'Диджей',rarity:'common',bonus:2 },
-        { id:'taco',emoji:'🌮',name:'Тако-шеф',rarity:'common',bonus:2 },
-        { id:'sleeper',emoji:'💤',name:'Соня',rarity:'common',bonus:2 },
-        { id:'plant',emoji:'🌵',name:'Кактусовод',rarity:'common',bonus:2 },
-        { id:'gamer',emoji:'🎮',name:'Геймер',rarity:'common',bonus:2 },
-        { id:'artist',emoji:'🎨',name:'Художник',rarity:'common',bonus:2 },
-        { id:'coffee',emoji:'☕',name:'Бариста',rarity:'common',bonus:2 },
-        { id:'biker',emoji:'🏍️',name:'Байкер',rarity:'common',bonus:2 },
-        { id:'robot',emoji:'🤖',name:'Робот',rarity:'common',bonus:2 },
-        { id:'grandma',emoji:'👵',name:'Бабушка с геранью',rarity:'rare',bonus:5 },
-        { id:'hacker',emoji:'💻',name:'Хакер',rarity:'rare',bonus:5 },
-        { id:'neighbor',emoji:'🔧',name:'Сосед с дрелью',rarity:'rare',bonus:5 },
-        { id:'detective',emoji:'🕵️',name:'Детектив',rarity:'rare',bonus:5 },
-        { id:'wizard',emoji:'🧙‍♂️',name:'Волшебник',rarity:'rare',bonus:5 },
-        { id:'ninja',emoji:'🥷',name:'Ниндзя',rarity:'rare',bonus:5 },
-        { id:'mermaid',emoji:'🧜‍♀️',name:'Русалка',rarity:'rare',bonus:5 },
-        { id:'vampire',emoji:'🧛',name:'Вампир',rarity:'rare',bonus:5 },
-        { id:'astronaut',emoji:'👨‍🚀',name:'Космонавт',rarity:'rare',bonus:5 },
-        { id:'cowboy',emoji:'🤠',name:'Ковбой',rarity:'rare',bonus:5 },
-        { id:'ghost',emoji:'👻',name:'Призрак',rarity:'epic',bonus:10 },
-        { id:'alien',emoji:'👽',name:'Инопланетянин',rarity:'epic',bonus:10 },
-        { id:'superhero',emoji:'🦸',name:'Супергерой',rarity:'epic',bonus:10 },
-        { id:'phoenix',emoji:'🦅',name:'Феникс',rarity:'epic',bonus:10 },
-        { id:'djinn',emoji:'🧞',name:'Джинн',rarity:'epic',bonus:10 },
-        { id:'samurai',emoji:'⚔️',name:'Самурай',rarity:'epic',bonus:10 },
-        { id:'mermaid_king',emoji:'🧜‍♂️',name:'Царь морей',rarity:'epic',bonus:10 },
-        { id:'time_lord',emoji:'⏳',name:'Повелитель времени',rarity:'epic',bonus:10 },
-        { id:'dragon',emoji:'🐉',name:'Дракон',rarity:'legendary',bonus:20 },
-        { id:'pirate_king',emoji:'🏴‍☠️',name:'Король пиратов',rarity:'legendary',bonus:20 },
-        { id:'president',emoji:'🎩',name:'Президент',rarity:'legendary',bonus:20 },
-        { id:'unicorn',emoji:'🦄',name:'Единорог',rarity:'legendary',bonus:20 },
-        { id:'cthulhu',emoji:'🐙',name:'Ктулху',rarity:'legendary',bonus:20 },
-        { id:'zeus',emoji:'⚡',name:'Зевс',rarity:'legendary',bonus:20 },
-    ];
-    
-    let collectedResidents = [];
-    let residentFloors = {};
-    
-    // =============================================
-    // 8. СОХРАНЕНИЕ
-    // =============================================
-    const SAVE_KEY = 'floors_game_save_v2';
-    
-    function saveGame() {
-        const data = { coins, bestFloors, bestCombo, totalFloorsBuilt, totalCoinsEarned, gamesPlayed,
-            upgrades: { foundation:upgrades.foundation.level, architect:upgrades.architect.level,
-                brakes:upgrades.brakes.level, goldrush:upgrades.goldrush.level, magnet:upgrades.magnet.level },
-            collectedResidents, ownedSkins, activeSkin, ownedBgSkins, activeBgSkin, unlockedAchievements };
-        try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
-    }
-    
-    function loadGame() {
-        try {
-            const raw = localStorage.getItem(SAVE_KEY);
-            if(!raw) return false;
-            const data = JSON.parse(raw);
-            coins=data.coins||0; bestFloors=data.bestFloors||0; bestCombo=data.bestCombo||0;
-            totalFloorsBuilt=data.totalFloorsBuilt||0; totalCoinsEarned=data.totalCoinsEarned||0;
-            gamesPlayed=data.gamesPlayed||0;
-            if(data.upgrades){ upgrades.foundation.level=data.upgrades.foundation||1; upgrades.architect.level=data.upgrades.architect||1;
-                upgrades.brakes.level=data.upgrades.brakes||1; upgrades.goldrush.level=data.upgrades.goldrush||1;
-                upgrades.magnet.level=data.upgrades.magnet||1; }
-            collectedResidents=data.collectedResidents||[]; ownedSkins=data.ownedSkins||['classic'];
-            activeSkin=data.activeSkin||'classic'; ownedBgSkins=data.ownedBgSkins||['night'];
-            activeBgSkin=data.activeBgSkin||'night'; unlockedAchievements=data.unlockedAchievements||[];
-            return true;
-        } catch(e) { return false; }
-    }
-    
-    function resetProgress() {
-        if(confirm('Точно сбросить ВЕСЬ прогресс?')){ localStorage.removeItem(SAVE_KEY); location.reload(); }
-    }
-    
-    function autoSave(){ clearTimeout(saveTimeout); saveTimeout = setTimeout(saveGame, 500); }
-    
-    // =============================================
-    // 9. БОНУСЫ
-    // =============================================
-    function getWidthBonus(){ return (upgrades.foundation.level-1)*3; }
-    function getArchitectBonus(){ const l=upgrades.architect.level; return l<=20?1+(l-1)*0.06:1+19*0.06+(l-20)*0.01; }
-    function getGoldrushChance(){ const l=upgrades.goldrush.level; return (l-1)*0.03; }
-    function getMagnetBonus(){ const l=upgrades.magnet.level; if(l<=5)return (l-1)*0.04;if(l<=10)return 0.16+(l-5)*0.03;if(l<=15)return 0.31+(l-10)*0.02;return 0.41+(l-15)*0.01; }
-    function updateIncrement(){ const l=upgrades.brakes.level; const reduction=l<=20?Math.max(0.10,1-(l-1)*0.04):Math.max(0.05,0.24-(l-20)*0.005); currentIncrement=BASE_SPEED_INCREMENT*reduction; }
-    function recalculateSpeed(){ updateIncrement(); moveSpeed=Math.min(START_SPEED+Math.max(0,floors.length-1)*currentIncrement,BASE_MAX_SPEED); }
-    
-    // =============================================
-    // 10-12. ЖИЛЬЦЫ, ДОСТИЖЕНИЯ, СКИНЫ
-    // =============================================
-    function getRandomResident(){ const r=Math.random()*100; const pool=r<55?ALL_RESIDENTS.filter(x=>x.rarity==='common'):r<80?ALL_RESIDENTS.filter(x=>x.rarity==='rare'):r<95?ALL_RESIDENTS.filter(x=>x.rarity==='epic'):ALL_RESIDENTS.filter(x=>x.rarity==='legendary'); return pool[Math.floor(Math.random()*pool.length)]; }
-    function getCollectionBonus(){ return collectedResidents.reduce((s,id)=>{const r=ALL_RESIDENTS.find(x=>x.id===id);return s+(r?r.bonus:0);},0); }
-    function isResidentCollected(id){ return collectedResidents.includes(id); }
-    function collectResident(r){ if(!isResidentCollected(r.id)){collectedResidents.push(r.id);showCollectPopup(r);autoSave();checkAchievements();} }
-    function showCollectPopup(r){ const c={common:'#aaa',rare:'#4da6ff',epic:'#c044ff',legendary:'#ffd700'}; collectPopup.innerHTML=`${r.emoji}<br><span style="color:${c[r.rarity]};font-size:16px;">${r.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${r.bonus}% к монетам</span>`; collectPopup.style.opacity='1';collectPopup.style.transform='translate(-50%,-50%) scale(1.1)';clearTimeout(collectPopup._timeout);collectPopup._timeout=setTimeout(()=>{collectPopup.style.opacity='0';collectPopup.style.transform='translate(-50%,-50%) scale(0.8)';},2000); }
-    function renderCollection(){ const cats=[{rarity:'legendary',name:'🟡 Легендарные',color:'#ffd700'},{rarity:'epic',name:'🟣 Эпические',color:'#c044ff'},{rarity:'rare',name:'🔵 Редкие',color:'#4da6ff'},{rarity:'common',name:'🟢 Обычные',color:'#aaa'}]; let h=''; cats.forEach(cat=>{const residents=ALL_RESIDENTS.filter(r=>r.rarity===cat.rarity); h+=`<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r=>isResidentCollected(r.id)).length}/${residents.length})</div><div class="collection-grid">`; residents.forEach(r=>{const c=isResidentCollected(r.id); h+=`<div class="collection-slot ${c?'':'locked'}">${c?r.emoji:'❓'}${c?`<span class="bonus-badge">+${r.bonus}%</span>`:''}</div>`;}); h+='</div>';}); document.getElementById('collection-content').innerHTML=h; document.getElementById('collected-count').textContent=collectedResidents.length; document.getElementById('total-count').textContent=ALL_RESIDENTS.length; document.getElementById('bonus-percent').textContent=`+${getCollectionBonus()}%`; }
-    
-    function checkAchievements(){ ACHIEVEMENTS.forEach(a=>{if(!unlockedAchievements.includes(a.id)&&a.check()){unlockedAchievements.push(a.id);achievementQueue.push(a);coins+=a.reward;updateUI();}}); if(!showingAchievement&&achievementQueue.length>0)showNextAchievement(); }
-    function showNextAchievement(){ if(achievementQueue.length===0){showingAchievement=false;return;} showingAchievement=true; const a=achievementQueue.shift(); achievementPopup.innerHTML=`${a.emoji} <b>${a.name}</b> +${a.reward}🪙`; achievementPopup.style.opacity='1';achievementPopup.style.top='100px';clearTimeout(achievementPopup._timeout);achievementPopup._timeout=setTimeout(()=>{achievementPopup.style.opacity='0';achievementPopup.style.top='80px';setTimeout(()=>showNextAchievement(),400);},2000); }
-    function renderAchievements(){ let h=''; ACHIEVEMENTS.forEach(a=>{const u=unlockedAchievements.includes(a.id); h+=`<div class="achievement-item ${u?'unlocked':'locked'}"><span class="shop-icon">${u?a.emoji:'🔒'}</span><div class="shop-info"><div class="name">${a.name}</div><div class="desc">${a.desc}</div><div class="reward">${u?'✅ Получено':'Награда: '+a.reward+'🪙'}</div></div></div>`;}); document.getElementById('tab-achievements').innerHTML=h; }
-    
-    function getSkinColors(){ const s=SKINS.find(x=>x.id===activeSkin); return s&&s.colors?s.colors:null; }
-    function renderFloorSkins(){ let h=''; SKINS.forEach(s=>{const o=ownedSkins.includes(s.id),a=activeSkin===s.id; let t=a?'✅ Надет':o?'👕 Надеть':'🪙 '+s.cost; let cl=a?'active-skin':o?'owned':(coins>=s.cost?'':'cant-afford'); h+=`<div class="shop-item"><span class="shop-icon">${s.emoji}</span><div class="shop-info"><div class="name">${s.name}</div></div><button class="shop-buy ${cl}" data-skin="${s.id}">${t}</button></div>`;}); document.getElementById('tab-floor-skins').innerHTML=h; document.getElementById('tab-floor-skins').querySelectorAll('.shop-buy').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const id=b.dataset.skin;if(activeSkin===id)return;if(ownedSkins.includes(id)){activeSkin=id;}else{const s=SKINS.find(x=>x.id===id);if(!s||coins<s.cost)return;coins-=s.cost;ownedSkins.push(id);activeSkin=id;updateUI();}renderFloorSkins();autoSave();});}); }
-    function getBgSkin(){ return BG_SKINS.find(x=>x.id===activeBgSkin)||BG_SKINS[0]; }
-    function renderBgSkins(){ let h=''; BG_SKINS.forEach(s=>{const o=ownedBgSkins.includes(s.id),a=activeBgSkin===s.id; let t=a?'✅ Надет':o?'🌌 Надеть':'🪙 '+s.cost; let cl=a?'active-skin':o?'owned':(coins>=s.cost?'':'cant-afford'); h+=`<div class="shop-item"><span class="shop-icon">${s.emoji}</span><div class="shop-info"><div class="name">${s.name}</div></div><button class="shop-buy ${cl}" data-bgskin="${s.id}">${t}</button></div>`;}); document.getElementById('tab-bg-skins').innerHTML=h; document.getElementById('tab-bg-skins').querySelectorAll('.shop-buy').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const id=b.dataset.bgskin;if(activeBgSkin===id)return;if(ownedBgSkins.includes(id)){activeBgSkin=id;}else{const s=BG_SKINS.find(x=>x.id===id);if(!s||coins<s.cost)return;coins-=s.cost;ownedBgSkins.push(id);activeBgSkin=id;updateUI();}renderBgSkins();autoSave();});}); }
-    
-    // =============================================
-    // 13. МАГАЗИН
-    // =============================================
-    function generateUpgradeHTML(){ const items=[{key:'foundation',icon:'🏛️',name:'Усиленный фундамент',desc:'Все этажи шире на +3 пикс.'},{key:'architect',icon:'📐',name:'Точный архитектор',desc:'Зона идеального попадания шире'},{key:'brakes',icon:'🐌',name:'Замедление времени',desc:'Скорость растёт медленнее'},{key:'goldrush',icon:'💰',name:'Золотая лихорадка',desc:'Шанс ×2 монет за этаж'},{key:'magnet',icon:'🧲',name:'Магнит для жильцов',desc:'Жильцы появляются чаще'},]; return items.map(u=>`<div class="shop-item"><span class="shop-icon">${u.icon}</span><div class="shop-info"><div class="name">${u.name}</div><div class="desc">${u.desc}</div><div class="level">Уровень: <span id="${u.key}-lvl">1</span>/20</div></div><button class="shop-buy" id="buy-${u.key}">🪙 <span id="${u.key}-cost">0</span></button></div>`).join(''); }
-    function getUpgradeCost(u){ const l=u.level;if(l>=u.maxLevel)return Infinity;return l<=20?u.baseCost+(l-1)*u.baseCost:u.baseCost*20+(l-20)*u.baseCost*3; }
-    function updateShopUI(){ ['foundation','architect','brakes','goldrush','magnet'].forEach(key=>{const u=upgrades[key],c=getUpgradeCost(u),lvl=document.getElementById(`${key}-lvl`),cost=document.getElementById(`${key}-cost`),btn=document.getElementById(`buy-${key}`);if(lvl)lvl.textContent=u.level;if(cost)cost.textContent=u.level>=u.maxLevel?'MAX':c;if(btn){if(u.level>=u.maxLevel){btn.textContent='✅ MAX';btn.classList.add('maxed');btn.classList.remove('cant-afford');}else{btn.textContent='🪙 '+c;btn.classList.toggle('cant-afford',coins<c);btn.classList.remove('maxed');}}}); }
-    function buyUpgrade(name){ const u=upgrades[name];if(u.level>=u.maxLevel)return;const c=getUpgradeCost(u);if(coins<c)return;coins-=c;u.level++;if(name==='foundation'&&currentFloor){currentFloor.w+=3;currentFloor.x-=1.5;}updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave(); }
-    let upgradesInit=false;
-    function initUpgrades(){ if(upgradesInit)return;document.getElementById('tab-upgrades').innerHTML=generateUpgradeHTML();['foundation','architect','brakes','goldrush','magnet'].forEach(k=>{document.getElementById(`buy-${k}`).addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade(k);updateShopUI();});});upgradesInit=true; }
-    
-    // =============================================
-    // 14. ПАНЕЛИ
-    // =============================================
-function openShop() {
-    panelOpen = true;
-    initUpgrades();
-    mainMenu.style.display = 'none'; // Скрываем меню
-    overlay.classList.add('show');
-    shopPanel.classList.add('open');
-    if (gameState === 'playing') bottomButtons.style.display = 'none';
-    updateShopUI();
-    renderFloorSkins();
-    renderBgSkins();
-    switchTab('shop-panel', 'upgrades');
-}
-
-function openCollection() {
-    panelOpen = true;
-    mainMenu.style.display = 'none'; // Скрываем меню
-    overlay.classList.add('show');
-    collectionPanel.classList.add('open');
-    if (gameState === 'playing') bottomButtons.style.display = 'none';
-    renderCollection();
-    renderAchievements();
-    switchTab('collection-panel', 'residents');
-}
-function closePanels() {
-    panelOpen = false;
-    shopPanel.classList.remove('open');
-    collectionPanel.classList.remove('open');
-    overlay.classList.remove('show');
-    if (gameState === 'playing') {
-        bottomButtons.style.display = 'flex';
-    } else if (gameState === 'menu') {
-        mainMenu.style.display = 'flex'; // Показываем меню обратно
-    }
-}
-    function switchTab(panelId,tabId){ const p=document.getElementById(panelId);p.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));p.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));p.querySelector(`[data-tab="${tabId}"]`).classList.add('active');document.getElementById(`tab-${tabId}`).classList.add('active'); }
-    document.querySelectorAll('.tab-btn').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const pId=b.closest('#shop-panel')?'shop-panel':'collection-panel';switchTab(pId,b.dataset.tab);});});
-    
-    // =============================================
-    // 15. МЕНЮ
-    // =============================================
-    function updateMenuStats(){ document.getElementById('menu-best').textContent=bestFloors; document.getElementById('menu-coins').textContent=coins; }
-    function showMenu() {
-    mainMenu.classList.remove('hidden');
-    mainMenu.style.display = 'flex'; // Восстанавливаем display
-    updateMenuStats();
-    gameState = 'menu';
-    uiLayer.style.display = 'none';
-    bottomButtons.style.display = 'none';
-    hintText.style.display = 'none';
-    gameoverPanel.style.display = 'none';
-    shopPanel.classList.remove('open');
-    collectionPanel.classList.remove('open');
-    overlay.classList.remove('show');
-    panelOpen = false;
-}
-    function startGame() {
-    mainMenu.classList.add('hidden');
-    mainMenu.style.display = 'none'; // Скрываем для надёжности
-    initGame();
-}
-    
-    playBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();startGame();});
-    menuShopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openShop();});
-    menuCollectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openCollection();});
-    menuResetBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();resetProgress();});
-    
-    // =============================================
-    // 16. ИГРА
-    // =============================================
-    function resize(){ const c=document.getElementById('gameContainer'),r=c.getBoundingClientRect();W=r.width;H=r.height;canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(1,0,0,1,0,0);ctx.scale(devicePixelRatio,devicePixelRatio); }
-    function getStartWidth(){ return BASE_WIDTH+getWidthBonus(); }
-    function initGame(){ floors=[];comboCount=0;direction=1;cameraY=0;targetCameraY=0;residentFloors={};updateIncrement();const sw=getStartWidth();floors.push({x:W/2-sw/2,y:H-FLOOR_HEIGHT-20,w:sw});gameState='playing';gameoverPanel.style.display='none';comboPopup.style.opacity='0';collectPopup.style.opacity='0';hintText.style.display='block';uiLayer.style.display='flex';bottomButtons.style.display='flex';gamesPlayed++;spawnFloor();updateUI(); }
-    function getColor(i){ const sc=getSkinColors();if(sc){return{top:`hsl(${sc.top[0]},${sc.top[1]}%,${Math.min(sc.top[2]+(i%5),80)}%)`,bottom:`hsl(${sc.top[0]},${sc.top[1]}%,${sc.bottom[2]+(i%3)}%)`,stroke:`hsl(${sc.top[0]},${sc.stroke[1]}%,${sc.stroke[2]}%)`,glow:`hsl(${sc.top[0]},${sc.stroke[1]}%,${sc.stroke[2]}%)`};}const h=(200+i*6)%360;return{top:`hsl(${h},65%,55%)`,bottom:`hsl(${h},65%,30%)`,stroke:`hsl(${h},75%,70%)`,glow:`hsl(${h},75%,60%)`}; }
-    function spawnFloor(){ if(!floors.length)return;const lf=floors[floors.length-1];const sx=direction>0?-lf.w+20:W-20;currentFloor={x:sx,y:lf.y-FLOOR_HEIGHT,w:lf.w};recalculateSpeed(); }
-    function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}const nf={x:ol,y:currentFloor.y,w:ow};floors.push(nf);totalFloorsBuilt++;const fi=floors.length-1;if(residentFloors[fi]){const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);if(res&&!isResidentCollected(res.id))collectResident(res);}const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.04*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);}else if(acc>1-0.25*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;spawnFloor();hintText.style.display='none';autoSave();checkAchievements();const ni=floors.length;if(ni>1&&ni%10===0&&!residentFloors[ni]){if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){residentFloors[ni]=getRandomResident().id;}} }
-    function showGoldrush(){comboPopup.textContent='💰 ЗОЛОТО! ×2';comboPopup.style.color='#ffd700';comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},700);}
-    function showCombo(c){if(c>1){comboPopup.textContent=`ИДЕАЛЬНО! x${c} 🔥`;comboPopup.style.color='#ffd700';}else if(c===0&&floors.length>1){comboPopup.textContent='Отлично! ✨';comboPopup.style.color='#fff';}else return;comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},500);}
-    function hideCombo(){comboPopup.style.opacity='0';}
-    function triggerGameOver(){gameState='gameover';currentFloor=null;const tf=floors.length-1,cb=1+getCollectionBonus()/100;const bc=Math.floor(tf*1*cb);coins+=bc;totalCoinsEarned+=bc;if(tf>bestFloors){bestFloors=tf;bestDisplay.textContent=bestFloors;}goFloorsEl.textContent=tf;goComboEl.textContent=bestCombo;goCoinsEl.textContent=bc;gameoverPanel.style.display='flex';hintText.style.display='none';bottomButtons.style.display='none';updateUI();saveGame();checkAchievements();updateMenuStats();}
-    function updateUI(){floorCountEl.textContent=Math.max(1,floors.length);bestDisplay.textContent=bestFloors;comboTextEl.textContent=comboCount;coinDisplayEl.textContent=coins;updateMenuStats();}
-    
-    function handleTap(e){e.preventDefault();if(gameState==='gameover'||panelOpen||gameState!=='playing'||!currentFloor)return;placeFloor();}
-    
-    // Кнопка "Играть ещё" после проигрыша
-    restartBtn.addEventListener('pointerdown',(e)=>{
-        e.stopPropagation();
-        gameoverPanel.style.display='none';
-        startGame();
-    });
-    
-    canvas.addEventListener('pointerdown',handleTap);
-    shopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openShop();});
-    collectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openCollection();});
-    resetBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();showMenu();});
-    closeShopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
-    closeCollectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
-    overlay.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
-    document.addEventListener('gesturestart',(e)=>e.preventDefault());
-    document.addEventListener('gesturechange',(e)=>e.preventDefault());
-    document.addEventListener('gestureend',(e)=>e.preventDefault());
-    window.addEventListener('resize',()=>{const ow=W;resize();const sx=W/ow;floors.forEach((f,i)=>{f.x*=sx;f.w*=sx;f.y=H-FLOOR_HEIGHT-20-(i*FLOOR_HEIGHT);});if(currentFloor){currentFloor.x*=sx;currentFloor.w*=sx;}});
-    
-    // =============================================
-    // ОТРИСОВКА
-    // =============================================
-    function update(){if(gameState!=='playing'||panelOpen)return;if(currentFloor){currentFloor.x+=moveSpeed*direction;if(currentFloor.x<=0){currentFloor.x=0;direction=1;}else if(currentFloor.x+currentFloor.w>=W){currentFloor.x=W-currentFloor.w;direction=-1;}}cameraY+=(targetCameraY-cameraY)*0.1;}
-    function draw(){ctx.clearRect(0,0,W,H);drawBackground();ctx.save();ctx.translate(0,cameraY);for(let i=0;i<floors.length;i++)drawFloor(floors[i],i,false);if(currentFloor&&gameState==='playing'&&!panelOpen)drawFloor(currentFloor,floors.length,true);ctx.restore();}
-    function drawBackground(){const bg=getBgSkin();const grad=ctx.createLinearGradient(0,0,0,H);bg.gradient.forEach((c,i)=>grad.addColorStop(i/(bg.gradient.length-1),c));ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
-        if(bg.id==='aurora'){const t=Date.now()/3000;for(let i=0;i<3;i++){ctx.fillStyle=`rgba(${100+i*30},${200+i*20},${150+i*30},0.15)`;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=20)ctx.lineTo(x,H*0.3+Math.sin(x*0.02+t+i)*40+Math.sin(x*0.05+t*2)*20);ctx.lineTo(W,H);ctx.closePath();ctx.fill();}}
-        if(bg.id==='ocean'){if(!drawBackground.bubbles)drawBackground.bubbles=Array.from({length:15},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*6,s:0.2+Math.random()*0.5}));drawBackground.bubbles.forEach(b=>{b.y-=b.s;if(b.y<-10){b.y=H+10;b.x=Math.random()*W;}ctx.fillStyle=`rgba(200,240,255,${0.2+Math.sin(Date.now()/1000+b.x)*0.1})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();});}
-        if(bg.id==='hell'){if(!drawBackground.sparks)drawBackground.sparks=Array.from({length:40},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.3+Math.random()*1.5}));drawBackground.sparks.forEach(sp=>{sp.y-=sp.s;if(sp.y<-10){sp.y=H+10;sp.x=Math.random()*W;}ctx.fillStyle=`rgba(255,${100+Math.floor(Math.random()*100)},0,${0.4+Math.sin(Date.now()/1000+sp.x)*0.2})`;ctx.beginPath();ctx.arc(sp.x,sp.y,sp.r,0,Math.PI*2);ctx.fill();});}
-        if(bg.id==='storm'){if(!drawBackground.lightnings){drawBackground.lightnings=[];for(let i=0;i<3;i++){drawBackground.lightnings.push({x:50+Math.random()*(W-100),startY:0,segments:4+Math.floor(Math.random()*6),opacity:0,timer:60+Math.random()*200,maxTimer:0});}}const lt=Date.now()/1000;drawBackground.lightnings.forEach(l=>{l.timer--;if(l.timer<=0){l.x=30+Math.random()*(W-60);l.segments=5+Math.floor(Math.random()*8);l.opacity=0.7+Math.random()*0.3;l.maxTimer=4+Math.floor(Math.random()*8);l.timer=l.maxTimer;}if(l.timer<l.maxTimer){const progress=1-(l.timer/l.maxTimer);const alpha=l.opacity*(1-progress)*(0.6+Math.sin(lt*60)*0.4);ctx.strokeStyle=`rgba(255,255,255,${alpha})`;ctx.lineWidth=2;ctx.shadowColor=`rgba(200,220,255,${alpha})`;ctx.shadowBlur=8;ctx.beginPath();let y=l.startY,x=l.x;ctx.moveTo(x,y);for(let s=0;s<l.segments;s++){y+=(H/l.segments)*(0.5+Math.random()*0.5);x+=(Math.random()-0.5)*60;if(x<0)x=5;if(x>W)x=W-5;ctx.lineTo(x,y);}ctx.stroke();ctx.shadowBlur=0;if(Math.random()<0.4){ctx.strokeStyle=`rgba(255,255,255,${alpha*0.5})`;ctx.lineWidth=1;ctx.beginPath();const bx=x+(Math.random()-0.5)*40,by=y+Math.random()*30;ctx.moveTo(x,y);ctx.lineTo(bx,by);ctx.stroke();}}});}
-        if(bg.id==='sakura'){if(!drawBackground.petals)drawBackground.petals=Array.from({length:25},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*3,s:0.3+Math.random()*0.8,wobble:Math.random()*Math.PI*2}));const pt=Date.now()/1000;drawBackground.petals.forEach(p=>{p.y+=p.s;p.x+=Math.sin(pt+p.wobble)*0.5;if(p.y>H+10){p.y=-10;p.x=Math.random()*W;}ctx.fillStyle=`rgba(255,${180+Math.floor(Math.random()*40)},${200+Math.floor(Math.random()*30)},0.7)`;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*0.6,Math.sin(pt+p.wobble)*0.5,0,Math.PI*2);ctx.fill();});}
-        if(bg.id==='volcano'){if(!drawBackground.ash)drawBackground.ash=Array.from({length:35},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.2+Math.random()*1,drift:Math.random()*2-1}));const at=Date.now()/1000;drawBackground.ash.forEach(a=>{a.y-=a.s;a.x+=a.drift*0.3;if(a.y<-10){a.y=H+10;a.x=Math.random()*W;}const alpha=0.3+Math.sin(at+a.x)*0.2;ctx.fillStyle=`rgba(${80+Math.floor(Math.random()*40)},${20+Math.floor(Math.random()*20)},${5},${alpha})`;ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);ctx.fill();});const lavaGrad=ctx.createLinearGradient(0,H*0.8,0,H);lavaGrad.addColorStop(0,'rgba(255,50,0,0)');lavaGrad.addColorStop(1,'rgba(255,100,0,0.3)');ctx.fillStyle=lavaGrad;ctx.fillRect(0,H*0.8,W,H*0.2);}
-        if(bg.starColor&&bg.starCount>0){if(!drawBackground.stars)drawBackground.stars=Array.from({length:100},()=>({x:Math.random()*420,y:Math.random()*750,r:0.3+Math.random()*1.5,twinkle:Math.random()*Math.PI*2}));const time=Date.now()/1000;for(let i=0;i<Math.min(bg.starCount,drawBackground.stars.length);i++){const star=drawBackground.stars[i];const alpha=0.3+Math.sin(time*2+star.twinkle)*0.2;let color=bg.starColor.replace('{alpha}',alpha).replace('{color}','255,255,255');if(bg.id==='space'){const colors=['rgba(255,255,255,','rgba(200,220,255,','rgba(255,255,200,','rgba(255,200,200,'];color=colors[Math.floor(Math.random()*4)]+alpha+')';}ctx.fillStyle=color;ctx.beginPath();ctx.arc(star.x,star.y,star.r,0,Math.PI*2);ctx.fill();}}
-        if(bg.id==='morning'){if(!drawBackground.clouds)drawBackground.clouds=Array.from({length:5},()=>({x:Math.random()*W,y:50+Math.random()*H*0.4,w:40+Math.random()*80}));drawBackground.clouds.forEach(c=>{c.x+=0.2;if(c.x>W+100)c.x=-100;ctx.fillStyle='rgba(255,255,255,0.25)';ctx.beginPath();ctx.ellipse(c.x,c.y,c.w,c.w*0.3,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(c.x-c.w*0.3,c.y+5,c.w*0.6,c.w*0.2,0,0,Math.PI*2);ctx.fill();});}
-    }
-    function drawFloor(floor,index,isCurrent){const color=getColor(index);ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(floor.x+2,floor.y+2,floor.w,FLOOR_HEIGHT);const grad=ctx.createLinearGradient(floor.x,floor.y,floor.x,floor.y+FLOOR_HEIGHT);grad.addColorStop(0,color.top);grad.addColorStop(1,color.bottom);ctx.fillStyle=grad;ctx.fillRect(floor.x,floor.y,floor.w,FLOOR_HEIGHT);if(isCurrent){ctx.shadowColor=color.glow;ctx.shadowBlur=12;ctx.strokeStyle=color.stroke;ctx.lineWidth=2.5;}else{ctx.shadowBlur=0;ctx.strokeStyle=color.stroke;ctx.lineWidth=1.5;}ctx.strokeRect(floor.x,floor.y,floor.w,FLOOR_HEIGHT);ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,0.12)';ctx.fillRect(floor.x,floor.y,floor.w,3);if(floor.w>20){const ws=Math.min(7,floor.w/4),wg=Math.max(15,ws*3),wy=floor.y+9;for(let wx=floor.x+8;wx<floor.x+floor.w-8;wx+=wg){if(wx+ws>floor.x+floor.w-4)break;const rid=residentFloors[index],hasR=rid&&!isResidentCollected(rid);if(hasR&&wx===floor.x+8){const r=ALL_RESIDENTS.find(x=>x.id===rid);ctx.font=`${ws+4}px Arial`;ctx.fillText(r.emoji,wx-2,wy+ws-1);}else{ctx.fillStyle='rgba(255,255,220,0.6)';ctx.fillRect(wx,wy,ws,ws);ctx.strokeStyle='rgba(0,0,0,0.3)';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(wx+ws/2,wy);ctx.lineTo(wx+ws/2,wy+ws);ctx.moveTo(wx,wy+ws/2);ctx.lineTo(wx+ws,wy+ws/2);ctx.stroke();}}}}
-    
-    function gameLoop(){update();draw();requestAnimationFrame(gameLoop);}
-    
-    resize();updateIncrement();
-    const loaded=loadGame();
-    if(loaded){updateMenuStats();}
-    showMenu();
-    gameLoop();
-    // Офлайн-режим (только для GitHub Pages)
-if ('serviceWorker' in navigator && location.hostname.includes('github.io')) {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-}
-})();
-</script>
+    (function() {
+        // =============================================
+        // 1. DOM-ЭЛЕМЕНТЫ
+        // =============================================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const uiLayer = document.getElementById('ui-layer');
+        const bestDisplay = document.getElementById('bestDisplay');
+        const floorCountEl = document.getElementById('floorCount');
+        const comboTextEl = document.getElementById('comboText');
+        const coinDisplayEl = document.getElementById('coinDisplay');
+        const comboPopup = document.getElementById('comboPopup');
+        const collectPopup = document.getElementById('collectPopup');
+        const achievementPopup = document.getElementById('achievement-popup');
+        const hintText = document.getElementById('hintText');
+        const gameoverPanel = document.getElementById('gameover-panel');
+        const goFloorsEl = document.getElementById('goFloors');
+        const goComboEl = document.getElementById('goCombo');
+        const goCoinsEl = document.getElementById('goCoins');
+        const restartBtn = document.getElementById('restart-btn');
+        const overlay = document.getElementById('overlay');
+        const bottomButtons = document.getElementById('bottom-buttons');
+        
+        const shopBtn = document.getElementById('shop-btn');
+        const collectionBtn = document.getElementById('collection-btn');
+        const soundBtn = document.getElementById('sound-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const shopPanel = document.getElementById('shop-panel');
+        const collectionPanel = document.getElementById('collection-panel');
+        const closeShopBtn = document.getElementById('close-shop');
+        const closeCollectionBtn = document.getElementById('close-collection');
+        
+        const mainMenu = document.getElementById('main-menu');
+        const playBtn = document.getElementById('play-btn');
+        const resumeBtn = document.getElementById('resume-btn');
+        const menuShopBtn = document.getElementById('menu-shop-btn');
+        const menuCollectionBtn = document.getElementById('menu-collection-btn');
+        const menuSoundBtn = document.getElementById('menu-sound-btn');
+        const menuResetBtn = document.getElementById('menu-reset-btn');
+        
+        // =============================================
+        // 2. ЗВУКИ
+        // =============================================
+        let audioCtx = null;
+        let soundEnabled = true;
+        
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        
+        function playSound(freq, type, duration, volume = 0.1, freq2 = null) {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                if (freq2) osc.frequency.linearRampToValueAtTime(freq2, audioCtx.currentTime + duration);
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+        
+        function soundPlace() { playSound(80, 'triangle', 0.08, 0.12); setTimeout(() => playSound(60, 'triangle', 0.06, 0.08), 30); }
+        function soundPerfect() { playSound(400, 'sine', 0.15, 0.1, 800); setTimeout(() => playSound(600, 'sine', 0.1, 0.08), 100); }
+        function soundGood() { playSound(200, 'sine', 0.05, 0.06); }
+        function soundGameOver() { playSound(40, 'sawtooth', 0.5, 0.15, 20); setTimeout(() => playSound(30, 'sawtooth', 0.4, 0.1, 15), 200); }
+        function soundResident() { playSound(600, 'sine', 0.1, 0.1); setTimeout(() => playSound(800, 'sine', 0.15, 0.1), 100); }
+        function soundGoldrush() { playSound(500, 'triangle', 0.08, 0.08); setTimeout(() => playSound(700, 'triangle', 0.08, 0.08), 80); setTimeout(() => playSound(900, 'triangle', 0.08, 0.08), 160); }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const icon = soundEnabled ? '🔊' : '🔇';
+            if (soundBtn) soundBtn.textContent = icon;
+            if (menuSoundBtn) menuSoundBtn.textContent = icon;
+        }
+        
+        soundBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); initAudio(); toggleSound(); });
+        menuSoundBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); initAudio(); toggleSound(); });
+        
+        // =============================================
+        // 3. ПЕРЕМЕННЫЕ ИГРЫ
+        // =============================================
+        let W, H;
+        const FLOOR_HEIGHT = 28;
+        const BASE_WIDTH = 160;
+        const START_SPEED = 1.2;
+        const BASE_MAX_SPEED = 7;
+        const BASE_SPEED_INCREMENT = 0.18;
+        
+        let floors = [];
+        let currentFloor = null;
+        let gameState = 'menu';
+        let coins = 0;
+        let comboCount = 0;
+        let bestCombo = 0;
+        let bestFloors = 0;
+        let totalFloorsBuilt = 0;
+        let totalCoinsEarned = 0;
+        let gamesPlayed = 0;
+        let direction = 1;
+        let moveSpeed = START_SPEED;
+        let cameraY = 0;
+        let targetCameraY = 0;
+        let panelOpen = false;
+        let currentIncrement = BASE_SPEED_INCREMENT;
+        let saveTimeout = null;
+        let savedGameState = null;
+        
+        let upgrades = {
+            foundation: { level: 1, maxLevel: 20, baseCost: 150 },
+            architect:  { level: 1, maxLevel: 20, baseCost: 200 },
+            brakes:     { level: 1, maxLevel: 20, baseCost: 250 },
+            goldrush:   { level: 1, maxLevel: 20, baseCost: 300 },
+            magnet:     { level: 1, maxLevel: 20, baseCost: 300 }
+        };
+        
+        // Достижения
+        const ACHIEVEMENTS = [
+            { id:'floors10',name:'Строитель',desc:'Построить 10 этажей',emoji:'🔨',check:()=>floors.length-1>=10,reward:200 },
+            { id:'floors25',name:'Архитектор',desc:'Построить 25 этажей',emoji:'📐',check:()=>floors.length-1>=25,reward:300 },
+            { id:'floors50',name:'Небоскрёб',desc:'Построить 50 этажей',emoji:'🏙️',check:()=>floors.length-1>=50,reward:400 },
+            { id:'floors100',name:'До небес',desc:'Построить 100 этажей',emoji:'🚀',check:()=>floors.length-1>=100,reward:500 },
+            { id:'floors150',name:'Высота',desc:'Построить 150 этажей',emoji:'🦅',check:()=>floors.length-1>=150,reward:600 },
+            { id:'combo5',name:'В ударе',desc:'Сделать комбо ×5',emoji:'🔥',check:()=>comboCount>=5,reward:100 },
+            { id:'combo10',name:'Мастер точности',desc:'Сделать комбо ×10',emoji:'🎯',check:()=>comboCount>=10,reward:300 },
+            { id:'combo15',name:'Смертельная точность',desc:'Сделать комбо ×15',emoji:'💀',check:()=>comboCount>=15,reward:500 },
+            { id:'sniper',name:'Снайпер',desc:'Лучшее комбо ≥5',emoji:'🎯',check:()=>bestCombo>=5,reward:500 },
+            { id:'collector5',name:'Коллекционер',desc:'Собрать 5 жильцов',emoji:'📖',check:()=>collectedResidents.length>=5,reward:200 },
+            { id:'collector20',name:'Охотник',desc:'Собрать 20 жильцов',emoji:'🏹',check:()=>collectedResidents.length>=20,reward:300 },
+            { id:'collector30',name:'Коллекционер 30',desc:'Собрать 30 жильцов',emoji:'🌈',check:()=>collectedResidents.length>=30,reward:400 },
+            { id:'all_residents',name:'Полная коллекция',desc:'Собрать всех 36 жильцов',emoji:'🏆',check:()=>collectedResidents.length>=36,reward:800 },
+            { id:'first_legendary',name:'Легенда',desc:'Найти легендарного жильца',emoji:'👑',check:()=>ALL_RESIDENTS.filter(r=>r.rarity==='legendary').some(r=>collectedResidents.includes(r.id)),reward:300 },
+            { id:'games10',name:'Полуночник',desc:'Сыграть 10 игр',emoji:'🌙',check:()=>gamesPlayed>=10,reward:100 },
+            { id:'first_floor_skin',name:'Новосёл',desc:'Купить первый скин этажа',emoji:'🏠',check:()=>ownedSkins.length>=2,reward:1000 },
+            { id:'all_floor_skins',name:'Империя',desc:'Купить все скины этажей',emoji:'🏰',check:()=>ownedSkins.length>=SKINS.length,reward:2000 },
+            { id:'first_bg_skin',name:'Мечтатель',desc:'Купить первый скин фона',emoji:'🌌',check:()=>ownedBgSkins.length>=2,reward:1000 },
+            { id:'all_bg_skins',name:'Мир',desc:'Купить все скины фона',emoji:'🌍',check:()=>ownedBgSkins.length>=BG_SKINS.length,reward:2000 },
+        ];
+        
+        let unlockedAchievements = [];
+        let achievementQueue = [];
+        let showingAchievement = false;
+        
+        // Скины этажей
+        const SKINS = [
+            { id:'classic',name:'Классический',emoji:'🧱',cost:0,colors:null },
+            { id:'forest',name:'Лесной',emoji:'🌿',cost:5000,colors:{top:[120,60,40],bottom:[120,60,20],stroke:[120,70,50]} },
+            { id:'ice',name:'Ледяной',emoji:'🧊',cost:7500,colors:{top:[200,70,70],bottom:[200,70,40],stroke:[200,80,85]} },
+            { id:'lava',name:'Лавовый',emoji:'🔥',cost:9000,colors:{top:[10,90,55],bottom:[10,90,25],stroke:[10,100,70]} },
+            { id:'ghost',name:'Призрачный',emoji:'👻',cost:10000,colors:{top:[0,0,80],bottom:[0,0,50],stroke:[0,0,95]} },
+            { id:'halloween',name:'Хэллоуин',emoji:'🎃',cost:12000,colors:{top:[30,85,55],bottom:[30,85,25],stroke:[30,90,70]} },
+            { id:'crystal',name:'Кристальный',emoji:'💎',cost:14000,colors:{top:[190,50,85],bottom:[190,50,50],stroke:[190,60,95]} },
+            { id:'shadow',name:'Теневой',emoji:'🖤',cost:15000,colors:{top:[260,30,25],bottom:[260,30,10],stroke:[260,50,60]} },
+            { id:'gold',name:'Золотой',emoji:'🏆',cost:17000,colors:{top:[48,90,65],bottom:[48,90,35],stroke:[48,100,85]} },
+        ];
+        
+        let ownedSkins = ['classic'];
+        let activeSkin = 'classic';
+        
+        // Скины фона
+        const BG_SKINS = [
+            { id:'night',name:'Ночное небо',emoji:'🌙',cost:0,gradient:['#0a0a1a','#1a1a3e','#0f2040'],starColor:'rgba(255,255,255,{alpha})',starCount:60 },
+            { id:'sunset',name:'Закат',emoji:'🌅',cost:3000,gradient:['#ff6b35','#e94560','#1a1a2e'],starColor:'rgba(255,215,0,{alpha})',starCount:40 },
+            { id:'morning',name:'Утро',emoji:'🌤️',cost:5000,gradient:['#87CEEB','#ffcccb','#b8d4e3'],starColor:null,starCount:0 },
+            { id:'space',name:'Космос',emoji:'🌌',cost:7500,gradient:['#000011','#1a0033','#0d004d'],starColor:'rgba({color},{alpha})',starCount:100 },
+            { id:'aurora',name:'Северное сияние',emoji:'🌠',cost:9000,gradient:['#001a33','#003322','#001a33'],starColor:'rgba(100,255,200,{alpha})',starCount:50 },
+            { id:'storm',name:'Гроза',emoji:'⛈️',cost:10000,gradient:['#1a1a2e','#2d2d44','#0a0a1a'],starColor:null,starCount:0 },
+            { id:'ocean',name:'Подводный мир',emoji:'🌊',cost:11000,gradient:['#0077b6','#023e8a','#001d3d'],starColor:'rgba(200,240,255,{alpha})',starCount:30 },
+            { id:'hell',name:'Огненный ад',emoji:'🔥',cost:12000,gradient:['#ff4500','#8b0000','#1a0000'],starColor:'rgba(255,100,0,{alpha})',starCount:70 },
+            { id:'sakura',name:'Сакура',emoji:'🌸',cost:14000,gradient:['#ffccd5','#ffb3c6','#ff8fa3'],starColor:'rgba(255,200,200,{alpha})',starCount:20 },
+            { id:'volcano',name:'Вулкан',emoji:'🌋',cost:15000,gradient:['#2d0000','#6b0000','#1a0000'],starColor:'rgba(255,150,0,{alpha})',starCount:50 },
+        ];
+        
+        let ownedBgSkins = ['night'];
+        let activeBgSkin = 'night';
+        
+        // Жильцы
+        const ALL_RESIDENTS = [
+            { id:'cat',emoji:'🐱',name:'Кот',rarity:'common',bonus:1 },
+            { id:'chef',emoji:'👨‍🍳',name:'Повар',rarity:'common',bonus:1 },
+            { id:'student',emoji:'📚',name:'Студент',rarity:'common',bonus:1 },
+            { id:'dj',emoji:'🎧',name:'Диджей',rarity:'common',bonus:1 },
+            { id:'taco',emoji:'🌮',name:'Тако-шеф',rarity:'common',bonus:1 },
+            { id:'sleeper',emoji:'💤',name:'Соня',rarity:'common',bonus:1 },
+            { id:'plant',emoji:'🌵',name:'Кактусовод',rarity:'common',bonus:1 },
+            { id:'gamer',emoji:'🎮',name:'Геймер',rarity:'common',bonus:1 },
+            { id:'artist',emoji:'🎨',name:'Художник',rarity:'common',bonus:1 },
+            { id:'coffee',emoji:'☕',name:'Бариста',rarity:'common',bonus:1 },
+            { id:'biker',emoji:'🏍️',name:'Байкер',rarity:'common',bonus:1 },
+            { id:'robot',emoji:'🤖',name:'Робот',rarity:'common',bonus:1 },
+            { id:'grandma',emoji:'👵',name:'Бабушка с геранью',rarity:'rare',bonus:2 },
+            { id:'hacker',emoji:'💻',name:'Хакер',rarity:'rare',bonus:2 },
+            { id:'neighbor',emoji:'🔧',name:'Сосед с дрелью',rarity:'rare',bonus:2 },
+            { id:'detective',emoji:'🕵️',name:'Детектив',rarity:'rare',bonus:2 },
+            { id:'wizard',emoji:'🧙‍♂️',name:'Волшебник',rarity:'rare',bonus:2 },
+            { id:'ninja',emoji:'🥷',name:'Ниндзя',rarity:'rare',bonus:2 },
+            { id:'mermaid',emoji:'🧜‍♀️',name:'Русалка',rarity:'rare',bonus:2 },
+            { id:'vampire',emoji:'🧛',name:'Вампир',rarity:'rare',bonus:2 },
+            { id:'astronaut',emoji:'👨‍🚀',name:'Космонавт',rarity:'rare',bonus:2 },
+            { id:'cowboy',emoji:'🤠',name:'Ковбой',rarity:'rare',bonus:2 },
+            { id:'ghost',emoji:'👻',name:'Призрак',rarity:'epic',bonus:3 },
+            { id:'alien',emoji:'👽',name:'Инопланетянин',rarity:'epic',bonus:3},
+            { id:'superhero',emoji:'🦸',name:'Супергерой',rarity:'epic',bonus:3 },
+            { id:'phoenix',emoji:'🦅',name:'Феникс',rarity:'epic',bonus:3 },
+            { id:'djinn',emoji:'🧞',name:'Джинн',rarity:'epic',bonus:3 },
+            { id:'samurai',emoji:'⚔️',name:'Самурай',rarity:'epic',bonus:3 },
+            { id:'mermaid_king',emoji:'🧜‍♂️',name:'Царь морей',rarity:'epic',bonus:3 },
+            { id:'time_lord',emoji:'⏳',name:'Повелитель времени',rarity:'epic',bonus:3 },
+            { id:'dragon',emoji:'🐉',name:'Дракон',rarity:'legendary',bonus:5 },
+            { id:'pirate_king',emoji:'🏴‍☠️',name:'Король пиратов',rarity:'legendary',bonus:5 },
+            { id:'president',emoji:'🎩',name:'Президент',rarity:'legendary',bonus:5 },
+            { id:'unicorn',emoji:'🦄',name:'Единорог',rarity:'legendary',bonus:5 },
+            { id:'cthulhu',emoji:'🐙',name:'Ктулху',rarity:'legendary',bonus:5 },
+            { id:'zeus',emoji:'⚡',name:'Зевс',rarity:'legendary',bonus:5 },
+        ];
+        
+        let collectedResidents = [];
+        let residentFloors = {};
+        
+        // Сохранение
+        const SAVE_KEY = 'floors_game_save_v2';
+        function saveGame() {
+            const data = { coins, bestFloors, bestCombo, totalFloorsBuilt, totalCoinsEarned, gamesPlayed,
+                upgrades: { foundation:upgrades.foundation.level, architect:upgrades.architect.level,
+                    brakes:upgrades.brakes.level, goldrush:upgrades.goldrush.level, magnet:upgrades.magnet.level },
+                collectedResidents, ownedSkins, activeSkin, ownedBgSkins, activeBgSkin, unlockedAchievements, soundEnabled };
+            try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
+        }
+        function loadGame() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if(!raw) return false;
+                const data = JSON.parse(raw);
+                coins=data.coins||0; bestFloors=data.bestFloors||0; bestCombo=data.bestCombo||0;
+                totalFloorsBuilt=data.totalFloorsBuilt||0; totalCoinsEarned=data.totalCoinsEarned||0;
+                gamesPlayed=data.gamesPlayed||0;
+                if(data.upgrades){ upgrades.foundation.level=data.upgrades.foundation||1; upgrades.architect.level=data.upgrades.architect||1;
+                    upgrades.brakes.level=data.upgrades.brakes||1; upgrades.goldrush.level=data.upgrades.goldrush||1;
+                    upgrades.magnet.level=data.upgrades.magnet||1; }
+                collectedResidents=data.collectedResidents||[]; ownedSkins=data.ownedSkins||['classic'];
+                activeSkin=data.activeSkin||'classic'; ownedBgSkins=data.ownedBgSkins||['night'];
+                activeBgSkin=data.activeBgSkin||'night'; unlockedAchievements=data.unlockedAchievements||[];
+                if (data.soundEnabled !== undefined) { soundEnabled = data.soundEnabled; }
+                return true;
+            } catch(e) { return false; }
+        }
+        function resetProgress() { if(confirm('Точно сбросить ВЕСЬ прогресс?')){ localStorage.removeItem(SAVE_KEY); location.reload(); } }
+        function autoSave(){ clearTimeout(saveTimeout); saveTimeout = setTimeout(saveGame, 500); }
+        
+        // Бонусы
+        function getWidthBonus(){ return (upgrades.foundation.level-1)*3; }
+        function getArchitectBonus(){ const l=upgrades.architect.level; return l<=20?1+(l-1)*0.06:1+19*0.06+(l-20)*0.01; }
+        function getGoldrushChance(){ const l=upgrades.goldrush.level; return (l-1)*0.03; }
+        function getMagnetBonus(){ const l=upgrades.magnet.level; if(l<=5)return (l-1)*0.04;if(l<=10)return 0.16+(l-5)*0.03;if(l<=15)return 0.31+(l-10)*0.02;return 0.41+(l-15)*0.01; }
+        function updateIncrement(){ const l=upgrades.brakes.level; const reduction=l<=20?Math.max(0.10,1-(l-1)*0.04):Math.max(0.05,0.24-(l-20)*0.005); currentIncrement=BASE_SPEED_INCREMENT*reduction; }
+        function recalculateSpeed(){ updateIncrement(); moveSpeed=Math.min(START_SPEED+Math.max(0,floors.length-1)*currentIncrement,BASE_MAX_SPEED); }
+        
+        // Жильцы
+        function getRandomResident(){ const r=Math.random()*100; const pool=r<55?ALL_RESIDENTS.filter(x=>x.rarity==='common'):r<80?ALL_RESIDENTS.filter(x=>x.rarity==='rare'):r<95?ALL_RESIDENTS.filter(x=>x.rarity==='epic'):ALL_RESIDENTS.filter(x=>x.rarity==='legendary'); return pool[Math.floor(Math.random()*pool.length)]; }
+        function getCollectionBonus(){ return collectedResidents.reduce((s,id)=>{const r=ALL_RESIDENTS.find(x=>x.id===id);return s+(r?r.bonus:0);},0); }
+        function isResidentCollected(id){ return collectedResidents.includes(id); }
+        function collectResident(r){ if(!isResidentCollected(r.id)){collectedResidents.push(r.id);showCollectPopup(r);soundResident();autoSave();checkAchievements();} }
+        function showCollectPopup(r){ const c={common:'#aaa',rare:'#4da6ff',epic:'#c044ff',legendary:'#ffd700'}; collectPopup.innerHTML=`${r.emoji}<br><span style="color:${c[r.rarity]};font-size:16px;">${r.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${r.bonus}% к монетам</span>`; collectPopup.style.opacity='1';collectPopup.style.transform='translate(-50%,-50%) scale(1.1)';clearTimeout(collectPopup._timeout);collectPopup._timeout=setTimeout(()=>{collectPopup.style.opacity='0';collectPopup.style.transform='translate(-50%,-50%) scale(0.8)';},2000); }
+        function renderCollection(){ const cats=[{rarity:'legendary',name:'🟡 Легендарные',color:'#ffd700'},{rarity:'epic',name:'🟣 Эпические',color:'#c044ff'},{rarity:'rare',name:'🔵 Редкие',color:'#4da6ff'},{rarity:'common',name:'🟢 Обычные',color:'#aaa'}]; let h=''; cats.forEach(cat=>{const residents=ALL_RESIDENTS.filter(r=>r.rarity===cat.rarity); h+=`<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r=>isResidentCollected(r.id)).length}/${residents.length})</div><div class="collection-grid">`; residents.forEach(r=>{const c=isResidentCollected(r.id); h+=`<div class="collection-slot ${c?'':'locked'}">${c?r.emoji:'❓'}${c?`<span class="bonus-badge">+${r.bonus}%</span>`:''}</div>`;}); h+='</div>';}); document.getElementById('collection-content').innerHTML=h; document.getElementById('collected-count').textContent=collectedResidents.length; document.getElementById('total-count').textContent=ALL_RESIDENTS.length; document.getElementById('bonus-percent').textContent=`+${getCollectionBonus()}%`; }
+        
+        // Достижения
+        function checkAchievements(){ ACHIEVEMENTS.forEach(a=>{if(!unlockedAchievements.includes(a.id)&&a.check()){unlockedAchievements.push(a.id);achievementQueue.push(a);coins+=a.reward;updateUI();}}); if(!showingAchievement&&achievementQueue.length>0)showNextAchievement(); }
+        function showNextAchievement(){ if(achievementQueue.length===0){showingAchievement=false;return;} showingAchievement=true; const a=achievementQueue.shift(); achievementPopup.innerHTML=`${a.emoji} <b>${a.name}</b> +${a.reward}🪙`; achievementPopup.style.opacity='1';achievementPopup.style.top='100px';clearTimeout(achievementPopup._timeout);achievementPopup._timeout=setTimeout(()=>{achievementPopup.style.opacity='0';achievementPopup.style.top='80px';setTimeout(()=>showNextAchievement(),400);},2000); }
+        function renderAchievements(){ let h=''; ACHIEVEMENTS.forEach(a=>{const u=unlockedAchievements.includes(a.id); h+=`<div class="achievement-item ${u?'unlocked':'locked'}"><span class="shop-icon">${u?a.emoji:'🔒'}</span><div class="shop-info"><div class="name">${a.name}</div><div class="desc">${a.desc}</div><div class="reward">${u?'✅ Получено':'Награда: '+a.reward+'🪙'}</div></div></div>`;}); document.getElementById('tab-achievements').innerHTML=h; }
+        
+        // Скины
+        function getSkinColors(){ const s=SKINS.find(x=>x.id===activeSkin); return s&&s.colors?s.colors:null; }
+        function renderFloorSkins(){ let h=''; SKINS.forEach(s=>{const o=ownedSkins.includes(s.id),a=activeSkin===s.id; let t=a?'✅ Надет':o?'👕 Надеть':'🪙 '+s.cost; let cl=a?'active-skin':o?'owned':(coins>=s.cost?'':'cant-afford'); h+=`<div class="shop-item"><span class="shop-icon">${s.emoji}</span><div class="shop-info"><div class="name">${s.name}</div></div><button class="shop-buy ${cl}" data-skin="${s.id}">${t}</button></div>`;}); document.getElementById('tab-floor-skins').innerHTML=h; document.getElementById('tab-floor-skins').querySelectorAll('.shop-buy').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const id=b.dataset.skin;if(activeSkin===id)return;if(ownedSkins.includes(id)){activeSkin=id;}else{const s=SKINS.find(x=>x.id===id);if(!s||coins<s.cost)return;coins-=s.cost;ownedSkins.push(id);activeSkin=id;updateUI();}renderFloorSkins();autoSave();});}); }
+        function getBgSkin(){ return BG_SKINS.find(x=>x.id===activeBgSkin)||BG_SKINS[0]; }
+        function renderBgSkins(){ let h=''; BG_SKINS.forEach(s=>{const o=ownedBgSkins.includes(s.id),a=activeBgSkin===s.id; let t=a?'✅ Надет':o?'🌌 Надеть':'🪙 '+s.cost; let cl=a?'active-skin':o?'owned':(coins>=s.cost?'':'cant-afford'); h+=`<div class="shop-item"><span class="shop-icon">${s.emoji}</span><div class="shop-info"><div class="name">${s.name}</div></div><button class="shop-buy ${cl}" data-bgskin="${s.id}">${t}</button></div>`;}); document.getElementById('tab-bg-skins').innerHTML=h; document.getElementById('tab-bg-skins').querySelectorAll('.shop-buy').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const id=b.dataset.bgskin;if(activeBgSkin===id)return;if(ownedBgSkins.includes(id)){activeBgSkin=id;}else{const s=BG_SKINS.find(x=>x.id===id);if(!s||coins<s.cost)return;coins-=s.cost;ownedBgSkins.push(id);activeBgSkin=id;updateUI();}renderBgSkins();autoSave();});}); }
+        
+        // Магазин
+        function generateUpgradeHTML(){ const items=[{key:'foundation',icon:'🏛️',name:'Усиленный фундамент',desc:'Все этажи шире на +3 пикс.'},{key:'architect',icon:'📐',name:'Точный архитектор',desc:'Зона идеального попадания шире'},{key:'brakes',icon:'🐌',name:'Замедление времени',desc:'Скорость растёт медленнее'},{key:'goldrush',icon:'💰',name:'Золотая лихорадка',desc:'Шанс ×2 монет за этаж'},{key:'magnet',icon:'🧲',name:'Магнит для жильцов',desc:'Жильцы появляются чаще'},]; return items.map(u=>`<div class="shop-item"><span class="shop-icon">${u.icon}</span><div class="shop-info"><div class="name">${u.name}</div><div class="desc">${u.desc}</div><div class="level">Уровень: <span id="${u.key}-lvl">1</span>/20</div></div><button class="shop-buy" id="buy-${u.key}">🪙 <span id="${u.key}-cost">0</span></button></div>`).join(''); }
+        function getUpgradeCost(u){ const l=u.level;if(l>=u.maxLevel)return Infinity;return l<=20?u.baseCost+(l-1)*u.baseCost:u.baseCost*20+(l-20)*u.baseCost*3; }
+        function updateShopUI(){ ['foundation','architect','brakes','goldrush','magnet'].forEach(key=>{const u=upgrades[key],c=getUpgradeCost(u),lvl=document.getElementById(`${key}-lvl`),cost=document.getElementById(`${key}-cost`),btn=document.getElementById(`buy-${key}`);if(lvl)lvl.textContent=u.level;if(cost)cost.textContent=u.level>=u.maxLevel?'MAX':c;if(btn){if(u.level>=u.maxLevel){btn.textContent='✅ MAX';btn.classList.add('maxed');btn.classList.remove('cant-afford');}else{btn.textContent='🪙 '+c;btn.classList.toggle('cant-afford',coins<c);btn.classList.remove('maxed');}}}); }
+        function buyUpgrade(name){ const u=upgrades[name];if(u.level>=u.maxLevel)return;const c=getUpgradeCost(u);if(coins<c)return;coins-=c;u.level++;if(name==='foundation'&&currentFloor){currentFloor.w+=3;currentFloor.x-=1.5;}updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave(); }
+        let upgradesInit=false;
+        function initUpgrades(){ if(upgradesInit)return;document.getElementById('tab-upgrades').innerHTML=generateUpgradeHTML();['foundation','architect','brakes','goldrush','magnet'].forEach(k=>{document.getElementById(`buy-${k}`).addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade(k);updateShopUI();});});upgradesInit=true; }
+        
+        // Панели
+        function openShop(){ panelOpen=true;initUpgrades();mainMenu.style.display='none';overlay.classList.add('show');shopPanel.classList.add('open');if(gameState==='playing')bottomButtons.style.display='none';updateShopUI();renderFloorSkins();renderBgSkins();switchTab('shop-panel','upgrades'); }
+        function openCollection(){ panelOpen=true;mainMenu.style.display='none';overlay.classList.add('show');collectionPanel.classList.add('open');if(gameState==='playing')bottomButtons.style.display='none';renderCollection();renderAchievements();switchTab('collection-panel','residents'); }
+        function closePanels(){ panelOpen=false;shopPanel.classList.remove('open');collectionPanel.classList.remove('open');overlay.classList.remove('show');if(gameState==='playing'){bottomButtons.style.display='flex';}else if(gameState==='menu'){mainMenu.style.display='flex';} }
+        function switchTab(panelId,tabId){ const p=document.getElementById(panelId);p.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));p.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));p.querySelector(`[data-tab="${tabId}"]`).classList.add('active');document.getElementById(`tab-${tabId}`).classList.add('active'); }
+        document.querySelectorAll('.tab-btn').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const pId=b.closest('#shop-panel')?'shop-panel':'collection-panel';switchTab(pId,b.dataset.tab);});});
+        
+        // =============================================
+        // МЕНЮ
+        // =============================================
+        function updateMenuStats(){ document.getElementById('menu-best').textContent=bestFloors; document.getElementById('menu-coins').textContent=coins; }
+        
+        function showMenu() {
+            if (gameState === 'playing') {
+                savedGameState = { floors, comboCount, direction, cameraY, targetCameraY, residentFloors, currentFloor };
+            }
+            mainMenu.classList.remove('hidden');
+            mainMenu.style.display = 'flex';
+            updateMenuStats();
+            gameState = 'menu';
+            uiLayer.style.display = 'none';
+            bottomButtons.style.display = 'none';
+            hintText.style.display = 'none';
+            gameoverPanel.style.display = 'none';
+            shopPanel.classList.remove('open');
+            collectionPanel.classList.remove('open');
+            overlay.classList.remove('show');
+            panelOpen = false;
+            resumeBtn.style.display = (savedGameState && savedGameState.floors.length > 1) ? 'block' : 'none';
+        }
+        
+        function startGame() {
+            savedGameState = null;
+            resumeBtn.style.display = 'none';
+            mainMenu.classList.add('hidden');
+            mainMenu.style.display = 'none';
+            initGame();
+        }
+        
+        function resumeGame() {
+            if (!savedGameState) return;
+            floors = savedGameState.floors;
+            comboCount = savedGameState.comboCount;
+            direction = savedGameState.direction;
+            cameraY = savedGameState.cameraY;
+            targetCameraY = savedGameState.targetCameraY;
+            residentFloors = savedGameState.residentFloors;
+            currentFloor = savedGameState.currentFloor;
+            savedGameState = null;
+            mainMenu.classList.add('hidden');
+            mainMenu.style.display = 'none';
+            gameState = 'playing';
+            gameoverPanel.style.display = 'none';
+            hintText.style.display = 'none';
+            uiLayer.style.display = 'flex';
+            bottomButtons.style.display = 'flex';
+            resumeBtn.style.display = 'none';
+            recalculateSpeed();
+            updateUI();
+        }
+        
+        playBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();initAudio();startGame();});
+        resumeBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();initAudio();resumeGame();});
+        menuShopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openShop();});
+        menuCollectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openCollection();});
+        menuResetBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();resetProgress();});
+        
+        // =============================================
+        // ИГРА
+        // =============================================
+        function resize(){ const c=document.getElementById('gameContainer'),r=c.getBoundingClientRect();W=r.width;H=r.height;canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(1,0,0,1,0,0);ctx.scale(devicePixelRatio,devicePixelRatio); }
+        function getStartWidth(){ return BASE_WIDTH+getWidthBonus(); }
+        function initGame(){ floors=[];comboCount=0;direction=1;cameraY=0;targetCameraY=0;residentFloors={};updateIncrement();const sw=getStartWidth();floors.push({x:W/2-sw/2,y:H-FLOOR_HEIGHT-20,w:sw});gameState='playing';gameoverPanel.style.display='none';comboPopup.style.opacity='0';collectPopup.style.opacity='0';hintText.style.display='block';uiLayer.style.display='flex';bottomButtons.style.display='flex';gamesPlayed++;spawnFloor();updateUI(); }
+        function getColor(i){ const sc=getSkinColors();if(sc){return{top:`hsl(${sc.top[0]},${sc.top[1]}%,${Math.min(sc.top[2]+(i%5),80)}%)`,bottom:`hsl(${sc.top[0]},${sc.top[1]}%,${sc.bottom[2]+(i%3)}%)`,stroke:`hsl(${sc.top[0]},${sc.stroke[1]}%,${sc.stroke[2]}%)`,glow:`hsl(${sc.top[0]},${sc.stroke[1]}%,${sc.stroke[2]}%)`};}const h=(200+i*6)%360;return{top:`hsl(${h},65%,55%)`,bottom:`hsl(${h},65%,30%)`,stroke:`hsl(${h},75%,70%)`,glow:`hsl(${h},75%,60%)`}; }
+        function spawnFloor(){ if(!floors.length)return;const lf=floors[floors.length-1];const sx=direction>0?-lf.w+20:W-20;currentFloor={x:sx,y:lf.y-FLOOR_HEIGHT,w:lf.w};recalculateSpeed(); }
+        
+        function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}const nf={x:ol,y:currentFloor.y,w:ow};floors.push(nf);totalFloorsBuilt++;const fi=floors.length-1;if(residentFloors[fi]){const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);if(res&&!isResidentCollected(res.id))collectResident(res);}const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.04*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();}else if(acc>1-0.25*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;spawnFloor();hintText.style.display='none';autoSave();checkAchievements();const ni=floors.length;if(ni>1&&ni%10===0&&!residentFloors[ni]){if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){residentFloors[ni]=getRandomResident().id;}} }
+        
+        function showGoldrush(){comboPopup.textContent='💰 ЗОЛОТО! ×2';comboPopup.style.color='#ffd700';comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},700);}
+        function showCombo(c){if(c>1){comboPopup.textContent=`ИДЕАЛЬНО! x${c} 🔥`;comboPopup.style.color='#ffd700';}else if(c===0&&floors.length>1){comboPopup.textContent='Отлично! ✨';comboPopup.style.color='#fff';}else return;comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},500);}
+        function hideCombo(){comboPopup.style.opacity='0';}
+        function triggerGameOver(){soundGameOver();gameState='gameover';currentFloor=null;const tf=floors.length,cb=1+getCollectionBonus()/100;const bc=Math.floor(tf*1*cb);coins+=bc;totalCoinsEarned+=bc;if(tf>bestFloors){bestFloors=tf;bestDisplay.textContent=bestFloors;}goFloorsEl.textContent=tf;goComboEl.textContent=bestCombo;goCoinsEl.textContent=bc;gameoverPanel.style.display='flex';hintText.style.display='none';bottomButtons.style.display='none';updateUI();saveGame();checkAchievements();updateMenuStats();savedGameState=null;resumeBtn.style.display='none';}
+        function updateUI(){floorCountEl.textContent=Math.max(1,floors.length);bestDisplay.textContent=bestFloors;comboTextEl.textContent=comboCount;coinDisplayEl.textContent=coins;updateMenuStats();}
+        
+        function handleTap(e){e.preventDefault();initAudio();if(gameState==='gameover'||panelOpen||gameState!=='playing'||!currentFloor)return;placeFloor();}
+        
+        restartBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();gameoverPanel.style.display='none';startGame();});
+        canvas.addEventListener('pointerdown',handleTap);
+        shopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openShop();});
+        collectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openCollection();});
+        resetBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();saveGame();showMenu();});
+        closeShopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+        closeCollectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+        overlay.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+        document.addEventListener('gesturestart',(e)=>e.preventDefault());
+        document.addEventListener('gesturechange',(e)=>e.preventDefault());
+        document.addEventListener('gestureend',(e)=>e.preventDefault());
+        window.addEventListener('resize',()=>{const ow=W;resize();const sx=W/ow;floors.forEach((f,i)=>{f.x*=sx;f.w*=sx;f.y=H-FLOOR_HEIGHT-20-(i*FLOOR_HEIGHT);});if(currentFloor){currentFloor.x*=sx;currentFloor.w*=sx;}});
+        
+        // Отрисовка
+        function update(){if(gameState!=='playing'||panelOpen)return;if(currentFloor){currentFloor.x+=moveSpeed*direction;if(currentFloor.x<=0){currentFloor.x=0;direction=1;}else if(currentFloor.x+currentFloor.w>=W){currentFloor.x=W-currentFloor.w;direction=-1;}}cameraY+=(targetCameraY-cameraY)*0.1;}
+        function draw(){ctx.clearRect(0,0,W,H);drawBackground();ctx.save();ctx.translate(0,cameraY);for(let i=0;i<floors.length;i++)drawFloor(floors[i],i,false);if(currentFloor&&gameState==='playing'&&!panelOpen)drawFloor(currentFloor,floors.length,true);ctx.restore();}
+        function drawBackground(){const bg=getBgSkin();const grad=ctx.createLinearGradient(0,0,0,H);bg.gradient.forEach((c,i)=>grad.addColorStop(i/(bg.gradient.length-1),c));ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+            if(bg.id==='aurora'){const t=Date.now()/3000;for(let i=0;i<3;i++){ctx.fillStyle=`rgba(${100+i*30},${200+i*20},${150+i*30},0.15)`;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=20)ctx.lineTo(x,H*0.3+Math.sin(x*0.02+t+i)*40+Math.sin(x*0.05+t*2)*20);ctx.lineTo(W,H);ctx.closePath();ctx.fill();}}
+            if(bg.id==='ocean'){if(!drawBackground.bubbles)drawBackground.bubbles=Array.from({length:15},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*6,s:0.2+Math.random()*0.5}));drawBackground.bubbles.forEach(b=>{b.y-=b.s;if(b.y<-10){b.y=H+10;b.x=Math.random()*W;}ctx.fillStyle=`rgba(200,240,255,${0.2+Math.sin(Date.now()/1000+b.x)*0.1})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();});}
+            if(bg.id==='hell'){if(!drawBackground.sparks)drawBackground.sparks=Array.from({length:40},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.3+Math.random()*1.5}));drawBackground.sparks.forEach(sp=>{sp.y-=sp.s;if(sp.y<-10){sp.y=H+10;sp.x=Math.random()*W;}ctx.fillStyle=`rgba(255,${100+Math.floor(Math.random()*100)},0,${0.4+Math.sin(Date.now()/1000+sp.x)*0.2})`;ctx.beginPath();ctx.arc(sp.x,sp.y,sp.r,0,Math.PI*2);ctx.fill();});}
+            if(bg.id==='storm'){if(!drawBackground.lightnings){drawBackground.lightnings=[];for(let i=0;i<3;i++){drawBackground.lightnings.push({x:50+Math.random()*(W-100),startY:0,segments:4+Math.floor(Math.random()*6),opacity:0,timer:60+Math.random()*200,maxTimer:0});}}const lt=Date.now()/1000;drawBackground.lightnings.forEach(l=>{l.timer--;if(l.timer<=0){l.x=30+Math.random()*(W-60);l.segments=5+Math.floor(Math.random()*8);l.opacity=0.7+Math.random()*0.3;l.maxTimer=4+Math.floor(Math.random()*8);l.timer=l.maxTimer;}if(l.timer<l.maxTimer){const progress=1-(l.timer/l.maxTimer);const alpha=l.opacity*(1-progress)*(0.6+Math.sin(lt*60)*0.4);ctx.strokeStyle=`rgba(255,255,255,${alpha})`;ctx.lineWidth=2;ctx.shadowColor=`rgba(200,220,255,${alpha})`;ctx.shadowBlur=8;ctx.beginPath();let y=l.startY,x=l.x;ctx.moveTo(x,y);for(let s=0;s<l.segments;s++){y+=(H/l.segments)*(0.5+Math.random()*0.5);x+=(Math.random()-0.5)*60;if(x<0)x=5;if(x>W)x=W-5;ctx.lineTo(x,y);}ctx.stroke();ctx.shadowBlur=0;if(Math.random()<0.4){ctx.strokeStyle=`rgba(255,255,255,${alpha*0.5})`;ctx.lineWidth=1;ctx.beginPath();const bx=x+(Math.random()-0.5)*40,by=y+Math.random()*30;ctx.moveTo(x,y);ctx.lineTo(bx,by);ctx.stroke();}}});}
+            if(bg.id==='sakura'){if(!drawBackground.petals)drawBackground.petals=Array.from({length:25},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*3,s:0.3+Math.random()*0.8,wobble:Math.random()*Math.PI*2}));const pt=Date.now()/1000;drawBackground.petals.forEach(p=>{p.y+=p.s;p.x+=Math.sin(pt+p.wobble)*0.5;if(p.y>H+10){p.y=-10;p.x=Math.random()*W;}ctx.fillStyle=`rgba(255,${180+Math.floor(Math.random()*40)},${200+Math.floor(Math.random()*30)},0.7)`;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*0.6,Math.sin(pt+p.wobble)*0.5,0,Math.PI*2);ctx.fill();});}
+            if(bg.id==='volcano'){if(!drawBackground.ash)drawBackground.ash=Array.from({length:35},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.2+Math.random()*1,drift:Math.random()*2-1}));const at=Date.now()/1000;drawBackground.ash.forEach(a=>{a.y-=a.s;a.x+=a.drift*0.3;if(a.y<-10){a.y=H+10;a.x=Math.random()*W;}const alpha=0.3+Math.sin(at+a.x)*0.2;ctx.fillStyle=`rgba(${80+Math.floor(Math.random()*40)},${20+Math.floor(Math.random()*20)},${5},${alpha})`;ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);ctx.fill();});const lavaGrad=ctx.createLinearGradient(0,H*0.8,0,H);lavaGrad.addColorStop(0,'rgba(255,50,0,0)');lavaGrad.addColorStop(1,'rgba(255,100,0,0.3)');ctx.fillStyle=lavaGrad;ctx.fillRect(0,H*0.8,W,H*0.2);}
+            if(bg.starColor&&bg.starCount>0){if(!drawBackground.stars)drawBackground.stars=Array.from({length:100},()=>({x:Math.random()*420,y:Math.random()*750,r:0.3+Math.random()*1.5,twinkle:Math.random()*Math.PI*2}));const time=Date.now()/1000;for(let i=0;i<Math.min(bg.starCount,drawBackground.stars.length);i++){const star=drawBackground.stars[i];const alpha=0.3+Math.sin(time*2+star.twinkle)*0.2;let color=bg.starColor.replace('{alpha}',alpha).replace('{color}','255,255,255');if(bg.id==='space'){const colors=['rgba(255,255,255,','rgba(200,220,255,','rgba(255,255,200,','rgba(255,200,200,'];color=colors[Math.floor(Math.random()*4)]+alpha+')';}ctx.fillStyle=color;ctx.beginPath();ctx.arc(star.x,star.y,star.r,0,Math.PI*2);ctx.fill();}}
+            if(bg.id==='morning'){if(!drawBackground.clouds)drawBackground.clouds=Array.from({length:5},()=>({x:Math.random()*W,y:50+Math.random()*H*0.4,w:40+Math.random()*80}));drawBackground.clouds.forEach(c=>{c.x+=0.2;if(c.x>W+100)c.x=-100;ctx.fillStyle='rgba(255,255,255,0.25)';ctx.beginPath();ctx.ellipse(c.x,c.y,c.w,c.w*0.3,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(c.x-c.w*0.3,c.y+5,c.w*0.6,c.w*0.2,0,0,Math.PI*2);ctx.fill();});}
+        }
+        
+        function drawFloor(floor, index, isCurrent) {
+            const color = getColor(index);
+            ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(floor.x + 2, floor.y + 2, floor.w, FLOOR_HEIGHT);
+            const grad = ctx.createLinearGradient(floor.x, floor.y, floor.x, floor.y + FLOOR_HEIGHT);
+            grad.addColorStop(0, color.top); grad.addColorStop(1, color.bottom);
+            ctx.fillStyle = grad; ctx.fillRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
+            if (isCurrent) { ctx.shadowColor = color.glow; ctx.shadowBlur = 12; ctx.strokeStyle = color.stroke; ctx.lineWidth = 2.5; }
+            else { ctx.shadowBlur = 0; ctx.strokeStyle = color.stroke; ctx.lineWidth = 1.5; }
+            ctx.strokeRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT); ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(floor.x, floor.y, floor.w, 3);
+            
+            if (floor.w > 15) {
+                const maxWindowWidth = Math.min(14, floor.w / 2 - 4);
+                const minWindowWidth = 6;
+                const windowWidth = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(floor.w / 20)));
+                const windowHeight = Math.max(6, Math.min(12, windowWidth * 0.8));
+                const gap = Math.max(3, windowWidth * 0.4);
+                const maxWindows = Math.floor((floor.w - gap) / (windowWidth + gap));
+                const windowCount = Math.max(1, Math.min(maxWindows, 8));
+                
+                if (!floor._windowsStyle || floor._windowsStyle.w !== floor.w) {
+                    floor._windowsStyle = { w: floor.w, count: windowCount };
+                    floor._windows = [];
+                    for (let i = 0; i < windowCount; i++) {
+                        const hasResident = residentFloors[index] && i === 0;
+                        const lit = Math.random() < 0.7;
+                        let special = null;
+                        if (!hasResident && Math.random() < 0.04) {
+                            const specials = ['🌿', '📺', '🐱', '🎵', '📚', '💡', '🪴', '☕'];
+                            special = specials[Math.floor(Math.random() * specials.length)];
+                        }
+                        floor._windows.push({ i: i, lit: lit, special: special, hasResident: hasResident });
+                    }
+                }
+                
+                const totalWindowsWidth = windowCount * windowWidth + (windowCount - 1) * gap;
+                const startX = floor.x + (floor.w - totalWindowsWidth) / 2;
+                
+                floor._windows.forEach(win => {
+                    const wx = startX + win.i * (windowWidth + gap);
+                    const wy = floor.y + (FLOOR_HEIGHT - windowHeight) / 2;
+                    
+                    if (win.hasResident) {
+                        ctx.fillStyle = 'rgba(255,255,150,0.9)'; ctx.fillRect(wx, wy, windowWidth, windowHeight);
+                        ctx.strokeStyle = 'rgba(255,215,0,0.8)'; ctx.lineWidth = 1; ctx.strokeRect(wx, wy, windowWidth, windowHeight);
+                        const resident = ALL_RESIDENTS.find(r => r.id === residentFloors[index]);
+                        if (resident) { ctx.font = `${windowWidth - 2}px Arial`; ctx.fillText(resident.emoji, wx + 1, wy + windowHeight - 2); }
+                    } else if (win.special && windowWidth >= 8) {
+                        const bgColor = win.lit ? 'rgba(255,255,200,0.7)' : 'rgba(30,30,50,0.7)';
+                        ctx.fillStyle = bgColor; ctx.fillRect(wx, wy, windowWidth, windowHeight);
+                        ctx.strokeStyle = 'rgba(255,255,255,0.3)'; ctx.lineWidth = 0.5; ctx.strokeRect(wx, wy, windowWidth, windowHeight);
+                        ctx.font = `${windowWidth - 4}px Arial`; ctx.fillText(win.special, wx + 2, wy + windowHeight - 2);
+                    } else {
+                        const bgColor = win.lit ? 'rgba(255,255,200,0.5)' : 'rgba(20,20,40,0.5)';
+                        ctx.fillStyle = bgColor; ctx.fillRect(wx, wy, windowWidth, windowHeight);
+                        ctx.strokeStyle = win.lit ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
+                        ctx.lineWidth = 0.5; ctx.strokeRect(wx, wy, windowWidth, windowHeight);
+                        if (windowWidth >= 8) {
+                            ctx.strokeStyle = win.lit ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.05)';
+                            ctx.beginPath(); ctx.moveTo(wx + windowWidth/2, wy); ctx.lineTo(wx + windowWidth/2, wy + windowHeight);
+                            ctx.moveTo(wx, wy + windowHeight/2); ctx.lineTo(wx + windowWidth, wy + windowHeight/2); ctx.stroke();
+                        }
+                    }
+                });
+            }
+        }
+        
+        function gameLoop(){update();draw();requestAnimationFrame(gameLoop);}
+        
+        // Запуск
+        resize();updateIncrement();
+        const loaded = loadGame();
+        if (loaded) {
+            updateMenuStats();
+            const icon = soundEnabled ? '🔊' : '🔇';
+            if (soundBtn) soundBtn.textContent = icon;
+            if (menuSoundBtn) menuSoundBtn.textContent = icon;
+        }
+        showMenu();
+        gameLoop();
+        
+        // Офлайн-режим (только для GitHub Pages)
+        if ('serviceWorker' in navigator && location.hostname.includes('github.io')) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    })();
+    </script>
 </body>
 </html>
