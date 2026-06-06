@@ -664,8 +664,25 @@ function showCollectPopup(r) {
         function generateUpgradeHTML(){ const items=[{key:'foundation',icon:'🏛️',name:'Усиленный фундамент',desc:'Все этажи шире на +3 пикс.'},{key:'architect',icon:'📐',name:'Точный архитектор',desc:'Зона идеального попадания шире'},{key:'brakes',icon:'🐌',name:'Замедление времени',desc:'Скорость растёт медленнее'},{key:'goldrush',icon:'💰',name:'Золотая лихорадка',desc:'Шанс ×2 монет за этаж'},{key:'magnet',icon:'🧲',name:'Магнит для жильцов',desc:'Жильцы появляются чаще'},]; return items.map(u=>`<div class="shop-item"><span class="shop-icon">${u.icon}</span><div class="shop-info"><div class="name">${u.name}</div><div class="desc">${u.desc}</div><div class="level">Уровень: <span id="${u.key}-lvl">1</span>/20</div></div><button class="shop-buy" id="buy-${u.key}">🪙 <span id="${u.key}-cost">0</span></button></div>`).join(''); }
         function getUpgradeCost(u){ const l=u.level;if(l>=u.maxLevel)return Infinity;return l<=20?u.baseCost+(l-1)*u.baseCost:u.baseCost*20+(l-20)*u.baseCost*3; }
         function updateShopUI(){ ['foundation','architect','brakes','goldrush','magnet'].forEach(key=>{const u=upgrades[key],c=getUpgradeCost(u),lvl=document.getElementById(`${key}-lvl`),cost=document.getElementById(`${key}-cost`),btn=document.getElementById(`buy-${key}`);if(lvl)lvl.textContent=u.level;if(cost)cost.textContent=u.level>=u.maxLevel?'MAX':c;if(btn){if(u.level>=u.maxLevel){btn.textContent='✅ MAX';btn.classList.add('maxed');btn.classList.remove('cant-afford');}else{btn.textContent='🪙 '+c;btn.classList.toggle('cant-afford',coins<c);btn.classList.remove('maxed');}}}); }
-        function buyUpgrade(name){ const u=upgrades[name];if(u.level>=u.maxLevel)return;const c=getUpgradeCost(u);if(coins<c)return;coins-=c;u.level++;if(name==='foundation'&&currentFloor){currentFloor.w+=3;currentFloor.x-=1.5;}updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave(); }
-        let upgradesInit=false;
+function buyUpgrade(name){ 
+    const u=upgrades[name];if(u.level>=u.maxLevel)return;const c=getUpgradeCost(u);if(coins<c)return;coins-=c;u.level++;
+    if(name==='foundation'){
+        // Расширяем все существующие этажи
+        floors.forEach(f => {
+            f.w += 3;
+            f.x -= 1.5;
+        });
+        // Расширяем текущий движущийся этаж
+        if(currentFloor){
+            currentFloor.w += 3;
+            currentFloor.x -= 1.5;
+        }
+        // Сбрасываем кеш окон, так как ширина изменилась
+        floors.forEach(f => { f._windows = null; });
+    }
+    updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave();
+} 
+let upgradesInit=false;
         function initUpgrades(){ if(upgradesInit)return;document.getElementById('tab-upgrades').innerHTML=generateUpgradeHTML();['foundation','architect','brakes','goldrush','magnet'].forEach(k=>{document.getElementById(`buy-${k}`).addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade(k);updateShopUI();});});upgradesInit=true; }
         
         function openShop(){ panelOpen=true;initUpgrades();mainMenu.style.display='none';overlay.classList.add('show');shopPanel.classList.add('open');if(gameState==='playing')bottomButtons.style.display='none';updateShopUI();renderFloorSkins();renderBgSkins();switchTab('shop-panel','upgrades'); }
@@ -752,8 +769,7 @@ function showCollectPopup(r) {
             return { top:`hsl(${h},65%,55%)`,bottom:`hsl(${h},65%,30%)`,stroke:`hsl(${h},75%,70%)`,glow:`hsl(${h},75%,60%)` }; 
         }
         
-        function spawnFloor(){ if(!floors.length)return;const lf=floors[floors.length-1];const sx=direction>0?-lf.w+20:W-20;currentFloor={x:sx,y:lf.y-FLOOR_HEIGHT,w:lf.w};recalculateSpeed(); }
-        
+function spawnFloor(){ if(!floors.length)return;const lf=floors[floors.length-1];const sx=direction>0?-lf.w+20:W-20;currentFloor={x:sx,y:lf.y-FLOOR_HEIGHT,w:lf.w};recalculateSpeed(); }
         function spawnPerfectParticles(x, y, w) {
             const count = 12;
             const colors = ['#ffd700', '#ffaa00', '#ffe066', '#ffffff', '#ffcc00'];
@@ -788,15 +804,15 @@ function showCollectPopup(r) {
             }
         }
         
-        function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}const nf={x:ol,y:currentFloor.y,w:ow,_windows:null,_residentWindow:null};floors.push(nf);
+        function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}const nf={x:ol,y:currentFloor.y,w:ow,_windows:null};floors.push(nf);
+
 ;totalFloorsBuilt++;const fi=floors.length-1;
 if(residentFloors[fi]){
     const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);
     if(res&&!isResidentCollected(res.id))collectResident(res);
     
-    // Жильца нет на этом этаже — и не должно быть
-}const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.02*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();spawnPerfectParticles(nf.x,nf.y,nf.w);}else if(acc>1-0.15*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;spawnFloor();hintText.style.display='none';autoSave();checkAchievements();const ni=floors.length;if(ni>1&&ni%10===0&&!residentFloors[ni]){
-    if(Math.random()<Math.min(0.25+getMagnetBonus(),0.55)){
+}const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.02*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();spawnPerfectParticles(nf.x,nf.y,nf.w);}else if(acc>1-0.15*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;spawnFloor();hintText.style.display='none';autoSave();checkAchievements();const ni=floors.length;if(ni>1&&ni%15===0&&!residentFloors[ni]){
+    if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){
         // Выбираем только НОВОГО жильца (которого ещё нет в коллекции)
         const newResidents = ALL_RESIDENTS.filter(r => !isResidentCollected(r.id));
         if (newResidents.length > 0) {
@@ -860,7 +876,7 @@ if(residentFloors[fi]){
                 const maxWindows = Math.floor((floor.w - gap) / (windowWidth + gap));
                 const windowCount = Math.max(1, Math.min(maxWindows, 8));
                 
-                if (!floor._windows || floor._windowsSeed !== index) {
+                if (!floor._windows) {
     const seed = index * 12345 + 67890;
     const pseudoRandom = (n) => { const x = Math.sin(seed + n) * 10000; return x - Math.floor(x); };
     
