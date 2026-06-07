@@ -769,8 +769,47 @@ let upgradesInit=false;
             return { top:`hsl(${h},65%,55%)`,bottom:`hsl(${h},65%,30%)`,stroke:`hsl(${h},75%,70%)`,glow:`hsl(${h},75%,60%)` }; 
         }
         
-function spawnFloor(){ if(!floors.length)return;const lf=floors[floors.length-1];const sx=direction>0?-lf.w+20:W-20;currentFloor={x:sx,y:lf.y-FLOOR_HEIGHT,w:lf.w};recalculateSpeed(); }
-        function spawnPerfectParticles(x, y, w) {
+function spawnFloor(){ 
+    if(!floors.length)return;
+    const lf=floors[floors.length-1];
+    const sx=direction>0?-lf.w+20:W-20;
+    const newWidth = lf.w;
+    
+    const windows = [];
+    let ww = 6, wh = 6, gap = 3, residentWindow = null;
+    
+    if (newWidth > 15) {
+        const maxWindowWidth = Math.min(14, newWidth / 2 - 4);
+        const minWindowWidth = 6;
+        ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(newWidth / 20)));
+        wh = Math.max(6, Math.min(12, ww * 0.8));
+        gap = Math.max(3, ww * 0.4);
+        const maxWindows = Math.floor((newWidth - gap) / (ww + gap));
+        const windowCount = Math.max(1, Math.min(maxWindows, 8));
+        
+        residentWindow = residentFloors[floors.length] ? Math.floor(Math.random() * windowCount) : null;
+        for (let i = 0; i < windowCount; i++) {
+            windows.push({
+                i: i,
+                lit: Math.random() < 0.7,
+                special: null,
+                hasResident: residentWindow !== null && i === residentWindow
+            });
+        }
+    }
+    
+    currentFloor={
+        x:sx, y:lf.y-FLOOR_HEIGHT, w:newWidth,
+        _windows: windows,
+        _windowWidth: ww,
+        _windowHeight: wh,
+        _windowGap: gap,
+        _windowCount: windows.length,
+        _residentWindow: residentWindow
+    };
+    recalculateSpeed();
+}       
+function spawnPerfectParticles(x, y, w) {
             const count = 12;
             const colors = ['#ffd700', '#ffaa00', '#ffe066', '#ffffff', '#ffcc00'];
             for (let i = 0; i < count; i++) {
@@ -804,23 +843,35 @@ function spawnFloor(){ if(!floors.length)return;const lf=floors[floors.length-1]
             }
         }
         
-        function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}const nf={x:ol,y:currentFloor.y,w:ow,_windows:null};floors.push(nf);
+function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}const nf={x:ol,y:currentFloor.y,w:ow,_windows:currentFloor._windows||[],_windowWidth:currentFloor._windowWidth||6,_windowHeight:currentFloor._windowHeight||6,_windowGap:currentFloor._windowGap||3,_windowCount:(currentFloor._windows||[]).length};floors.push(nf);const fi=floors.length-1;
 
-;totalFloorsBuilt++;const fi=floors.length-1;
-if(residentFloors[fi]){
+totalFloorsBuilt++;
+
+// Назначаем жильца в окно и собираем
+if(residentFloors[fi] && nf._windows.length > 0){
+    const rw = currentFloor._residentWindow !== null ? currentFloor._residentWindow : Math.floor(Math.random() * nf._windows.length);
+    nf._residentWindow = rw;
+    nf._windows.forEach((w, i) => { w.hasResident = (i === rw); });
+    
     const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);
     if(res&&!isResidentCollected(res.id))collectResident(res);
-    
-}const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.02*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();spawnPerfectParticles(nf.x,nf.y,nf.w);}else if(acc>1-0.15*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;spawnFloor();hintText.style.display='none';autoSave();checkAchievements();const ni=floors.length;if(ni>1&&ni%15===0&&!residentFloors[ni]){
+}
+
+const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.02*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();spawnPerfectParticles(nf.x,nf.y,nf.w);}else if(acc>1-0.15*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;
+
+// Спавн жильца ДО spawnFloor
+const ni=floors.length;
+if(ni>1&&ni%15===0&&!residentFloors[ni]){
     if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){
-        // Выбираем только НОВОГО жильца (которого ещё нет в коллекции)
         const newResidents = ALL_RESIDENTS.filter(r => !isResidentCollected(r.id));
         if (newResidents.length > 0) {
             const pick = newResidents[Math.floor(Math.random() * newResidents.length)];
             residentFloors[ni] = pick.id;
         }
     }
-} }
+}
+
+spawnFloor();hintText.style.display='none';autoSave();checkAchievements(); }
         
         function showGoldrush(){comboPopup.textContent='💰 ЗОЛОТО! ×2';comboPopup.style.color='#ffd700';comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},700);}
         function showCombo(c){if(c>1){comboPopup.textContent=`ИДЕАЛЬНО! x${c} 🔥`;comboPopup.style.color='#ffd700';}else if(c===0&&floors.length>1){comboPopup.textContent='Отлично! ✨';comboPopup.style.color='#fff';}else return;comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},500);}
@@ -877,24 +928,8 @@ if(residentFloors[fi]){
                 const windowCount = Math.max(1, Math.min(maxWindows, 8));
                 
                 if (!floor._windows) {
-    const seed = index * 12345 + 67890;
-    const pseudoRandom = (n) => { const x = Math.sin(seed + n) * 10000; return x - Math.floor(x); };
-    
-    // Выбираем окно для жильца один раз
-    if (floor._residentWindow === undefined && residentFloors[index]) {
-        floor._residentWindow = Math.floor(pseudoRandom(999) * windowCount);
-    }
-    
     floor._windows = [];
-    for (let i = 0; i < windowCount; i++) {
-        const hasResident = residentFloors[index] && i === floor._residentWindow;
-        const lit = pseudoRandom(i * 3) < 0.7;
-        floor._windows.push({ i: i, lit: lit, special: null, hasResident: hasResident });
-    }
-    floor._windowsSeed = index;
-    floor._windowWidth = windowWidth;
-    floor._windowHeight = windowHeight;
-    floor._windowGap = gap;
+    // Окна будут сгенерированы в placeFloor
 }
 
 const ww = floor._windowWidth;
