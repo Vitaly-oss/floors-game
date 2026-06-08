@@ -676,12 +676,64 @@ function buyUpgrade(name){
         if(currentFloor){
             currentFloor.w += 3;
             currentFloor.x -= 1.5;
+            
+            // Перегенерируем окна для текущего этажа
+            if (currentFloor.w > 15) {
+                const maxWindowWidth = Math.min(14, currentFloor.w / 2 - 4);
+                const minWindowWidth = 6;
+                const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(currentFloor.w / 20)));
+                const wh = Math.max(6, Math.min(12, ww * 0.8));
+                const gap = Math.max(3, ww * 0.4);
+                const maxWindows = Math.floor((currentFloor.w - gap) / (ww + gap));
+                const windowCount = Math.max(1, Math.min(maxWindows, 12));
+                
+                currentFloor._windows = [];
+                currentFloor._windowWidth = ww;
+                currentFloor._windowHeight = wh;
+                currentFloor._windowGap = gap;
+                currentFloor._windowCount = windowCount;
+                
+                for (let i = 0; i < windowCount; i++) {
+                    currentFloor._windows.push({
+                        i: i,
+                        lit: Math.random() < 0.7,
+                        special: null,
+                        hasResident: false
+                    });
+                }
+            }
         }
-        // Сбрасываем кеш окон, так как ширина изменилась
-        floors.forEach(f => { f._windows = null; });
+        // Перегенерируем окна для всех этажей кроме фундамента
+        floors.forEach((f, i) => {
+            if (i > 0 && f.w > 15) {
+                const maxWindowWidth = Math.min(14, f.w / 2 - 4);
+                const minWindowWidth = 6;
+                const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(f.w / 20)));
+                const wh = Math.max(6, Math.min(12, ww * 0.8));
+                const gap = Math.max(3, ww * 0.4);
+                const maxWindows = Math.floor((f.w - gap) / (ww + gap));
+                const windowCount = Math.max(1, Math.min(maxWindows, 12));
+                
+                f._windows = [];
+                f._windowWidth = ww;
+                f._windowHeight = wh;
+                f._windowGap = gap;
+                f._windowCount = windowCount;
+                
+                const rw = f._residentWindow !== undefined ? f._residentWindow : null;
+                for (let j = 0; j < windowCount; j++) {
+                    f._windows.push({
+                        i: j,
+                        lit: Math.random() < 0.7,
+                        special: null,
+                        hasResident: rw !== null && j === rw
+                    });
+                }
+            }
+        });
     }
     updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave();
-} 
+}
 let upgradesInit=false;
         function initUpgrades(){ if(upgradesInit)return;document.getElementById('tab-upgrades').innerHTML=generateUpgradeHTML();['foundation','architect','brakes','goldrush','magnet'].forEach(k=>{document.getElementById(`buy-${k}`).addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade(k);updateShopUI();});});upgradesInit=true; }
         
@@ -785,7 +837,7 @@ function spawnFloor(){
         wh = Math.max(6, Math.min(12, ww * 0.8));
         gap = Math.max(3, ww * 0.4);
         const maxWindows = Math.floor((newWidth - gap) / (ww + gap));
-        const windowCount = Math.max(1, Math.min(maxWindows, 8));
+        const windowCount = Math.max(1, Math.min(maxWindows, 12));
         
         residentWindow = residentFloors[floors.length] ? Math.floor(Math.random() * windowCount) : null;
         for (let i = 0; i < windowCount; i++) {
@@ -843,7 +895,39 @@ function spawnPerfectParticles(x, y, w) {
             }
         }
         
-function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}const nf={x:ol,y:currentFloor.y,w:ow,_windows:currentFloor._windows||[],_windowWidth:currentFloor._windowWidth||6,_windowHeight:currentFloor._windowHeight||6,_windowGap:currentFloor._windowGap||3,_windowCount:(currentFloor._windows||[]).length};floors.push(nf);const fi=floors.length-1;
+function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}// Переносим окна с пересчётом размеров под новую ширину
+const oldWindows = currentFloor._windows || [];
+let newWindows = [];
+let newWw = currentFloor._windowWidth || 6;
+let newWh = currentFloor._windowHeight || 6;
+let newGap = currentFloor._windowGap || 3;
+let newWc = oldWindows.length;
+
+if (ow > 15 && oldWindows.length > 0) {
+    // Пересчитываем размеры окон под новую ширину
+    const maxWindowWidth = Math.min(14, ow / 2 - 4);
+    const minWindowWidth = 6;
+    newWw = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(ow / 20)));
+    newWh = Math.max(6, Math.min(12, newWw * 0.8));
+    newGap = Math.max(3, newWw * 0.4);
+    const maxWindows = Math.floor((ow - newGap) / (newWw + newGap));
+    newWc = Math.min(oldWindows.length, Math.max(1, Math.min(maxWindows, 10)));
+    
+    // Копируем только нужное количество окон, сохраняя их свойства
+    for (let i = 0; i < newWc; i++) {
+        const oldWin = oldWindows[i];
+        newWindows.push({
+            i: i,
+            lit: oldWin.lit,
+            special: oldWin.special,
+            hasResident: oldWin.hasResident
+        });
+    }
+} else {
+    newWindows = oldWindows;
+}
+
+const nf={x:ol,y:currentFloor.y,w:ow,_windows:newWindows,_windowWidth:newWw,_windowHeight:newWh,_windowGap:newGap,_windowCount:newWc};floors.push(nf);const fi=floors.length-1;
 
 totalFloorsBuilt++;
 
@@ -925,7 +1009,7 @@ spawnFloor();hintText.style.display='none';autoSave();checkAchievements(); }
                 const windowHeight = Math.max(6, Math.min(12, windowWidth * 0.8));
                 const gap = Math.max(3, windowWidth * 0.4);
                 const maxWindows = Math.floor((floor.w - gap) / (windowWidth + gap));
-                const windowCount = Math.max(1, Math.min(maxWindows, 8));
+                const windowCount = Math.max(1, Math.min(maxWindows, 12));
                 
                 if (!floor._windows) {
     floor._windows = [];
