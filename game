@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Выше неба — Строй свою башню</title>
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Выше неба">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="icon" id="favicon" href="data:image/png;base64,iVBORw0KGgo=">
+    <link rel="apple-touch-icon" id="apple-icon" href="data:image/png;base64,iVBORw0KGgo=">
+    
+    <!-- Яндекс SDK -->
+    <script src="https://yandex.ru/games/sdk/v2"></script>
+    
+    <script>
+    (function() {
+        const canvas = document.createElement('canvas');
+        canvas.width = 180; canvas.height = 180;
+        const ctx = canvas.getContext('2d');
+        const bg = ctx.createLinearGradient(0, 0, 0, 180);
+        bg.addColorStop(0, '#1a1a3e'); bg.addColorStop(1, '#0f2040');
+        ctx.fillStyle = bg; ctx.fillRect(0, 0, 180, 180);
+        ctx.fillStyle = 'rgba(255,255,255,0.5)';
+        for (let i = 0; i < 15; i++) {
+            ctx.beginPath();
+            ctx.arc(30 + Math.random() * 120, 20 + Math.random() * 80, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        ctx.font = '90px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🏙️', 90, 95);
+        const dataUrl = canvas.toDataURL();
+        document.getElementById('favicon').href = dataUrl;
+        document.getElementById('apple-icon').href = dataUrl;
+    })();
+    </script>
+    
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            background:#1a1a2e; display:flex; justify-content:center; align-items:center;
+            height:100vh; overflow:hidden; touch-action:none;
+            font-family:'Arial',sans-serif; user-select:none; -webkit-user-select:none;
+            -webkit-tap-highlight-color:transparent;
+        }
+        #gameContainer {
+            position:relative; width:100%; max-width:700px; height:100vh; max-height:900px;
+            background:linear-gradient(180deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%); overflow:hidden;
+        }
+        canvas { display:block; width:100%; height:100%; }
+        
+        #ui-layer {
+            position:absolute; top:20px; left:15px; right:15px; display:flex;
+            justify-content:space-between; align-items:center; pointer-events:none;
+            color:white; font-size:14px; font-weight:bold;
+            text-shadow:2px 2px 8px rgba(0,0,0,0.6); z-index:5; gap:3px;
+        }
+        .ui-item {
+            background:rgba(0,0,0,0.6); backdrop-filter:blur(10px);
+            padding:7px 11px; border-radius:20px; display:flex; align-items:center; gap:5px; font-size:14px;
+        }
+        #bottom-buttons {
+            position:absolute; bottom:30px; right:20px; display:flex;
+            flex-direction:column; gap:10px; z-index:6;
+        }
+        #shop-btn, #collection-btn, #reset-btn {
+            width:42px; height:42px; border:2px solid rgba(255,255,255,0.25); border-radius:50%;
+            cursor:pointer; transition:0.2s; display:flex;
+            align-items:center; justify-content:center; background:transparent;
+            position:relative;
+        }
+        #shop-btn:active, #collection-btn:active, #reset-btn:active { transform:scale(0.9); background:rgba(255,255,255,0.1); }
+        
+        #shop-btn::before, #collection-btn::before, #reset-btn::before {
+            content:''; position:absolute; width:20px; height:20px;
+            background-size:contain; background-repeat:no-repeat; background-position:center;
+            top:50%; left:50%; transform:translate(-50%,-50%);
+        }
+        #shop-btn::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffd700' stroke-width='2'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'/%3E%3C/svg%3E");
+        }
+        #collection-btn::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e94560' stroke-width='2'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E");
+        }
+        #reset-btn::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z'/%3E%3C/svg%3E");
+        }
+        
+        .combo-popup {
+            position:absolute; top:35%; left:50%; transform:translate(-50%,-50%);
+            color:#ffd700; font-size:32px; font-weight:bold; pointer-events:none;
+            text-shadow:0 0 20px rgba(255,215,0,0.9); opacity:0; transition:all 0.5s ease-out; z-index:6;
+        }
+        .collect-popup {
+            position:absolute; top:25%; left:50%; transform:translate(-50%,-50%);
+            color:#ff69b4; font-size:22px; font-weight:bold; pointer-events:none;
+            text-shadow:0 0 15px rgba(255,105,180,0.8); opacity:0; transition:all 0.5s ease-out;
+            z-index:6; text-align:center; line-height:1.4;
+        }
+        #achievement-popup {
+            position:absolute; top:100px; left:50%; transform:translateX(-50%);
+            background:linear-gradient(135deg,#1a1a3e,#0f0f2e); border:2px solid #f59e0b;
+            border-radius:16px; padding:12px 20px; color:white; font-size:14px; font-weight:bold;
+            z-index:11; text-align:center; opacity:0; transition:all 0.5s ease-out;
+            pointer-events:none; box-shadow:0 8px 30px rgba(245,158,11,0.4); white-space:nowrap;
+        }
+        
+        #shop-panel, #collection-panel {
+            position:absolute; bottom:0; left:0; right:0;
+            background:rgba(15,15,35,0.97); border-radius:24px 24px 0 0;
+            padding:20px; z-index:8; transform:translateY(100%); transition:transform 0.3s ease-out;
+            display:flex; flex-direction:column; gap:10px; backdrop-filter:blur(20px);
+            max-height:70vh; overflow-y:auto;
+        }
+        #shop-panel { border-top:2px solid #ffd700; }
+        #collection-panel { border-top:2px solid #e94560; }
+        #shop-panel.open, #collection-panel.open { transform:translateY(0); }
+        
+        .tab-buttons { display:flex; gap:8px; margin-bottom:5px; }
+        .tab-btn {
+            flex:1; padding:8px; border:none; border-radius:12px; font-size:13px;
+            font-weight:bold; cursor:pointer; transition:0.2s; color:white;
+            background:rgba(255,255,255,0.08); text-align:center;
+        }
+        .tab-btn.active { background:rgba(255,255,255,0.2); }
+        .tab-content { display:none; flex-direction:column; gap:10px; }
+        .tab-content.active { display:flex; }
+        
+        h3 { text-align:center; font-size:18px; margin:0; }
+        #shop-panel h3 { color:#ffd700; } #collection-panel h3 { color:#e94560; }
+        
+        .shop-item, .achievement-item {
+            display:flex; align-items:center; justify-content:space-between;
+            background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.15);
+            border-radius:16px; padding:10px 12px; gap:10px;
+        }
+        .shop-icon { font-size:28px; min-width:36px; text-align:center; }
+        .shop-info { flex:1; color:white; }
+        .shop-info .name { font-weight:bold; font-size:13px; }
+        .shop-info .desc { font-size:10px; color:#aaa; margin-top:2px; }
+        .shop-info .level { font-size:10px; color:#ffd700; margin-top:2px; }
+        .shop-buy {
+            background:linear-gradient(135deg,#4CAF50,#2E7D32); color:white;
+            border:none; padding:7px 12px; border-radius:20px; font-weight:bold;
+            font-size:11px; cursor:pointer; white-space:nowrap; transition:0.2s;
+            min-width:60px; text-align:center;
+        }
+        .shop-buy:active { transform:scale(0.95); }
+        .shop-buy.cant-afford { background:#666; opacity:0.6; }
+        .shop-buy.owned { background:linear-gradient(135deg,#7c3aed,#5b21b6); }
+        .shop-buy.active-skin { background:linear-gradient(135deg,#ffd700,#ffaa00); color:#000; }
+        .shop-buy.maxed { background:#555; cursor:default; }
+        .achievement-item.locked { opacity:0.4; }
+        .achievement-item.unlocked { border-color:#f59e0b; }
+        .achievement-item .reward { color:#f59e0b; font-size:10px; margin-top:2px; }
+        
+        .close-btn {
+            display:block; margin:5px auto 0; background:rgba(255,255,255,0.1);
+            color:white; border:none; padding:10px 30px; border-radius:20px;
+            font-size:14px; cursor:pointer;
+        }
+        .collection-stats { text-align:center; color:#ccc; font-size:13px; margin-bottom:5px; }
+        .collection-stats span { color:#ffd700; font-weight:bold; }
+        .collection-category { color:#aaa; font-size:13px; font-weight:bold; margin-top:5px; margin-bottom:2px; }
+        .collection-grid { display:flex; flex-wrap:wrap; gap:8px; justify-content:flex-start; }
+        .collection-slot {
+            width:44px; height:44px; background:rgba(255,255,255,0.05);
+            border:1px solid rgba(255,255,255,0.2); border-radius:10px;
+            display:flex; align-items:center; justify-content:center; font-size:24px; position:relative;
+        }
+        .collection-slot.locked { opacity:0.3; filter:grayscale(1); }
+        .collection-slot .bonus-badge {
+            position:absolute; bottom:-2px; right:-2px; background:#ffd700; color:#000;
+            font-size:8px; font-weight:bold; padding:1px 3px; border-radius:5px;
+        }
+        
+        #gameover-panel {
+            position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+            background:rgba(15,15,30,0.95); border:2px solid #e94560;
+            border-radius:24px; padding:25px 20px; text-align:center; color:white;
+            display:none; flex-direction:column; gap:10px; min-width:240px;
+            backdrop-filter:blur(20px); z-index:10; box-shadow:0 20px 60px rgba(0,0,0,0.5);
+        }
+        #gameover-panel h2 { color:#e94560; font-size:22px; margin:0; }
+        #gameover-panel .emoji { font-size:40px; }
+        #gameover-panel .stats { font-size:14px; color:#ccc; line-height:1.5; }
+        #gameover-panel .coins { font-size:22px; color:#ffd700; font-weight:bold; }
+        #restart-btn {
+            background:linear-gradient(135deg,#e94560,#c23152); color:white;
+            border:none; padding:12px 25px; font-size:16px; font-weight:bold;
+            border-radius:30px; cursor:pointer; transition:0.2s;
+            box-shadow:0 8px 25px rgba(233,69,96,0.4);
+        }
+        #restart-btn:active { transform:scale(0.95); }
+        
+        /* Кнопка рекламы */
+        #ad-btn {
+            background:linear-gradient(135deg,#ffd700,#ffaa00); color:#000;
+            border:none; padding:12px 25px; font-size:16px; font-weight:bold;
+            border-radius:30px; cursor:pointer; transition:0.2s;
+            box-shadow:0 8px 25px rgba(255,215,0,0.4);
+        }
+        #ad-btn:active { transform:scale(0.95); }
+        
+        #main-menu {
+            position:absolute; inset:0; z-index:20;
+            background:linear-gradient(180deg,#0a0a1a 0%,#16213e 50%,#0f3460 100%);
+            display:flex; align-items:center; justify-content:center;
+            transition:opacity 0.5s ease-out;
+        }
+        #main-menu.hidden { opacity:0; pointer-events:none; }
+        .menu-content {
+            display:flex; flex-direction:column; align-items:center;
+            gap:20px; text-align:center; color:white; padding:20px;
+        }
+        .menu-emoji { font-size:60px; display:block; animation:bounce 1.5s infinite; }
+        @keyframes bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-10px);} }
+        .menu-title h1 {
+            font-size:36px; margin:5px 0 0;
+            background:linear-gradient(135deg,#ffd700,#ffaa00);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text;
+        }
+        .menu-title p { font-size:14px; color:#aaa; margin-top:5px; }
+        .menu-stats { display:flex; gap:20px; font-size:16px; font-weight:bold; }
+        .menu-stat {
+            background:rgba(255,255,255,0.08); padding:8px 16px;
+            border-radius:15px; display:flex; align-items:center; gap:6px;
+        }
+        .menu-btn {
+            width:100%; max-width:250px; padding:14px; border:none;
+            border-radius:25px; font-size:18px; font-weight:bold;
+            cursor:pointer; transition:0.2s; color:white;
+            background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.15);
+            display:flex; align-items:center; justify-content:center; gap:8px;
+        }
+        .menu-btn.primary {
+            background:linear-gradient(135deg,#4CAF50,#2E7D32);
+            font-size:22px; border:none; box-shadow:0 6px 20px rgba(46,125,50,0.4);
+        }
+        .menu-btn:active { transform:scale(0.95); }
+        .menu-btn.small { max-width:120px; padding:10px; font-size:14px; background:transparent; border:1px solid rgba(255,255,255,0.15); }
+        .menu-buttons { display:flex; gap:10px; width:100%; max-width:250px; }
+        .menu-buttons .menu-btn { flex:1; font-size:14px; padding:12px; }
+        
+        #menu-shop-btn::before, #menu-collection-btn::before {
+            content:''; display:inline-block; width:18px; height:18px;
+            background-size:contain; background-repeat:no-repeat; background-position:center;
+        }
+        #menu-shop-btn::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Ccircle cx='9' cy='21' r='1'/%3E%3Ccircle cx='20' cy='21' r='1'/%3E%3Cpath d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6'/%3E%3C/svg%3E");
+        }
+        #menu-collection-btn::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E");
+        }
+        
+        #menu-sound-btn::before {
+            content:''; display:inline-block; width:16px; height:16px;
+            background-size:contain; background-repeat:no-repeat; background-position:center;
+            vertical-align:middle; margin-right:5px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3E%3Cpath d='M15.54 8.46a5 5 0 0 1 0 7.07'/%3E%3Cpath d='M19.07 4.93a10 10 0 0 1 0 14.14'/%3E%3C/svg%3E");
+        }
+        #menu-sound-btn.muted::before {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3E%3Cline x1='23' y1='9' x2='17' y2='15'/%3E%3Cline x1='17' y1='9' x2='23' y2='15'/%3E%3C/svg%3E");
+        }
+        
+        #menu-reset-btn::before {
+            content:''; display:inline-block; width:16px; height:16px;
+            background-size:contain; background-repeat:no-repeat; background-position:center;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolyline points='3 6 5 6 21 6'/%3E%3Cpath d='M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2'/%3E%3C/svg%3E");
+        }
+        
+        .hint-text {
+            position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+            color:rgba(255,255,255,0.7); font-size:14px; pointer-events:none;
+            text-align:center; z-index:5; transition:opacity 0.3s;
+        }
+        #overlay { position:absolute; inset:0; background:rgba(0,0,0,0.5); z-index:7; display:none; }
+        #overlay.show { display:block; }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <div id="main-menu">
+            <div class="menu-content">
+                <span class="menu-emoji">🏙️</span>
+                <div class="menu-title">
+                    <h1>Выше неба</h1>
+                    <p>Строй свою башню!</p>
+                </div>
+                <div class="menu-stats">
+                    <div class="menu-stat"><span>🏆</span> <span id="menu-best">0</span></div>
+                    <div class="menu-stat"><span>🪙</span> <span id="menu-coins">0</span></div>
+                </div>
+                <button id="play-btn" class="menu-btn primary">🎮 Играть</button>
+                <button id="resume-btn" class="menu-btn primary" style="display:none;">▶ Продолжить</button>
+                <div class="menu-buttons">
+                    <button id="menu-shop-btn" class="menu-btn">Магазин</button>
+                    <button id="menu-collection-btn" class="menu-btn">Коллекция</button>
+                </div>
+                <div class="menu-buttons">
+                    <button id="menu-sound-btn" class="menu-btn small">Звук</button>
+                    <button id="menu-reset-btn" class="menu-btn small">Сброс</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="ui-layer" style="display:none;">
+            <div class="ui-item">🏗️ <span id="floorCount">1</span></div>
+            <div class="ui-item">🏆 <span id="bestDisplay">0</span></div>
+            <div class="ui-item">🔥 <span id="comboText">0</span></div>
+            <div class="ui-item">🪙 <span id="coinDisplay">0</span></div>
+        </div>
+        
+        <div id="achievement-popup"></div>
+        <div class="combo-popup" id="comboPopup"></div>
+        <div class="collect-popup" id="collectPopup"></div>
+        <div class="hint-text" id="hintText" style="display:none;">👆 Тапни, чтобы опустить этаж</div>
+        
+        <div id="bottom-buttons" style="display:none;">
+            <button id="shop-btn"></button>
+            <button id="collection-btn"></button>
+            <button id="reset-btn"></button>
+        </div>
+        
+        <div id="overlay"></div>
+        
+        <div id="shop-panel">
+            <h3>🏪 Магазин</h3>
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="upgrades">⚡ Улучшения</button>
+                <button class="tab-btn" data-tab="floor-skins">🎨 Этажи</button>
+                <button class="tab-btn" data-tab="bg-skins">🌌 Фон</button>
+            </div>
+            <div class="tab-content active" id="tab-upgrades"></div>
+            <div class="tab-content" id="tab-floor-skins"></div>
+            <div class="tab-content" id="tab-bg-skins"></div>
+            <button class="close-btn" id="close-shop">✕ Закрыть</button>
+        </div>
+        
+        <div id="collection-panel">
+            <h3>📖 Коллекция</h3>
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="residents">👥 Жильцы</button>
+                <button class="tab-btn" data-tab="achievements">🏅 Достижения</button>
+            </div>
+            <div class="tab-content active" id="tab-residents">
+                <div class="collection-stats">
+                    Собрано: <span id="collected-count">0</span> / <span id="total-count">36</span> | 
+                    Бонус: <span id="bonus-percent">+0%</span>
+                </div>
+                <div id="collection-content"></div>
+            </div>
+            <div class="tab-content" id="tab-achievements"></div>
+            <button class="close-btn" id="close-collection">✕ Закрыть</button>
+        </div>
+        
+        <div id="gameover-panel">
+            <span class="emoji">💥</span>
+            <h2>Башня рухнула!</h2>
+            <div class="stats">
+                Этажей: <b><span id="goFloors">0</span></b><br>
+                Лучшее комбо: <b><span id="goCombo">0</span></b>
+            </div>
+            <div class="coins">🪙 +<span id="goCoins">0</span></div>
+            <button id="ad-btn">🎬 ×2 монет</button>
+            <button id="restart-btn">🔄 Играть ещё</button>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        // =============================================
+        // ЯНДЕКС SDK
+        // =============================================
+        let yaSDK = null;
+        let isYaGames = false;
+        
+        if (typeof YaGames !== 'undefined') {
+            YaGames.init().then(sdk => {
+                yaSDK = sdk;
+                isYaGames = true;
+                loadFromCloud();
+            }).catch(() => {});
+        }
+        
+        function showRewardedAd(callback) {
+    if (isYaGames && yaSDK) {
+        yaSDK.adv.showRewardedVideo({
+            callbacks: {
+                onOpen: () => {
+                    soundEnabled = false;
+                    if (audioCtx) audioCtx.suspend();
+                },
+                onRewarded: () => {
+                    soundEnabled = true;
+                    if (audioCtx) audioCtx.resume();
+                    if (callback) callback();
+                },
+                onClose: () => {
+                    soundEnabled = true;
+                    if (audioCtx) audioCtx.resume();
+                },
+                onError: (err) => {
+                    soundEnabled = true;
+                    if (audioCtx) audioCtx.resume();
+                    console.log('Ошибка рекламы:', err);
+                }
+            }
+        });
+    } else {
+        if (confirm('🎬 Посмотреть рекламу?)')) {
+            if (callback) callback();
+        }
+    }
+}
+        
+        async function saveToCloud() {
+            if (isYaGames && yaSDK) {
+                const data = { coins, bestFloors, bestCombo, upgrades, collectedResidents, ownedSkins, activeSkin, ownedBgSkins, activeBgSkin, unlockedAchievements, soundEnabled };
+                try { await yaSDK.player.setData({ gameData: JSON.stringify(data) }); } catch(e) {}
+            }
+        }
+        
+        async function loadFromCloud() {
+            if (isYaGames && yaSDK) {
+                try {
+                    const data = await yaSDK.player.getData();
+                    if (data && data.gameData) {
+                        const saved = JSON.parse(data.gameData);
+                        if (saved.coins) coins = saved.coins;
+                        if (saved.bestFloors) bestFloors = saved.bestFloors;
+                        if (saved.bestCombo) bestCombo = saved.bestCombo;
+                        if (saved.upgrades) upgrades = saved.upgrades;
+                        if (saved.collectedResidents) collectedResidents = saved.collectedResidents;
+                        if (saved.ownedSkins) ownedSkins = saved.ownedSkins;
+                        if (saved.activeSkin) activeSkin = saved.activeSkin;
+                        if (saved.ownedBgSkins) ownedBgSkins = saved.ownedBgSkins;
+                        if (saved.activeBgSkin) activeBgSkin = saved.activeBgSkin;
+                        if (saved.unlockedAchievements) unlockedAchievements = saved.unlockedAchievements;
+                        if (saved.soundEnabled !== undefined) soundEnabled = saved.soundEnabled;
+                        updateUI();
+                        updateMenuStats();
+                    }
+                } catch(e) {}
+            }
+        }
+        
+        // =============================================
+        // DOM-ЭЛЕМЕНТЫ
+        // =============================================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        const uiLayer = document.getElementById('ui-layer');
+        const bestDisplay = document.getElementById('bestDisplay');
+        const floorCountEl = document.getElementById('floorCount');
+        const comboTextEl = document.getElementById('comboText');
+        const coinDisplayEl = document.getElementById('coinDisplay');
+        const comboPopup = document.getElementById('comboPopup');
+        const collectPopup = document.getElementById('collectPopup');
+        const achievementPopup = document.getElementById('achievement-popup');
+        const hintText = document.getElementById('hintText');
+        const gameoverPanel = document.getElementById('gameover-panel');
+        const goFloorsEl = document.getElementById('goFloors');
+        const goComboEl = document.getElementById('goCombo');
+        const goCoinsEl = document.getElementById('goCoins');
+        const restartBtn = document.getElementById('restart-btn');
+        const adBtn = document.getElementById('ad-btn');
+        const overlay = document.getElementById('overlay');
+        const bottomButtons = document.getElementById('bottom-buttons');
+        
+        const shopBtn = document.getElementById('shop-btn');
+        const collectionBtn = document.getElementById('collection-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const shopPanel = document.getElementById('shop-panel');
+        const collectionPanel = document.getElementById('collection-panel');
+        const closeShopBtn = document.getElementById('close-shop');
+        const closeCollectionBtn = document.getElementById('close-collection');
+        
+        const mainMenu = document.getElementById('main-menu');
+        const playBtn = document.getElementById('play-btn');
+        const resumeBtn = document.getElementById('resume-btn');
+        const menuShopBtn = document.getElementById('menu-shop-btn');
+        const menuCollectionBtn = document.getElementById('menu-collection-btn');
+        const menuSoundBtn = document.getElementById('menu-sound-btn');
+        const menuResetBtn = document.getElementById('menu-reset-btn');
+        
+        let audioCtx = null;
+        let soundEnabled = true;
+        let pendingBonusCoins = 0;
+        
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        
+        function playSound(freq, type, duration, volume = 0.1, freq2 = null) {
+            if (!soundEnabled || !audioCtx) return;
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                if (freq2) osc.frequency.linearRampToValueAtTime(freq2, audioCtx.currentTime + duration);
+                gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+        
+        function soundPlace() { playSound(80, 'triangle', 0.08, 0.12); setTimeout(() => playSound(60, 'triangle', 0.06, 0.08), 30); }
+        function soundPerfect() { playSound(400, 'sine', 0.15, 0.1, 800); setTimeout(() => playSound(600, 'sine', 0.1, 0.08), 100); }
+        function soundGood() { playSound(200, 'sine', 0.05, 0.06); }
+        function soundGameOver() { playSound(40, 'sawtooth', 0.5, 0.15, 20); setTimeout(() => playSound(30, 'sawtooth', 0.4, 0.1, 15), 200); }
+        function soundResident() { playSound(600, 'sine', 0.1, 0.1); setTimeout(() => playSound(800, 'sine', 0.15, 0.1), 100); }
+        function soundGoldrush() { playSound(500, 'triangle', 0.08, 0.08); setTimeout(() => playSound(700, 'triangle', 0.08, 0.08), 80); setTimeout(() => playSound(900, 'triangle', 0.08, 0.08), 160); }
+        
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            if (menuSoundBtn) {
+                if (soundEnabled) { menuSoundBtn.classList.remove('muted'); }
+                else { menuSoundBtn.classList.add('muted'); }
+            }
+        }
+        
+        menuSoundBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); initAudio(); toggleSound(); });
+        
+        // Кнопка рекламы
+        adBtn.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            showRewardedAd(() => {
+                coins += pendingBonusCoins;
+                updateUI();
+                updateMenuStats();
+                saveGame();
+                adBtn.style.display = 'none';
+                goCoinsEl.textContent = Math.floor(pendingBonusCoins * 2);
+            });
+        });
+        
+        let W, H;
+        const FLOOR_HEIGHT = 28;
+        const BASE_WIDTH = 160;
+        const START_SPEED = 1.2;
+        const BASE_MAX_SPEED = 7;
+        const BASE_SPEED_INCREMENT = 0.18;
+        
+        let floors = [];
+        let currentFloor = null;
+        let gameState = 'menu';
+        let coins = 0;
+        let comboCount = 0;
+        let bestCombo = 0;
+        let bestFloors = 0;
+        let totalFloorsBuilt = 0;
+        let totalCoinsEarned = 0;
+        let gamesPlayed = 0;
+        let direction = 1;
+        let moveSpeed = START_SPEED;
+        let cameraY = 0;
+        let targetCameraY = 0;
+        let panelOpen = false;
+        let currentIncrement = BASE_SPEED_INCREMENT;
+        let saveTimeout = null;
+        let savedGameState = null;
+        let particles = [];
+        
+        let upgrades = {
+            foundation: { level: 1, maxLevel: 20, baseCost: 150 },
+            architect:  { level: 1, maxLevel: 20, baseCost: 200 },
+            brakes:     { level: 1, maxLevel: 20, baseCost: 250 },
+            goldrush:   { level: 1, maxLevel: 20, baseCost: 300 },
+            magnet:     { level: 1, maxLevel: 20, baseCost: 300 }
+        };
+        
+        const ACHIEVEMENTS = [
+            { id:'floors10',name:'Строитель',desc:'Построить 10 этажей',emoji:'🔨',check:()=>floors.length-1>=10,reward:200 },
+            { id:'floors25',name:'Архитектор',desc:'Построить 25 этажей',emoji:'📐',check:()=>floors.length-1>=25,reward:300 },
+            { id:'floors50',name:'Небоскрёб',desc:'Построить 50 этажей',emoji:'🏙️',check:()=>floors.length-1>=50,reward:400 },
+            { id:'floors100',name:'До небес',desc:'Построить 100 этажей',emoji:'🚀',check:()=>floors.length-1>=100,reward:500 },
+            { id:'floors150',name:'Высота',desc:'Построить 150 этажей',emoji:'🦅',check:()=>floors.length-1>=150,reward:600 },
+            { id:'combo5',name:'В ударе',desc:'Сделать комбо ×5',emoji:'🔥',check:()=>comboCount>=5,reward:100 },
+            { id:'combo10',name:'Мастер точности',desc:'Сделать комбо ×10',emoji:'🎯',check:()=>comboCount>=10,reward:300 },
+            { id:'combo15',name:'Смертельная точность',desc:'Сделать комбо ×15',emoji:'💀',check:()=>comboCount>=15,reward:500 },
+            { id:'sniper',name:'Снайпер',desc:'Лучшее комбо ≥5',emoji:'🎯',check:()=>bestCombo>=5,reward:500 },
+            { id:'collector5',name:'Коллекционер',desc:'Собрать 5 жильцов',emoji:'📖',check:()=>collectedResidents.length>=5,reward:200 },
+            { id:'collector20',name:'Охотник',desc:'Собрать 20 жильцов',emoji:'🏹',check:()=>collectedResidents.length>=20,reward:300 },
+            { id:'collector30',name:'Коллекционер 30',desc:'Собрать 30 жильцов',emoji:'🌈',check:()=>collectedResidents.length>=30,reward:400 },
+            { id:'all_residents',name:'Полная коллекция',desc:'Собрать всех 36 жильцов',emoji:'🏆',check:()=>collectedResidents.length>=36,reward:800 },
+            { id:'first_legendary',name:'Легенда',desc:'Найти легендарного жильца',emoji:'👑',check:()=>ALL_RESIDENTS.filter(r=>r.rarity==='legendary').some(r=>collectedResidents.includes(r.id)),reward:300 },
+            { id:'games10',name:'Полуночник',desc:'Сыграть 10 игр',emoji:'🌙',check:()=>gamesPlayed>=10,reward:100 },
+            { id:'first_floor_skin',name:'Новосёл',desc:'Купить первый скин этажа',emoji:'🏠',check:()=>ownedSkins.length>=2,reward:1000 },
+            { id:'all_floor_skins',name:'Империя',desc:'Купить все скины этажей',emoji:'🏰',check:()=>ownedSkins.length>=SKINS.length,reward:2000 },
+            { id:'first_bg_skin',name:'Мечтатель',desc:'Купить первый скин фона',emoji:'🌌',check:()=>ownedBgSkins.length>=2,reward:1000 },
+            { id:'all_bg_skins',name:'Мир',desc:'Купить все скины фона',emoji:'🌍',check:()=>ownedBgSkins.length>=BG_SKINS.length,reward:2000 },
+        ];
+        
+        let unlockedAchievements = [];
+        let achievementQueue = [];
+        let showingAchievement = false;
+        
+        const SKINS = [
+            { id:'classic',name:'Классический',emoji:'🧱',cost:0,colors:null },
+            { id:'forest',name:'Лесной',emoji:'🌿',cost:5000,colors:{top:[120,60,40],bottom:[120,60,20],stroke:[120,70,50]} },
+            { id:'ice',name:'Ледяной',emoji:'🧊',cost:7500,colors:{top:[200,70,70],bottom:[200,70,40],stroke:[200,80,85]} },
+            { id:'lava',name:'Лавовый',emoji:'🔥',cost:9000,colors:{top:[10,90,55],bottom:[10,90,25],stroke:[10,100,70]} },
+            { id:'ghost',name:'Призрачный',emoji:'👻',cost:10000,colors:{top:[0,0,80],bottom:[0,0,50],stroke:[0,0,95]} },
+            { id:'halloween',name:'Хэллоуин',emoji:'🎃',cost:12000,colors:{top:[30,85,55],bottom:[30,85,25],stroke:[30,90,70]} },
+            { id:'crystal',name:'Кристальный',emoji:'💎',cost:14000,colors:{top:[190,50,85],bottom:[190,50,50],stroke:[190,60,95]} },
+            { id:'shadow',name:'Теневой',emoji:'🖤',cost:15000,colors:{top:[260,30,25],bottom:[260,30,10],stroke:[260,50,60]} },
+            { id:'gold',name:'Золотой',emoji:'🏆',cost:17000,colors:{top:[48,90,65],bottom:[48,90,35],stroke:[48,100,85]} },
+        ];
+        
+        let ownedSkins = ['classic'];
+        let activeSkin = 'classic';
+        
+        const BG_SKINS = [
+            { id:'night',name:'Ночное небо',emoji:'🌙',cost:0,gradient:['#0a0a1a','#1a1a3e','#0f2040'],starColor:'rgba(255,255,255,{alpha})',starCount:60 },
+            { id:'sunset',name:'Закат',emoji:'🌅',cost:3000,gradient:['#ff6b35','#e94560','#1a1a2e'],starColor:'rgba(255,215,0,{alpha})',starCount:40 },
+            { id:'morning',name:'Утро',emoji:'🌤️',cost:5000,gradient:['#87CEEB','#ffcccb','#b8d4e3'],starColor:null,starCount:0 },
+            { id:'space',name:'Космос',emoji:'🌌',cost:7500,gradient:['#000011','#1a0033','#0d004d'],starColor:'rgba({color},{alpha})',starCount:100 },
+            { id:'aurora',name:'Северное сияние',emoji:'🌠',cost:9000,gradient:['#001a33','#003322','#001a33'],starColor:'rgba(100,255,200,{alpha})',starCount:50 },
+            { id:'ocean',name:'Подводный мир',emoji:'🌊',cost:10000,gradient:['#0077b6','#023e8a','#001d3d'],starColor:'rgba(200,240,255,{alpha})',starCount:30 },
+            { id:'hell',name:'Огненный ад',emoji:'🔥',cost:11000,gradient:['#ff4500','#8b0000','#1a0000'],starColor:'rgba(255,100,0,{alpha})',starCount:70 },
+            { id:'sakura',name:'Сакура',emoji:'🌸',cost:13000,gradient:['#ffccd5','#ffb3c6','#ff8fa3'],starColor:'rgba(255,200,200,{alpha})',starCount:20 },
+            { id:'volcano',name:'Вулкан',emoji:'🌋',cost:15000,gradient:['#2d0000','#6b0000','#1a0000'],starColor:'rgba(255,150,0,{alpha})',starCount:50 },
+        ];
+        
+        let ownedBgSkins = ['night'];
+        let activeBgSkin = 'night';
+        
+        const ALL_RESIDENTS = [
+            { id:'cat',emoji:'🐱',name:'Кот',rarity:'common',bonus:1 },
+            { id:'chef',emoji:'👨‍🍳',name:'Повар',rarity:'common',bonus:1 },
+            { id:'student',emoji:'📚',name:'Студент',rarity:'common',bonus:1 },
+            { id:'dj',emoji:'🎧',name:'Диджей',rarity:'common',bonus:1 },
+            { id:'taco',emoji:'🌮',name:'Тако-шеф',rarity:'common',bonus:1 },
+            { id:'sleeper',emoji:'💤',name:'Соня',rarity:'common',bonus:1 },
+            { id:'plant',emoji:'🌵',name:'Кактусовод',rarity:'common',bonus:1 },
+            { id:'gamer',emoji:'🎮',name:'Геймер',rarity:'common',bonus:1 },
+            { id:'artist',emoji:'🎨',name:'Художник',rarity:'common',bonus:1 },
+            { id:'coffee',emoji:'☕',name:'Бариста',rarity:'common',bonus:1 },
+            { id:'biker',emoji:'🏍️',name:'Байкер',rarity:'common',bonus:1 },
+            { id:'robot',emoji:'🤖',name:'Робот',rarity:'common',bonus:1 },
+            { id:'grandma',emoji:'👵',name:'Бабушка с геранью',rarity:'rare',bonus:2 },
+            { id:'hacker',emoji:'💻',name:'Хакер',rarity:'rare',bonus:2 },
+            { id:'neighbor',emoji:'🔧',name:'Сосед с дрелью',rarity:'rare',bonus:2 },
+            { id:'detective',emoji:'🕵️',name:'Детектив',rarity:'rare',bonus:2 },
+            { id:'wizard',emoji:'🧙‍♂️',name:'Волшебник',rarity:'rare',bonus:2 },
+            { id:'ninja',emoji:'🥷',name:'Ниндзя',rarity:'rare',bonus:2 },
+            { id:'mermaid',emoji:'🧜‍♀️',name:'Русалка',rarity:'rare',bonus:2 },
+            { id:'vampire',emoji:'🧛',name:'Вампир',rarity:'rare',bonus:2 },
+            { id:'astronaut',emoji:'👨‍🚀',name:'Космонавт',rarity:'rare',bonus:2 },
+            { id:'cowboy',emoji:'🤠',name:'Ковбой',rarity:'rare',bonus:2 },
+            { id:'ghost',emoji:'👻',name:'Призрак',rarity:'epic',bonus:3 },
+            { id:'alien',emoji:'👽',name:'Инопланетянин',rarity:'epic',bonus:3 },
+            { id:'superhero',emoji:'🦸',name:'Супергерой',rarity:'epic',bonus:3 },
+            { id:'phoenix',emoji:'🦅',name:'Феникс',rarity:'epic',bonus:3 },
+            { id:'djinn',emoji:'🧞',name:'Джинн',rarity:'epic',bonus:3 },
+            { id:'samurai',emoji:'⚔️',name:'Самурай',rarity:'epic',bonus:3 },
+            { id:'mermaid_king',emoji:'🧜‍♂️',name:'Царь морей',rarity:'epic',bonus:3 },
+            { id:'time_lord',emoji:'⏳',name:'Повелитель времени',rarity:'epic',bonus:3 },
+            { id:'dragon',emoji:'🐉',name:'Дракон',rarity:'legendary',bonus:5 },
+            { id:'pirate_king',emoji:'🏴‍☠️',name:'Король пиратов',rarity:'legendary',bonus:5 },
+            { id:'president',emoji:'🎩',name:'Президент',rarity:'legendary',bonus:5 },
+            { id:'unicorn',emoji:'🦄',name:'Единорог',rarity:'legendary',bonus:5 },
+            { id:'cthulhu',emoji:'🐙',name:'Ктулху',rarity:'legendary',bonus:5 },
+            { id:'zeus',emoji:'⚡',name:'Зевс',rarity:'legendary',bonus:5 },
+        ];
+        
+        let collectedResidents = [];
+        let residentFloors = {};
+        
+        const SAVE_KEY = 'floors_game_save_v2';
+        function saveGame() {
+            const data = { coins, bestFloors, bestCombo, totalFloorsBuilt, totalCoinsEarned, gamesPlayed,
+                upgrades: { foundation:upgrades.foundation.level, architect:upgrades.architect.level,
+                    brakes:upgrades.brakes.level, goldrush:upgrades.goldrush.level, magnet:upgrades.magnet.level },
+                collectedResidents, ownedSkins, activeSkin, ownedBgSkins, activeBgSkin, unlockedAchievements, soundEnabled };
+            try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
+            saveToCloud();
+        }
+        function loadGame() {
+            try {
+                const raw = localStorage.getItem(SAVE_KEY);
+                if(!raw) return false;
+                const data = JSON.parse(raw);
+                coins=data.coins||0; bestFloors=data.bestFloors||0; bestCombo=data.bestCombo||0;
+                totalFloorsBuilt=data.totalFloorsBuilt||0; totalCoinsEarned=data.totalCoinsEarned||0;
+                gamesPlayed=data.gamesPlayed||0;
+                if(data.upgrades){ upgrades.foundation.level=data.upgrades.foundation||1; upgrades.architect.level=data.upgrades.architect||1;
+                    upgrades.brakes.level=data.upgrades.brakes||1; upgrades.goldrush.level=data.upgrades.goldrush||1;
+                    upgrades.magnet.level=data.upgrades.magnet||1; }
+                collectedResidents=data.collectedResidents||[]; ownedSkins=data.ownedSkins||['classic'];
+                activeSkin=data.activeSkin||'classic'; ownedBgSkins=data.ownedBgSkins||['night'];
+                activeBgSkin=data.activeBgSkin||'night'; unlockedAchievements=data.unlockedAchievements||[];
+                if (data.soundEnabled !== undefined) { soundEnabled = data.soundEnabled; }
+                return true;
+            } catch(e) { return false; }
+        }
+        function resetProgress() { if(confirm('Точно сбросить ВЕСЬ прогресс?')){ localStorage.removeItem(SAVE_KEY); location.reload(); } }
+        function autoSave(){ clearTimeout(saveTimeout); saveTimeout = setTimeout(saveGame, 500); }
+        
+        function getWidthBonus(){ return (upgrades.foundation.level-1)*3; }
+        function getArchitectBonus(){ const l=upgrades.architect.level; return l<=20?1+(l-1)*0.06:1+19*0.06+(l-20)*0.01; }
+        function getGoldrushChance(){ const l=upgrades.goldrush.level; return (l-1)*0.03; }
+        function getMagnetBonus(){ const l=upgrades.magnet.level; if(l<=5)return (l-1)*0.04;if(l<=10)return 0.16+(l-5)*0.03;if(l<=15)return 0.31+(l-10)*0.02;return 0.41+(l-15)*0.01; }
+        function updateIncrement(){ const l=upgrades.brakes.level; const reduction=l<=20?Math.max(0.10,1-(l-1)*0.04):Math.max(0.05,0.24-(l-20)*0.005); currentIncrement=BASE_SPEED_INCREMENT*reduction; }
+        function recalculateSpeed(){ updateIncrement(); moveSpeed=Math.min(START_SPEED+Math.max(0,floors.length-1)*currentIncrement,BASE_MAX_SPEED); }
+        
+        function getRandomResident(){ const r=Math.random()*100; const pool=r<55?ALL_RESIDENTS.filter(x=>x.rarity==='common'):r<80?ALL_RESIDENTS.filter(x=>x.rarity==='rare'):r<95?ALL_RESIDENTS.filter(x=>x.rarity==='epic'):ALL_RESIDENTS.filter(x=>x.rarity==='legendary'); return pool[Math.floor(Math.random()*pool.length)]; }
+        function getCollectionBonus(){ return collectedResidents.reduce((s,id)=>{const r=ALL_RESIDENTS.find(x=>x.id===id);return s+(r?r.bonus:0);},0); }
+        function isResidentCollected(id){ return collectedResidents.includes(id); }
+        
+        let residentPopupTimeout = null;
+        function collectResident(r) {
+            if (!isResidentCollected(r.id)) {
+                collectedResidents.push(r.id);
+                soundResident();
+                showCollectPopup(r);
+                autoSave();
+                checkAchievements();
+            }
+        }
+        function showCollectPopup(r) {
+            const c = { common:'#aaa', rare:'#4da6ff', epic:'#c044ff', legendary:'#ffd700' };
+            collectPopup.innerHTML = `${r.emoji}<br><span style="color:${c[r.rarity]};font-size:16px;">${r.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${r.bonus}% к монетам</span>`;
+            clearTimeout(residentPopupTimeout);
+            collectPopup.style.transition = 'none';
+            collectPopup.style.opacity = '0';
+            collectPopup.style.transform = 'translate(-50%,-50%) scale(0.8)';
+            requestAnimationFrame(() => {
+                collectPopup.style.transition = 'all 0.3s ease-out';
+                collectPopup.style.opacity = '1';
+                collectPopup.style.transform = 'translate(-50%,-50%) scale(1.1)';
+            });
+            residentPopupTimeout = setTimeout(() => {
+                collectPopup.style.opacity = '0';
+                collectPopup.style.transform = 'translate(-50%,-50%) scale(0.8)';
+            }, 2000);
+        }
+        function renderCollection(){ const cats=[{rarity:'legendary',name:'🟡 Легендарные',color:'#ffd700'},{rarity:'epic',name:'🟣 Эпические',color:'#c044ff'},{rarity:'rare',name:'🔵 Редкие',color:'#4da6ff'},{rarity:'common',name:'🟢 Обычные',color:'#aaa'}]; let h=''; cats.forEach(cat=>{const residents=ALL_RESIDENTS.filter(r=>r.rarity===cat.rarity); h+=`<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r=>isResidentCollected(r.id)).length}/${residents.length})</div><div class="collection-grid">`; residents.forEach(r=>{const c=isResidentCollected(r.id); h+=`<div class="collection-slot ${c?'':'locked'}">${c?r.emoji:'❓'}${c?`<span class="bonus-badge">+${r.bonus}%</span>`:''}</div>`;}); h+='</div>';}); document.getElementById('collection-content').innerHTML=h; document.getElementById('collected-count').textContent=collectedResidents.length; document.getElementById('total-count').textContent=ALL_RESIDENTS.length; document.getElementById('bonus-percent').textContent=`+${getCollectionBonus()}%`; }
+        
+        function checkAchievements(){ ACHIEVEMENTS.forEach(a=>{if(!unlockedAchievements.includes(a.id)&&a.check()){unlockedAchievements.push(a.id);achievementQueue.push(a);coins+=a.reward;updateUI();}}); if(!showingAchievement&&achievementQueue.length>0)showNextAchievement(); }
+        function showNextAchievement(){ if(achievementQueue.length===0){showingAchievement=false;return;} showingAchievement=true; const a=achievementQueue.shift(); achievementPopup.innerHTML=`${a.emoji} <b>${a.name}</b> +${a.reward}🪙`; achievementPopup.style.opacity='1';achievementPopup.style.top='100px';clearTimeout(achievementPopup._timeout);achievementPopup._timeout=setTimeout(()=>{achievementPopup.style.opacity='0';achievementPopup.style.top='80px';setTimeout(()=>showNextAchievement(),400);},2000); }
+        function renderAchievements(){ let h=''; ACHIEVEMENTS.forEach(a=>{const u=unlockedAchievements.includes(a.id); h+=`<div class="achievement-item ${u?'unlocked':'locked'}"><span class="shop-icon">${u?a.emoji:'🔒'}</span><div class="shop-info"><div class="name">${a.name}</div><div class="desc">${a.desc}</div><div class="reward">${u?'✅ Получено':'Награда: '+a.reward+'🪙'}</div></div></div>`;}); document.getElementById('tab-achievements').innerHTML=h; }
+        
+        function getSkinColors(){ const s=SKINS.find(x=>x.id===activeSkin); return s&&s.colors?s.colors:null; }
+        function renderFloorSkins(){ let h=''; SKINS.forEach(s=>{const o=ownedSkins.includes(s.id),a=activeSkin===s.id; let t=a?'✅ Надет':o?'👕 Надеть':'🪙 '+s.cost; let cl=a?'active-skin':o?'owned':(coins>=s.cost?'':'cant-afford'); h+=`<div class="shop-item"><span class="shop-icon">${s.emoji}</span><div class="shop-info"><div class="name">${s.name}</div></div><button class="shop-buy ${cl}" data-skin="${s.id}">${t}</button></div>`;}); document.getElementById('tab-floor-skins').innerHTML=h; document.getElementById('tab-floor-skins').querySelectorAll('.shop-buy').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const id=b.dataset.skin;if(activeSkin===id)return;if(ownedSkins.includes(id)){activeSkin=id;}else{const s=SKINS.find(x=>x.id===id);if(!s||coins<s.cost)return;coins-=s.cost;ownedSkins.push(id);activeSkin=id;updateUI();}renderFloorSkins();autoSave();});}); }
+        function getBgSkin(){ return BG_SKINS.find(x=>x.id===activeBgSkin)||BG_SKINS[0]; }
+        function renderBgSkins(){ let h=''; BG_SKINS.forEach(s=>{const o=ownedBgSkins.includes(s.id),a=activeBgSkin===s.id; let t=a?'✅ Надет':o?'🌌 Надеть':'🪙 '+s.cost; let cl=a?'active-skin':o?'owned':(coins>=s.cost?'':'cant-afford'); h+=`<div class="shop-item"><span class="shop-icon">${s.emoji}</span><div class="shop-info"><div class="name">${s.name}</div></div><button class="shop-buy ${cl}" data-bgskin="${s.id}">${t}</button></div>`;}); document.getElementById('tab-bg-skins').innerHTML=h; document.getElementById('tab-bg-skins').querySelectorAll('.shop-buy').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const id=b.dataset.bgskin;if(activeBgSkin===id)return;if(ownedBgSkins.includes(id)){activeBgSkin=id;}else{const s=BG_SKINS.find(x=>x.id===id);if(!s||coins<s.cost)return;coins-=s.cost;ownedBgSkins.push(id);activeBgSkin=id;updateUI();}renderBgSkins();autoSave();});}); }
+        
+        function generateUpgradeHTML(){ const items=[{key:'foundation',icon:'🏛️',name:'Усиленный фундамент',desc:'Все этажи шире на +3 пикс.'},{key:'architect',icon:'📐',name:'Точный архитектор',desc:'Зона идеального попадания шире'},{key:'brakes',icon:'🐌',name:'Замедление времени',desc:'Скорость растёт медленнее'},{key:'goldrush',icon:'💰',name:'Золотая лихорадка',desc:'Шанс ×2 монет за этаж'},{key:'magnet',icon:'🧲',name:'Магнит для жильцов',desc:'Жильцы появляются чаще'},]; return items.map(u=>`<div class="shop-item"><span class="shop-icon">${u.icon}</span><div class="shop-info"><div class="name">${u.name}</div><div class="desc">${u.desc}</div><div class="level">Уровень: <span id="${u.key}-lvl">1</span>/20</div></div><button class="shop-buy" id="buy-${u.key}">🪙 <span id="${u.key}-cost">0</span></button></div>`).join(''); }
+        function getUpgradeCost(u){ const l=u.level;if(l>=u.maxLevel)return Infinity;return l<=20?u.baseCost+(l-1)*u.baseCost:u.baseCost*20+(l-20)*u.baseCost*3; }
+        function updateShopUI(){ ['foundation','architect','brakes','goldrush','magnet'].forEach(key=>{const u=upgrades[key],c=getUpgradeCost(u),lvl=document.getElementById(`${key}-lvl`),cost=document.getElementById(`${key}-cost`),btn=document.getElementById(`buy-${key}`);if(lvl)lvl.textContent=u.level;if(cost)cost.textContent=u.level>=u.maxLevel?'MAX':c;if(btn){if(u.level>=u.maxLevel){btn.textContent='✅ MAX';btn.classList.add('maxed');btn.classList.remove('cant-afford');}else{btn.textContent='🪙 '+c;btn.classList.toggle('cant-afford',coins<c);btn.classList.remove('maxed');}}}); }
+        
+        function buyUpgrade(name){ 
+            const u=upgrades[name];if(u.level>=u.maxLevel)return;const c=getUpgradeCost(u);if(coins<c)return;coins-=c;u.level++;
+            if(name==='foundation'){
+                floors.forEach(f => { f.w += 3; f.x -= 1.5; });
+                if(currentFloor){
+                    currentFloor.w += 3; currentFloor.x -= 1.5;
+                    if (currentFloor.w > 15) {
+                        const maxWindowWidth = Math.min(14, currentFloor.w / 2 - 4);
+                        const minWindowWidth = 6;
+                        const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(currentFloor.w / 20)));
+                        const wh = Math.max(6, Math.min(12, ww * 0.8));
+                        const gap = Math.max(3, ww * 0.4);
+                        const maxWindows = Math.floor((currentFloor.w - gap) / (ww + gap));
+                        const windowCount = Math.max(1, Math.min(maxWindows, 10));
+                        currentFloor._windows = [];
+                        currentFloor._windowWidth = ww;
+                        currentFloor._windowHeight = wh;
+                        currentFloor._windowGap = gap;
+                        currentFloor._windowCount = windowCount;
+                        for (let i = 0; i < windowCount; i++) {
+                            currentFloor._windows.push({ i: i, lit: Math.random() < 0.7, special: null, hasResident: false });
+                        }
+                    }
+                }
+                floors.forEach((f, i) => {
+                    if (i > 0 && f.w > 15) {
+                        const maxWindowWidth = Math.min(14, f.w / 2 - 4);
+                        const minWindowWidth = 6;
+                        const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(f.w / 20)));
+                        const wh = Math.max(6, Math.min(12, ww * 0.8));
+                        const gap = Math.max(3, ww * 0.4);
+                        const maxWindows = Math.floor((f.w - gap) / (ww + gap));
+                        const windowCount = Math.max(1, Math.min(maxWindows, 10));
+                        f._windows = [];
+                        f._windowWidth = ww;
+                        f._windowHeight = wh;
+                        f._windowGap = gap;
+                        f._windowCount = windowCount;
+                        const rw = f._residentWindow !== undefined ? f._residentWindow : null;
+                        for (let j = 0; j < windowCount; j++) {
+                            f._windows.push({ i: j, lit: Math.random() < 0.7, special: null, hasResident: rw !== null && j === rw });
+                        }
+                    }
+                });
+            }
+            updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave();
+        }
+        
+        let upgradesInit=false;
+        function initUpgrades(){ if(upgradesInit)return;document.getElementById('tab-upgrades').innerHTML=generateUpgradeHTML();['foundation','architect','brakes','goldrush','magnet'].forEach(k=>{document.getElementById(`buy-${k}`).addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade(k);updateShopUI();});});upgradesInit=true; }
+        
+        function openShop(){ panelOpen=true;initUpgrades();mainMenu.style.display='none';overlay.classList.add('show');shopPanel.classList.add('open');if(gameState==='playing')bottomButtons.style.display='none';updateShopUI();renderFloorSkins();renderBgSkins();switchTab('shop-panel','upgrades'); }
+        function openCollection(){ panelOpen=true;mainMenu.style.display='none';overlay.classList.add('show');collectionPanel.classList.add('open');if(gameState==='playing')bottomButtons.style.display='none';renderCollection();renderAchievements();switchTab('collection-panel','residents'); }
+        function closePanels(){ panelOpen=false;shopPanel.classList.remove('open');collectionPanel.classList.remove('open');overlay.classList.remove('show');if(gameState==='playing'){bottomButtons.style.display='flex';}else if(gameState==='menu'){mainMenu.style.display='flex';} }
+        function switchTab(panelId,tabId){ const p=document.getElementById(panelId);p.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));p.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));p.querySelector(`[data-tab="${tabId}"]`).classList.add('active');document.getElementById(`tab-${tabId}`).classList.add('active'); }
+        document.querySelectorAll('.tab-btn').forEach(b=>{b.addEventListener('pointerdown',(e)=>{e.stopPropagation();const pId=b.closest('#shop-panel')?'shop-panel':'collection-panel';switchTab(pId,b.dataset.tab);});});
+        
+        function updateMenuStats(){ document.getElementById('menu-best').textContent=bestFloors; document.getElementById('menu-coins').textContent=coins; }
+        
+        function showMenu() {
+            if (gameState === 'playing') {
+                savedGameState = { floors, comboCount, direction, cameraY, targetCameraY, residentFloors, currentFloor };
+            }
+            mainMenu.classList.remove('hidden');
+            mainMenu.style.display = 'flex';
+            updateMenuStats();
+            gameState = 'menu';
+            uiLayer.style.display = 'none';
+            bottomButtons.style.display = 'none';
+            hintText.style.display = 'none';
+            gameoverPanel.style.display = 'none';
+            shopPanel.classList.remove('open');
+            collectionPanel.classList.remove('open');
+            overlay.classList.remove('show');
+            panelOpen = false;
+            resumeBtn.style.display = (savedGameState && savedGameState.floors.length > 1) ? 'block' : 'none';
+        }
+        
+        function startGame() {
+            savedGameState = null;
+            resumeBtn.style.display = 'none';
+            mainMenu.classList.add('hidden');
+            mainMenu.style.display = 'none';
+            initGame();
+        }
+        
+        function resumeGame() {
+            if (!savedGameState) return;
+            floors = savedGameState.floors;
+            comboCount = savedGameState.comboCount;
+            direction = savedGameState.direction;
+            cameraY = savedGameState.cameraY;
+            targetCameraY = savedGameState.targetCameraY;
+            residentFloors = savedGameState.residentFloors;
+            currentFloor = savedGameState.currentFloor;
+            savedGameState = null;
+            mainMenu.classList.add('hidden');
+            mainMenu.style.display = 'none';
+            gameState = 'playing';
+            gameoverPanel.style.display = 'none';
+            hintText.style.display = 'none';
+            uiLayer.style.display = 'flex';
+            bottomButtons.style.display = 'flex';
+            resumeBtn.style.display = 'none';
+            recalculateSpeed();
+            updateUI();
+        }
+        
+        playBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();initAudio();startGame();});
+        resumeBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();initAudio();resumeGame();});
+        menuShopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openShop();});
+        menuCollectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openCollection();});
+        menuResetBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();resetProgress();});
+        
+        function resize(){ const c=document.getElementById('gameContainer'),r=c.getBoundingClientRect();W=r.width;H=r.height;canvas.width=W*devicePixelRatio;canvas.height=H*devicePixelRatio;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(1,0,0,1,0,0);ctx.scale(devicePixelRatio,devicePixelRatio); }
+        function getStartWidth(){ return BASE_WIDTH+getWidthBonus(); }
+        function initGame(){ floors=[];comboCount=0;direction=1;cameraY=0;targetCameraY=0;residentFloors={};particles=[];updateIncrement();const sw=getStartWidth();floors.push({x:W/2-sw/2,y:H-FLOOR_HEIGHT-20,w:sw,isFoundation:true});gameState='playing';gameoverPanel.style.display='none';comboPopup.style.opacity='0';collectPopup.style.opacity='0';hintText.style.display='block';uiLayer.style.display='flex';bottomButtons.style.display='flex';gamesPlayed++;spawnFloor();updateUI(); }
+        
+        function getColor(i, floor){ 
+            if (floor && floor.isFoundation) {
+                return { top:'hsl(30,10%,55%)',bottom:'hsl(30,10%,35%)',stroke:'hsl(30,10%,65%)',glow:'hsl(30,10%,60%)' };
+            }
+            const sc = getSkinColors();
+            if(sc){
+                const hueShift = (i * 4) % 60 - 30;
+                const hue = sc.top[0] + hueShift;
+                const sat = sc.top[1];
+                const lightTop = Math.min(sc.top[2] + (i % 5), 80);
+                const lightBottom = sc.bottom[2] + (i % 3);
+                return{ top:`hsl(${hue},${sat}%,${lightTop}%)`,bottom:`hsl(${hue},${sat}%,${lightBottom}%)`,stroke:`hsl(${hue},${sc.stroke[1]}%,${sc.stroke[2]}%)`,glow:`hsl(${hue},${sc.stroke[1]}%,${sc.stroke[2]}%)` };
+            }
+            const h = (200 + i * 6) % 360;
+            return { top:`hsl(${h},65%,55%)`,bottom:`hsl(${h},65%,30%)`,stroke:`hsl(${h},75%,70%)`,glow:`hsl(${h},75%,60%)` }; 
+        }
+        
+        function spawnFloor(){ 
+            if(!floors.length)return;
+            const lf=floors[floors.length-1];
+            const sx=direction>0?-lf.w+20:W-20;
+            const newWidth = lf.w;
+            const windows = [];
+            let ww = 6, wh = 6, gap = 3, residentWindow = null;
+            if (newWidth > 15) {
+                const maxWindowWidth = Math.min(14, newWidth / 2 - 4);
+                const minWindowWidth = 6;
+                ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(newWidth / 20)));
+                wh = Math.max(6, Math.min(12, ww * 0.8));
+                gap = Math.max(3, ww * 0.4);
+                const maxWindows = Math.floor((newWidth - gap) / (ww + gap));
+                const windowCount = Math.max(1, Math.min(maxWindows, 10));
+                residentWindow = residentFloors[floors.length] ? Math.floor(Math.random() * windowCount) : null;
+                for (let i = 0; i < windowCount; i++) {
+                    windows.push({ i: i, lit: Math.random() < 0.7, special: null, hasResident: residentWindow !== null && i === residentWindow });
+                }
+            }
+            currentFloor={ x:sx, y:lf.y-FLOOR_HEIGHT, w:newWidth, _windows: windows, _windowWidth: ww, _windowHeight: wh, _windowGap: gap, _windowCount: windows.length, _residentWindow: residentWindow };
+            recalculateSpeed();
+        }
+        
+        function spawnPerfectParticles(x, y, w) {
+            const count = 12;
+            const colors = ['#ffd700', '#ffaa00', '#ffe066', '#ffffff', '#ffcc00'];
+            for (let i = 0; i < count; i++) {
+                particles.push({ x: x + Math.random() * w, y: y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3 - 2, life: 30 + Math.random() * 20, maxLife: 50, color: colors[Math.floor(Math.random() * colors.length)], size: 1.5 + Math.random() * 3 });
+            }
+        }
+        
+        function updateAndDrawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.life--;
+                if (p.life <= 0) { particles.splice(i, 1); continue; }
+                const alpha = p.life / p.maxLife;
+                ctx.fillStyle = p.color.startsWith('#fff') ? `rgba(255,255,255,${alpha})` : p.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
+                if (p.color === '#ffffff') ctx.fillStyle = `rgba(255,255,255,${alpha})`;
+                ctx.beginPath(); ctx.arc(p.x, p.y + cameraY, p.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+        
+        function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}
+            const oldWindows = currentFloor._windows || [];
+            let newWindows = []; let newWw = currentFloor._windowWidth || 6; let newWh = currentFloor._windowHeight || 6; let newGap = currentFloor._windowGap || 3; let newWc = oldWindows.length;
+            if (ow > 15 && oldWindows.length > 0) {
+                const maxWindowWidth = Math.min(14, ow / 2 - 4); const minWindowWidth = 6;
+                newWw = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(ow / 20)));
+                newWh = Math.max(6, Math.min(12, newWw * 0.8)); newGap = Math.max(3, newWw * 0.4);
+                const maxWindows = Math.floor((ow - newGap) / (newWw + newGap));
+                newWc = Math.min(oldWindows.length, Math.max(1, Math.min(maxWindows, 10)));
+                for (let i = 0; i < newWc; i++) { const oldWin = oldWindows[i]; newWindows.push({ i: i, lit: oldWin.lit, special: oldWin.special, hasResident: oldWin.hasResident }); }
+            } else { newWindows = oldWindows; }
+            const nf={x:ol,y:currentFloor.y,w:ow,_windows:newWindows,_windowWidth:newWw,_windowHeight:newWh,_windowGap:newGap,_windowCount:newWc};floors.push(nf);const fi=floors.length-1;
+            totalFloorsBuilt++;
+            if(residentFloors[fi] && nf._windows.length > 0){
+                const rw = currentFloor._residentWindow !== null ? currentFloor._residentWindow : Math.floor(Math.random() * nf._windows.length);
+                nf._residentWindow = rw;
+                nf._windows.forEach((w, i) => { w.hasResident = (i === rw); });
+                const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);
+                if(res&&!isResidentCollected(res.id))collectResident(res);
+            }
+            const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.02*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();spawnPerfectParticles(nf.x,nf.y,nf.w);}else if(acc>1-0.15*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;
+            const ni=floors.length;
+            if(ni>1&&ni%15===0&&!residentFloors[ni]){ if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){ const newResidents = ALL_RESIDENTS.filter(r => !isResidentCollected(r.id)); if (newResidents.length > 0) { const pick = newResidents[Math.floor(Math.random() * newResidents.length)]; residentFloors[ni] = pick.id; } } }
+            spawnFloor();hintText.style.display='none';autoSave();checkAchievements(); }
+        
+        function showGoldrush(){comboPopup.textContent='💰 ЗОЛОТО! ×2';comboPopup.style.color='#ffd700';comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},700);}
+        function showCombo(c){if(c>1){comboPopup.textContent=`ИДЕАЛЬНО! x${c} 🔥`;comboPopup.style.color='#ffd700';}else if(c===0&&floors.length>1){comboPopup.textContent='Отлично! ✨';comboPopup.style.color='#fff';}else return;comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},500);}
+        function hideCombo(){comboPopup.style.opacity='0';}
+        function triggerGameOver(){soundGameOver();gameState='gameover';currentFloor=null;const tf=floors.length,cb=1+getCollectionBonus()/100;const bc=Math.floor(tf*1*cb);coins+=bc;totalCoinsEarned+=bc;if(tf>bestFloors){bestFloors=tf;bestDisplay.textContent=bestFloors;}goFloorsEl.textContent=tf;goComboEl.textContent=bestCombo;goCoinsEl.textContent=bc;pendingBonusCoins=bc;adBtn.style.display='block';gameoverPanel.style.display='flex';hintText.style.display='none';bottomButtons.style.display='none';updateUI();saveGame();checkAchievements();updateMenuStats();savedGameState=null;resumeBtn.style.display='none';}
+        function updateUI(){floorCountEl.textContent=Math.max(1,floors.length);bestDisplay.textContent=bestFloors;comboTextEl.textContent=comboCount;coinDisplayEl.textContent=coins;updateMenuStats();}
+        
+        function handleTap(e){e.preventDefault();initAudio();if(gameState==='gameover'||panelOpen||gameState!=='playing'||!currentFloor)return;placeFloor();}
+        
+        restartBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();gameoverPanel.style.display='none';startGame();});
+        canvas.addEventListener('pointerdown',handleTap);
+        shopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openShop();});
+        collectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();openCollection();});
+        resetBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();saveGame();showMenu();});
+        closeShopBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+        closeCollectionBtn.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+        overlay.addEventListener('pointerdown',(e)=>{e.stopPropagation();closePanels();});
+        document.addEventListener('gesturestart',(e)=>e.preventDefault());
+        document.addEventListener('gesturechange',(e)=>e.preventDefault());
+        document.addEventListener('gestureend',(e)=>e.preventDefault());
+        window.addEventListener('resize',()=>{const ow=W;resize();const sx=W/ow;floors.forEach((f,i)=>{f.x*=sx;f.w*=sx;f.y=H-FLOOR_HEIGHT-20-(i*FLOOR_HEIGHT);});if(currentFloor){currentFloor.x*=sx;currentFloor.w*=sx;}});
+        
+        function update(){if(gameState!=='playing'||panelOpen)return;if(currentFloor){currentFloor.x+=moveSpeed*direction;if(currentFloor.x<=0){currentFloor.x=0;direction=1;}else if(currentFloor.x+currentFloor.w>=W){currentFloor.x=W-currentFloor.w;direction=-1;}}cameraY+=(targetCameraY-cameraY)*0.1;}
+        function draw(){ctx.clearRect(0,0,W,H);drawBackground();updateAndDrawParticles();ctx.save();ctx.translate(0,cameraY);for(let i=0;i<floors.length;i++)drawFloor(floors[i],i,false);if(currentFloor&&gameState==='playing'&&!panelOpen)drawFloor(currentFloor,floors.length,true);ctx.restore();}
+        
+        function drawBackground(){const bg=getBgSkin();const grad=ctx.createLinearGradient(0,0,0,H);bg.gradient.forEach((c,i)=>grad.addColorStop(i/(bg.gradient.length-1),c));ctx.fillStyle=grad;ctx.fillRect(0,0,W,H);
+            if(bg.id==='aurora'){const t=Date.now()/3000;for(let i=0;i<3;i++){ctx.fillStyle=`rgba(${100+i*30},${200+i*20},${150+i*30},0.15)`;ctx.beginPath();ctx.moveTo(0,H);for(let x=0;x<=W;x+=20)ctx.lineTo(x,H*0.3+Math.sin(x*0.02+t+i)*40+Math.sin(x*0.05+t*2)*20);ctx.lineTo(W,H);ctx.closePath();ctx.fill();}}
+            if(bg.id==='ocean'){if(!drawBackground.bubbles)drawBackground.bubbles=Array.from({length:15},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*6,s:0.2+Math.random()*0.5}));drawBackground.bubbles.forEach(b=>{b.y-=b.s;if(b.y<-10){b.y=H+10;b.x=Math.random()*W;}ctx.fillStyle=`rgba(200,240,255,${0.2+Math.sin(Date.now()/1000+b.x)*0.1})`;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.fill();});}
+            if(bg.id==='hell'){if(!drawBackground.sparks)drawBackground.sparks=Array.from({length:40},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.3+Math.random()*1.5}));drawBackground.sparks.forEach(sp=>{sp.y-=sp.s;if(sp.y<-10){sp.y=H+10;sp.x=Math.random()*W;}ctx.fillStyle=`rgba(255,${100+Math.floor(Math.random()*100)},0,${0.4+Math.sin(Date.now()/1000+sp.x)*0.2})`;ctx.beginPath();ctx.arc(sp.x,sp.y,sp.r,0,Math.PI*2);ctx.fill();});}
+            if(bg.id==='sakura'){if(!drawBackground.petals)drawBackground.petals=Array.from({length:25},()=>({x:Math.random()*W,y:Math.random()*H,r:2+Math.random()*3,s:0.3+Math.random()*0.8,wobble:Math.random()*Math.PI*2}));const pt=Date.now()/1000;drawBackground.petals.forEach(p=>{p.y+=p.s;p.x+=Math.sin(pt+p.wobble)*0.5;if(p.y>H+10){p.y=-10;p.x=Math.random()*W;}ctx.fillStyle=`rgba(255,${180+Math.floor(Math.random()*40)},${200+Math.floor(Math.random()*30)},0.7)`;ctx.beginPath();ctx.ellipse(p.x,p.y,p.r,p.r*0.6,Math.sin(pt+p.wobble)*0.5,0,Math.PI*2);ctx.fill();});}
+            if(bg.id==='volcano'){if(!drawBackground.ash)drawBackground.ash=Array.from({length:35},()=>({x:Math.random()*W,y:Math.random()*H,r:1+Math.random()*3,s:0.2+Math.random()*1,drift:Math.random()*2-1}));const at=Date.now()/1000;drawBackground.ash.forEach(a=>{a.y-=a.s;a.x+=a.drift*0.3;if(a.y<-10){a.y=H+10;a.x=Math.random()*W;}const alpha=0.3+Math.sin(at+a.x)*0.2;ctx.fillStyle=`rgba(${80+Math.floor(Math.random()*40)},${20+Math.floor(Math.random()*20)},${5},${alpha})`;ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);ctx.fill();});const lavaGrad=ctx.createLinearGradient(0,H*0.8,0,H);lavaGrad.addColorStop(0,'rgba(255,50,0,0)');lavaGrad.addColorStop(1,'rgba(255,100,0,0.3)');ctx.fillStyle=lavaGrad;ctx.fillRect(0,H*0.8,W,H*0.2);}
+            if(bg.starColor&&bg.starCount>0){if(!drawBackground.stars)drawBackground.stars=Array.from({length:100},()=>({x:Math.random()*420,y:Math.random()*750,r:0.3+Math.random()*1.5,twinkle:Math.random()*Math.PI*2}));const time=Date.now()/1000;for(let i=0;i<Math.min(bg.starCount,drawBackground.stars.length);i++){const star=drawBackground.stars[i];const alpha=0.3+Math.sin(time*2+star.twinkle)*0.2;let color=bg.starColor.replace('{alpha}',alpha).replace('{color}','255,255,255');if(bg.id==='space'){const colors=['rgba(255,255,255,','rgba(200,220,255,','rgba(255,255,200,','rgba(255,200,200,'];color=colors[Math.floor(Math.random()*4)]+alpha+')';}ctx.fillStyle=color;ctx.beginPath();ctx.arc(star.x,star.y,star.r,0,Math.PI*2);ctx.fill();}}
+            if(bg.id==='morning'){if(!drawBackground.clouds)drawBackground.clouds=Array.from({length:5},()=>({x:Math.random()*W,y:50+Math.random()*H*0.4,w:40+Math.random()*80}));drawBackground.clouds.forEach(c=>{c.x+=0.2;if(c.x>W+100)c.x=-100;ctx.fillStyle='rgba(255,255,255,0.25)';ctx.beginPath();ctx.ellipse(c.x,c.y,c.w,c.w*0.3,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(c.x-c.w*0.3,c.y+5,c.w*0.6,c.w*0.2,0,0,Math.PI*2);ctx.fill();});}
+        }
+        
+        function drawFloor(floor, index, isCurrent) {
+            const color = getColor(index, floor);
+            ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(floor.x + 2, floor.y + 2, floor.w, FLOOR_HEIGHT);
+            const grad = ctx.createLinearGradient(floor.x, floor.y, floor.x, floor.y + FLOOR_HEIGHT);
+            grad.addColorStop(0, color.top); grad.addColorStop(1, color.bottom);
+            ctx.fillStyle = grad; ctx.fillRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT);
+            if (isCurrent) { ctx.shadowColor = color.glow; ctx.shadowBlur = 12; ctx.strokeStyle = color.stroke; ctx.lineWidth = 2.5; }
+            else { ctx.shadowBlur = 0; ctx.strokeStyle = color.stroke; ctx.lineWidth = 1.5; }
+            ctx.strokeRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT); ctx.shadowBlur = 0;
+            ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(floor.x, floor.y, floor.w, 3);
+            
+            if (floor.w > 15 && index > 0 && floor._windows && floor._windows.length > 0) {
+                const ww = floor._windowWidth || 6;
+                const wh = floor._windowHeight || 6;
+                const wg = floor._windowGap || 3;
+                const wc = floor._windowCount || floor._windows.length;
+                const totalWidth = wc * ww + (wc - 1) * wg;
+                const startX = floor.x + (floor.w - totalWidth) / 2;
+                
+                floor._windows.forEach(win => {
+                    const wx = startX + win.i * (ww + wg);
+                    const wy = floor.y + (FLOOR_HEIGHT - wh) / 2;
+                    if (wx < floor.x || wx + ww > floor.x + floor.w) return;
+                    
+                    if (win.hasResident) {
+                        ctx.fillStyle = 'rgba(255,255,150,0.9)'; ctx.fillRect(wx, wy, ww, wh);
+                        ctx.strokeStyle = 'rgba(255,215,0,0.8)'; ctx.lineWidth = 1; ctx.strokeRect(wx, wy, ww, wh);
+                        const resident = ALL_RESIDENTS.find(r => r.id === residentFloors[index]);
+                        if (resident) { ctx.font = `${Math.max(7, ww - 4)}px Arial`; ctx.fillText(resident.emoji, wx + 1, wy + wh - 2); }
+                    } else {
+                        const bgColor = win.lit ? 'rgba(255,255,200,0.5)' : 'rgba(20,20,40,0.5)';
+                        ctx.fillStyle = bgColor; ctx.fillRect(wx, wy, ww, wh);
+                        ctx.strokeStyle = win.lit ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
+                        ctx.lineWidth = 0.5; ctx.strokeRect(wx, wy, ww, wh);
+                        if (ww >= 8) {
+                            ctx.strokeStyle = win.lit ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.05)';
+                            ctx.beginPath(); ctx.moveTo(wx + ww/2, wy); ctx.lineTo(wx + ww/2, wy + wh);
+                            ctx.moveTo(wx, wy + wh/2); ctx.lineTo(wx + ww, wy + wh/2); ctx.stroke();
+                        }
+                    }
+                });
+            }
+        }
+        
+        function gameLoop(){update();draw();requestAnimationFrame(gameLoop);}
+        
+        resize();updateIncrement();
+        const loaded = loadGame();
+        if (loaded) {
+            updateMenuStats();
+            if (!soundEnabled && menuSoundBtn) menuSoundBtn.classList.add('muted');
+        }
+        showMenu();
+        gameLoop();
+        
+        if ('serviceWorker' in navigator && location.hostname.includes('github.io')) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    })();
+    </script>
+</body>
+</html>
