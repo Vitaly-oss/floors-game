@@ -12,32 +12,30 @@
     <link rel="icon" id="favicon" href="data:image/png;base64,iVBORw0KGgo=">
     <link rel="apple-touch-icon" id="apple-icon" href="data:image/png;base64,iVBORw0KGgo=">
     
-    <!-- Яндекс SDK -->
-    <script src="https://yandex.ru/games/sdk/v2"></script>
-    
     <script>
-    (function() {
-        const canvas = document.createElement('canvas');
-        canvas.width = 180; canvas.height = 180;
-        const ctx = canvas.getContext('2d');
-        const bg = ctx.createLinearGradient(0, 0, 0, 180);
-        bg.addColorStop(0, '#1a1a3e'); bg.addColorStop(1, '#0f2040');
-        ctx.fillStyle = bg; ctx.fillRect(0, 0, 180, 180);
-        ctx.fillStyle = 'rgba(255,255,255,0.5)';
-        for (let i = 0; i < 15; i++) {
-            ctx.beginPath();
-            ctx.arc(30 + Math.random() * 120, 20 + Math.random() * 80, 1.5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        ctx.font = '90px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('🏙️', 90, 95);
-        const dataUrl = canvas.toDataURL();
-        document.getElementById('favicon').href = dataUrl;
-        document.getElementById('apple-icon').href = dataUrl;
-    })();
-    </script>
+(function() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 180; canvas.height = 180;
+    const ctx = canvas.getContext('2d');
+    const bg = ctx.createLinearGradient(0, 0, 0, 180);
+    bg.addColorStop(0, '#1a1a3e'); bg.addColorStop(1, '#0f2040');
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, 180, 180);
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    for (let i = 0; i < 15; i++) {
+        ctx.beginPath();
+        ctx.arc(30 + Math.random() * 120, 20 + Math.random() * 80, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    // Иконка 🏙️ по центру
+    ctx.font = '90px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏙️', 90, 95);
+    const dataUrl = canvas.toDataURL();
+    document.getElementById('favicon').href = dataUrl;
+    document.getElementById('apple-icon').href = dataUrl;
+})();
+</script>
     
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -197,15 +195,6 @@
         }
         #restart-btn:active { transform:scale(0.95); }
         
-        /* Кнопка рекламы */
-        #ad-btn {
-            background:linear-gradient(135deg,#ffd700,#ffaa00); color:#000;
-            border:none; padding:12px 25px; font-size:16px; font-weight:bold;
-            border-radius:30px; cursor:pointer; transition:0.2s;
-            box-shadow:0 8px 25px rgba(255,215,0,0.4);
-        }
-        #ad-btn:active { transform:scale(0.95); }
-        
         #main-menu {
             position:absolute; inset:0; z-index:20;
             background:linear-gradient(180deg,#0a0a1a 0%,#16213e 50%,#0f3460 100%);
@@ -247,6 +236,7 @@
         .menu-buttons { display:flex; gap:10px; width:100%; max-width:250px; }
         .menu-buttons .menu-btn { flex:1; font-size:14px; padding:12px; }
         
+        /* Иконки в меню */
         #menu-shop-btn::before, #menu-collection-btn::before {
             content:''; display:inline-block; width:18px; height:18px;
             background-size:contain; background-repeat:no-repeat; background-position:center;
@@ -258,16 +248,19 @@
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20'/%3E%3Cpath d='M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z'/%3E%3C/svg%3E");
         }
         
+        /* Кнопка звука */
+      
         #menu-sound-btn::before {
-            content:''; display:inline-block; width:16px; height:16px;
-            background-size:contain; background-repeat:no-repeat; background-position:center;
-            vertical-align:middle; margin-right:5px;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3E%3Cpath d='M15.54 8.46a5 5 0 0 1 0 7.07'/%3E%3Cpath d='M19.07 4.93a10 10 0 0 1 0 14.14'/%3E%3C/svg%3E");
-        }
-        #menu-sound-btn.muted::before {
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3E%3Cline x1='23' y1='9' x2='17' y2='15'/%3E%3Cline x1='17' y1='9' x2='23' y2='15'/%3E%3C/svg%3E");
-        }
+    content:''; display:inline-block; width:16px; height:16px;
+    background-size:contain; background-repeat:no-repeat; background-position:center;
+    vertical-align:middle; margin-right:5px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3E%3Cpath d='M15.54 8.46a5 5 0 0 1 0 7.07'/%3E%3Cpath d='M19.07 4.93a10 10 0 0 1 0 14.14'/%3E%3C/svg%3E");
+}
+#menu-sound-btn.muted::before {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpolygon points='11 5 6 9 2 9 2 15 6 15 11 19 11 5'/%3E%3Cline x1='23' y1='9' x2='17' y2='15'/%3E%3Cline x1='17' y1='9' x2='23' y2='15'/%3E%3C/svg%3E");
+}
         
+        /* Кнопка сброса */
         #menu-reset-btn::before {
             content:''; display:inline-block; width:16px; height:16px;
             background-size:contain; background-repeat:no-repeat; background-position:center;
@@ -301,12 +294,12 @@
                 <button id="play-btn" class="menu-btn primary">🎮 Играть</button>
                 <button id="resume-btn" class="menu-btn primary" style="display:none;">▶ Продолжить</button>
                 <div class="menu-buttons">
-                    <button id="menu-shop-btn" class="menu-btn">Магазин</button>
-                    <button id="menu-collection-btn" class="menu-btn">Коллекция</button>
+                    <button id="menu-shop-btn" class="menu-btn"></button>
+                    <button id="menu-collection-btn" class="menu-btn"></button>
                 </div>
                 <div class="menu-buttons">
-                    <button id="menu-sound-btn" class="menu-btn small">Звук</button>
-                    <button id="menu-reset-btn" class="menu-btn small">Сброс</button>
+                    <button id="menu-sound-btn" class="menu-btn small"></button>
+                    <button id="menu-reset-btn" class="menu-btn small"></button>
                 </div>
             </div>
         </div>
@@ -369,92 +362,12 @@
                 Лучшее комбо: <b><span id="goCombo">0</span></b>
             </div>
             <div class="coins">🪙 +<span id="goCoins">0</span></div>
-            <button id="ad-btn">🎬 ×2 монет</button>
             <button id="restart-btn">🔄 Играть ещё</button>
         </div>
     </div>
 
     <script>
     (function() {
-        // =============================================
-        // ЯНДЕКС SDK
-        // =============================================
-        let yaSDK = null;
-        let isYaGames = false;
-        
-        if (typeof YaGames !== 'undefined') {
-            YaGames.init().then(sdk => {
-                yaSDK = sdk;
-                isYaGames = true;
-                loadFromCloud();
-            }).catch(() => {});
-        }
-        
-        function showRewardedAd(callback) {
-    if (isYaGames && yaSDK) {
-        yaSDK.adv.showRewardedVideo({
-            callbacks: {
-                onOpen: () => {
-                    soundEnabled = false;
-                    if (audioCtx) audioCtx.suspend();
-                },
-                onRewarded: () => {
-                    soundEnabled = true;
-                    if (audioCtx) audioCtx.resume();
-                    if (callback) callback();
-                },
-                onClose: () => {
-                    soundEnabled = true;
-                    if (audioCtx) audioCtx.resume();
-                },
-                onError: (err) => {
-                    soundEnabled = true;
-                    if (audioCtx) audioCtx.resume();
-                    console.log('Ошибка рекламы:', err);
-                }
-            }
-        });
-    } else {
-        if (confirm('🎬 Посмотреть рекламу?)')) {
-            if (callback) callback();
-        }
-    }
-}
-        
-        async function saveToCloud() {
-            if (isYaGames && yaSDK) {
-                const data = { coins, bestFloors, bestCombo, upgrades, collectedResidents, ownedSkins, activeSkin, ownedBgSkins, activeBgSkin, unlockedAchievements, soundEnabled };
-                try { await yaSDK.player.setData({ gameData: JSON.stringify(data) }); } catch(e) {}
-            }
-        }
-        
-        async function loadFromCloud() {
-            if (isYaGames && yaSDK) {
-                try {
-                    const data = await yaSDK.player.getData();
-                    if (data && data.gameData) {
-                        const saved = JSON.parse(data.gameData);
-                        if (saved.coins) coins = saved.coins;
-                        if (saved.bestFloors) bestFloors = saved.bestFloors;
-                        if (saved.bestCombo) bestCombo = saved.bestCombo;
-                        if (saved.upgrades) upgrades = saved.upgrades;
-                        if (saved.collectedResidents) collectedResidents = saved.collectedResidents;
-                        if (saved.ownedSkins) ownedSkins = saved.ownedSkins;
-                        if (saved.activeSkin) activeSkin = saved.activeSkin;
-                        if (saved.ownedBgSkins) ownedBgSkins = saved.ownedBgSkins;
-                        if (saved.activeBgSkin) activeBgSkin = saved.activeBgSkin;
-                        if (saved.unlockedAchievements) unlockedAchievements = saved.unlockedAchievements;
-                        if (saved.soundEnabled !== undefined) soundEnabled = saved.soundEnabled;
-                        updateUI();
-                        updateMenuStats();
-                    }
-                } catch(e) {}
-            }
-        }
-        
-        // =============================================
-        // DOM-ЭЛЕМЕНТЫ
-        // =============================================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
@@ -472,7 +385,6 @@
         const goComboEl = document.getElementById('goCombo');
         const goCoinsEl = document.getElementById('goCoins');
         const restartBtn = document.getElementById('restart-btn');
-        const adBtn = document.getElementById('ad-btn');
         const overlay = document.getElementById('overlay');
         const bottomButtons = document.getElementById('bottom-buttons');
         
@@ -494,7 +406,6 @@
         
         let audioCtx = null;
         let soundEnabled = true;
-        let pendingBonusCoins = 0;
         
         function initAudio() {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -532,19 +443,6 @@
         }
         
         menuSoundBtn.addEventListener('pointerdown', (e) => { e.stopPropagation(); initAudio(); toggleSound(); });
-        
-        // Кнопка рекламы
-        adBtn.addEventListener('pointerdown', (e) => {
-            e.stopPropagation();
-            showRewardedAd(() => {
-                coins += pendingBonusCoins;
-                updateUI();
-                updateMenuStats();
-                saveGame();
-                adBtn.style.display = 'none';
-                goCoinsEl.textContent = Math.floor(pendingBonusCoins * 2);
-            });
-        });
         
         let W, H;
         const FLOOR_HEIGHT = 28;
@@ -686,7 +584,6 @@
                     brakes:upgrades.brakes.level, goldrush:upgrades.goldrush.level, magnet:upgrades.magnet.level },
                 collectedResidents, ownedSkins, activeSkin, ownedBgSkins, activeBgSkin, unlockedAchievements, soundEnabled };
             try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); } catch(e) {}
-            saveToCloud();
         }
         function loadGame() {
             try {
@@ -719,34 +616,40 @@
         function getRandomResident(){ const r=Math.random()*100; const pool=r<55?ALL_RESIDENTS.filter(x=>x.rarity==='common'):r<80?ALL_RESIDENTS.filter(x=>x.rarity==='rare'):r<95?ALL_RESIDENTS.filter(x=>x.rarity==='epic'):ALL_RESIDENTS.filter(x=>x.rarity==='legendary'); return pool[Math.floor(Math.random()*pool.length)]; }
         function getCollectionBonus(){ return collectedResidents.reduce((s,id)=>{const r=ALL_RESIDENTS.find(x=>x.id===id);return s+(r?r.bonus:0);},0); }
         function isResidentCollected(id){ return collectedResidents.includes(id); }
-        
-        let residentPopupTimeout = null;
-        function collectResident(r) {
-            if (!isResidentCollected(r.id)) {
-                collectedResidents.push(r.id);
-                soundResident();
-                showCollectPopup(r);
-                autoSave();
-                checkAchievements();
-            }
-        }
-        function showCollectPopup(r) {
-            const c = { common:'#aaa', rare:'#4da6ff', epic:'#c044ff', legendary:'#ffd700' };
-            collectPopup.innerHTML = `${r.emoji}<br><span style="color:${c[r.rarity]};font-size:16px;">${r.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${r.bonus}% к монетам</span>`;
-            clearTimeout(residentPopupTimeout);
-            collectPopup.style.transition = 'none';
-            collectPopup.style.opacity = '0';
-            collectPopup.style.transform = 'translate(-50%,-50%) scale(0.8)';
-            requestAnimationFrame(() => {
-                collectPopup.style.transition = 'all 0.3s ease-out';
-                collectPopup.style.opacity = '1';
-                collectPopup.style.transform = 'translate(-50%,-50%) scale(1.1)';
-            });
-            residentPopupTimeout = setTimeout(() => {
-                collectPopup.style.opacity = '0';
-                collectPopup.style.transform = 'translate(-50%,-50%) scale(0.8)';
-            }, 2000);
-        }
+let residentPopupTimeout = null;
+
+function collectResident(r) {
+    if (!isResidentCollected(r.id)) {
+        collectedResidents.push(r.id);
+        soundResident();
+        showCollectPopup(r);
+        autoSave();
+        checkAchievements();
+    }
+}
+
+function showCollectPopup(r) {
+    const c = { common:'#aaa', rare:'#4da6ff', epic:'#c044ff', legendary:'#ffd700' };
+    collectPopup.innerHTML = `${r.emoji}<br><span style="color:${c[r.rarity]};font-size:16px;">${r.name} найден!</span><br><span style="font-size:12px;color:#aaa;">+${r.bonus}% к монетам</span>`;
+    
+    // Сбрасываем таймер и анимацию
+    clearTimeout(residentPopupTimeout);
+    collectPopup.style.transition = 'none';
+    collectPopup.style.opacity = '0';
+    collectPopup.style.transform = 'translate(-50%,-50%) scale(0.8)';
+    
+    // Запускаем новую анимацию
+    requestAnimationFrame(() => {
+        collectPopup.style.transition = 'all 0.3s ease-out';
+        collectPopup.style.opacity = '1';
+        collectPopup.style.transform = 'translate(-50%,-50%) scale(1.1)';
+    });
+    
+    residentPopupTimeout = setTimeout(() => {
+        collectPopup.style.opacity = '0';
+        collectPopup.style.transform = 'translate(-50%,-50%) scale(0.8)';
+    }, 2000);
+}
         function renderCollection(){ const cats=[{rarity:'legendary',name:'🟡 Легендарные',color:'#ffd700'},{rarity:'epic',name:'🟣 Эпические',color:'#c044ff'},{rarity:'rare',name:'🔵 Редкие',color:'#4da6ff'},{rarity:'common',name:'🟢 Обычные',color:'#aaa'}]; let h=''; cats.forEach(cat=>{const residents=ALL_RESIDENTS.filter(r=>r.rarity===cat.rarity); h+=`<div class="collection-category" style="color:${cat.color}">${cat.name} (${residents.filter(r=>isResidentCollected(r.id)).length}/${residents.length})</div><div class="collection-grid">`; residents.forEach(r=>{const c=isResidentCollected(r.id); h+=`<div class="collection-slot ${c?'':'locked'}">${c?r.emoji:'❓'}${c?`<span class="bonus-badge">+${r.bonus}%</span>`:''}</div>`;}); h+='</div>';}); document.getElementById('collection-content').innerHTML=h; document.getElementById('collected-count').textContent=collectedResidents.length; document.getElementById('total-count').textContent=ALL_RESIDENTS.length; document.getElementById('bonus-percent').textContent=`+${getCollectionBonus()}%`; }
         
         function checkAchievements(){ ACHIEVEMENTS.forEach(a=>{if(!unlockedAchievements.includes(a.id)&&a.check()){unlockedAchievements.push(a.id);achievementQueue.push(a);coins+=a.reward;updateUI();}}); if(!showingAchievement&&achievementQueue.length>0)showNextAchievement(); }
@@ -761,56 +664,77 @@
         function generateUpgradeHTML(){ const items=[{key:'foundation',icon:'🏛️',name:'Усиленный фундамент',desc:'Все этажи шире на +3 пикс.'},{key:'architect',icon:'📐',name:'Точный архитектор',desc:'Зона идеального попадания шире'},{key:'brakes',icon:'🐌',name:'Замедление времени',desc:'Скорость растёт медленнее'},{key:'goldrush',icon:'💰',name:'Золотая лихорадка',desc:'Шанс ×2 монет за этаж'},{key:'magnet',icon:'🧲',name:'Магнит для жильцов',desc:'Жильцы появляются чаще'},]; return items.map(u=>`<div class="shop-item"><span class="shop-icon">${u.icon}</span><div class="shop-info"><div class="name">${u.name}</div><div class="desc">${u.desc}</div><div class="level">Уровень: <span id="${u.key}-lvl">1</span>/20</div></div><button class="shop-buy" id="buy-${u.key}">🪙 <span id="${u.key}-cost">0</span></button></div>`).join(''); }
         function getUpgradeCost(u){ const l=u.level;if(l>=u.maxLevel)return Infinity;return l<=20?u.baseCost+(l-1)*u.baseCost:u.baseCost*20+(l-20)*u.baseCost*3; }
         function updateShopUI(){ ['foundation','architect','brakes','goldrush','magnet'].forEach(key=>{const u=upgrades[key],c=getUpgradeCost(u),lvl=document.getElementById(`${key}-lvl`),cost=document.getElementById(`${key}-cost`),btn=document.getElementById(`buy-${key}`);if(lvl)lvl.textContent=u.level;if(cost)cost.textContent=u.level>=u.maxLevel?'MAX':c;if(btn){if(u.level>=u.maxLevel){btn.textContent='✅ MAX';btn.classList.add('maxed');btn.classList.remove('cant-afford');}else{btn.textContent='🪙 '+c;btn.classList.toggle('cant-afford',coins<c);btn.classList.remove('maxed');}}}); }
-        
-        function buyUpgrade(name){ 
-            const u=upgrades[name];if(u.level>=u.maxLevel)return;const c=getUpgradeCost(u);if(coins<c)return;coins-=c;u.level++;
-            if(name==='foundation'){
-                floors.forEach(f => { f.w += 3; f.x -= 1.5; });
-                if(currentFloor){
-                    currentFloor.w += 3; currentFloor.x -= 1.5;
-                    if (currentFloor.w > 15) {
-                        const maxWindowWidth = Math.min(14, currentFloor.w / 2 - 4);
-                        const minWindowWidth = 6;
-                        const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(currentFloor.w / 20)));
-                        const wh = Math.max(6, Math.min(12, ww * 0.8));
-                        const gap = Math.max(3, ww * 0.4);
-                        const maxWindows = Math.floor((currentFloor.w - gap) / (ww + gap));
-                        const windowCount = Math.max(1, Math.min(maxWindows, 10));
-                        currentFloor._windows = [];
-                        currentFloor._windowWidth = ww;
-                        currentFloor._windowHeight = wh;
-                        currentFloor._windowGap = gap;
-                        currentFloor._windowCount = windowCount;
-                        for (let i = 0; i < windowCount; i++) {
-                            currentFloor._windows.push({ i: i, lit: Math.random() < 0.7, special: null, hasResident: false });
-                        }
-                    }
+function buyUpgrade(name){ 
+    const u=upgrades[name];if(u.level>=u.maxLevel)return;const c=getUpgradeCost(u);if(coins<c)return;coins-=c;u.level++;
+    if(name==='foundation'){
+        // Расширяем все существующие этажи
+        floors.forEach(f => {
+            f.w += 3;
+            f.x -= 1.5;
+        });
+        // Расширяем текущий движущийся этаж
+        if(currentFloor){
+            currentFloor.w += 3;
+            currentFloor.x -= 1.5;
+            
+            // Перегенерируем окна для текущего этажа
+            if (currentFloor.w > 15) {
+                const maxWindowWidth = Math.min(14, currentFloor.w / 2 - 4);
+                const minWindowWidth = 6;
+                const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(currentFloor.w / 20)));
+                const wh = Math.max(6, Math.min(12, ww * 0.8));
+                const gap = Math.max(3, ww * 0.4);
+                const maxWindows = Math.floor((currentFloor.w - gap) / (ww + gap));
+                const windowCount = Math.max(1, Math.min(maxWindows, 12));
+                
+                currentFloor._windows = [];
+                currentFloor._windowWidth = ww;
+                currentFloor._windowHeight = wh;
+                currentFloor._windowGap = gap;
+                currentFloor._windowCount = windowCount;
+                
+                for (let i = 0; i < windowCount; i++) {
+                    currentFloor._windows.push({
+                        i: i,
+                        lit: Math.random() < 0.7,
+                        special: null,
+                        hasResident: false
+                    });
                 }
-                floors.forEach((f, i) => {
-                    if (i > 0 && f.w > 15) {
-                        const maxWindowWidth = Math.min(14, f.w / 2 - 4);
-                        const minWindowWidth = 6;
-                        const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(f.w / 20)));
-                        const wh = Math.max(6, Math.min(12, ww * 0.8));
-                        const gap = Math.max(3, ww * 0.4);
-                        const maxWindows = Math.floor((f.w - gap) / (ww + gap));
-                        const windowCount = Math.max(1, Math.min(maxWindows, 10));
-                        f._windows = [];
-                        f._windowWidth = ww;
-                        f._windowHeight = wh;
-                        f._windowGap = gap;
-                        f._windowCount = windowCount;
-                        const rw = f._residentWindow !== undefined ? f._residentWindow : null;
-                        for (let j = 0; j < windowCount; j++) {
-                            f._windows.push({ i: j, lit: Math.random() < 0.7, special: null, hasResident: rw !== null && j === rw });
-                        }
-                    }
-                });
             }
-            updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave();
         }
-        
-        let upgradesInit=false;
+        // Перегенерируем окна для всех этажей кроме фундамента
+        floors.forEach((f, i) => {
+            if (i > 0 && f.w > 15) {
+                const maxWindowWidth = Math.min(14, f.w / 2 - 4);
+                const minWindowWidth = 6;
+                const ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(f.w / 20)));
+                const wh = Math.max(6, Math.min(12, ww * 0.8));
+                const gap = Math.max(3, ww * 0.4);
+                const maxWindows = Math.floor((f.w - gap) / (ww + gap));
+                const windowCount = Math.max(1, Math.min(maxWindows, 12));
+                
+                f._windows = [];
+                f._windowWidth = ww;
+                f._windowHeight = wh;
+                f._windowGap = gap;
+                f._windowCount = windowCount;
+                
+                const rw = f._residentWindow !== undefined ? f._residentWindow : null;
+                for (let j = 0; j < windowCount; j++) {
+                    f._windows.push({
+                        i: j,
+                        lit: Math.random() < 0.7,
+                        special: null,
+                        hasResident: rw !== null && j === rw
+                    });
+                }
+            }
+        });
+    }
+    updateIncrement();recalculateSpeed();updateUI();updateShopUI();autoSave();
+}
+let upgradesInit=false;
         function initUpgrades(){ if(upgradesInit)return;document.getElementById('tab-upgrades').innerHTML=generateUpgradeHTML();['foundation','architect','brakes','goldrush','magnet'].forEach(k=>{document.getElementById(`buy-${k}`).addEventListener('pointerdown',(e)=>{e.stopPropagation();buyUpgrade(k);updateShopUI();});});upgradesInit=true; }
         
         function openShop(){ panelOpen=true;initUpgrades();mainMenu.style.display='none';overlay.classList.add('show');shopPanel.classList.add('open');if(gameState==='playing')bottomButtons.style.display='none';updateShopUI();renderFloorSkins();renderBgSkins();switchTab('shop-panel','upgrades'); }
@@ -897,79 +821,146 @@
             return { top:`hsl(${h},65%,55%)`,bottom:`hsl(${h},65%,30%)`,stroke:`hsl(${h},75%,70%)`,glow:`hsl(${h},75%,60%)` }; 
         }
         
-        function spawnFloor(){ 
-            if(!floors.length)return;
-            const lf=floors[floors.length-1];
-            const sx=direction>0?-lf.w+20:W-20;
-            const newWidth = lf.w;
-            const windows = [];
-            let ww = 6, wh = 6, gap = 3, residentWindow = null;
-            if (newWidth > 15) {
-                const maxWindowWidth = Math.min(14, newWidth / 2 - 4);
-                const minWindowWidth = 6;
-                ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(newWidth / 20)));
-                wh = Math.max(6, Math.min(12, ww * 0.8));
-                gap = Math.max(3, ww * 0.4);
-                const maxWindows = Math.floor((newWidth - gap) / (ww + gap));
-                const windowCount = Math.max(1, Math.min(maxWindows, 10));
-                residentWindow = residentFloors[floors.length] ? Math.floor(Math.random() * windowCount) : null;
-                for (let i = 0; i < windowCount; i++) {
-                    windows.push({ i: i, lit: Math.random() < 0.7, special: null, hasResident: residentWindow !== null && i === residentWindow });
-                }
-            }
-            currentFloor={ x:sx, y:lf.y-FLOOR_HEIGHT, w:newWidth, _windows: windows, _windowWidth: ww, _windowHeight: wh, _windowGap: gap, _windowCount: windows.length, _residentWindow: residentWindow };
-            recalculateSpeed();
-        }
+function spawnFloor(){ 
+    if(!floors.length)return;
+    const lf=floors[floors.length-1];
+    const sx=direction>0?-lf.w+20:W-20;
+    const newWidth = lf.w;
+    
+    const windows = [];
+    let ww = 6, wh = 6, gap = 3, residentWindow = null;
+    
+    if (newWidth > 15) {
+        const maxWindowWidth = Math.min(14, newWidth / 2 - 4);
+        const minWindowWidth = 6;
+        ww = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(newWidth / 20)));
+        wh = Math.max(6, Math.min(12, ww * 0.8));
+        gap = Math.max(3, ww * 0.4);
+        const maxWindows = Math.floor((newWidth - gap) / (ww + gap));
+        const windowCount = Math.max(1, Math.min(maxWindows, 12));
         
-        function spawnPerfectParticles(x, y, w) {
+        residentWindow = residentFloors[floors.length] ? Math.floor(Math.random() * windowCount) : null;
+        for (let i = 0; i < windowCount; i++) {
+            windows.push({
+                i: i,
+                lit: Math.random() < 0.7,
+                special: null,
+                hasResident: residentWindow !== null && i === residentWindow
+            });
+        }
+    }
+    
+    currentFloor={
+        x:sx, y:lf.y-FLOOR_HEIGHT, w:newWidth,
+        _windows: windows,
+        _windowWidth: ww,
+        _windowHeight: wh,
+        _windowGap: gap,
+        _windowCount: windows.length,
+        _residentWindow: residentWindow
+    };
+    recalculateSpeed();
+}       
+function spawnPerfectParticles(x, y, w) {
             const count = 12;
             const colors = ['#ffd700', '#ffaa00', '#ffe066', '#ffffff', '#ffcc00'];
             for (let i = 0; i < count; i++) {
-                particles.push({ x: x + Math.random() * w, y: y, vx: (Math.random() - 0.5) * 4, vy: -Math.random() * 3 - 2, life: 30 + Math.random() * 20, maxLife: 50, color: colors[Math.floor(Math.random() * colors.length)], size: 1.5 + Math.random() * 3 });
+                particles.push({
+                    x: x + Math.random() * w,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: -Math.random() * 3 - 2,
+                    life: 30 + Math.random() * 20,
+                    maxLife: 50,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: 1.5 + Math.random() * 3
+                });
             }
         }
         
         function updateAndDrawParticles() {
             for (let i = particles.length - 1; i >= 0; i--) {
                 const p = particles[i];
-                p.x += p.vx; p.y += p.vy; p.vy += 0.05; p.life--;
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.05;
+                p.life--;
                 if (p.life <= 0) { particles.splice(i, 1); continue; }
                 const alpha = p.life / p.maxLife;
                 ctx.fillStyle = p.color.startsWith('#fff') ? `rgba(255,255,255,${alpha})` : p.color.replace(')', `, ${alpha})`).replace('rgb', 'rgba');
                 if (p.color === '#ffffff') ctx.fillStyle = `rgba(255,255,255,${alpha})`;
-                ctx.beginPath(); ctx.arc(p.x, p.y + cameraY, p.size, 0, Math.PI * 2); ctx.fill();
+                ctx.beginPath();
+                ctx.arc(p.x, p.y + cameraY, p.size, 0, Math.PI * 2);
+                ctx.fill();
             }
         }
         
-        function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}
-            const oldWindows = currentFloor._windows || [];
-            let newWindows = []; let newWw = currentFloor._windowWidth || 6; let newWh = currentFloor._windowHeight || 6; let newGap = currentFloor._windowGap || 3; let newWc = oldWindows.length;
-            if (ow > 15 && oldWindows.length > 0) {
-                const maxWindowWidth = Math.min(14, ow / 2 - 4); const minWindowWidth = 6;
-                newWw = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(ow / 20)));
-                newWh = Math.max(6, Math.min(12, newWw * 0.8)); newGap = Math.max(3, newWw * 0.4);
-                const maxWindows = Math.floor((ow - newGap) / (newWw + newGap));
-                newWc = Math.min(oldWindows.length, Math.max(1, Math.min(maxWindows, 10)));
-                for (let i = 0; i < newWc; i++) { const oldWin = oldWindows[i]; newWindows.push({ i: i, lit: oldWin.lit, special: oldWin.special, hasResident: oldWin.hasResident }); }
-            } else { newWindows = oldWindows; }
-            const nf={x:ol,y:currentFloor.y,w:ow,_windows:newWindows,_windowWidth:newWw,_windowHeight:newWh,_windowGap:newGap,_windowCount:newWc};floors.push(nf);const fi=floors.length-1;
-            totalFloorsBuilt++;
-            if(residentFloors[fi] && nf._windows.length > 0){
-                const rw = currentFloor._residentWindow !== null ? currentFloor._residentWindow : Math.floor(Math.random() * nf._windows.length);
-                nf._residentWindow = rw;
-                nf._windows.forEach((w, i) => { w.hasResident = (i === rw); });
-                const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);
-                if(res&&!isResidentCollected(res.id))collectResident(res);
-            }
-            const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.02*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();spawnPerfectParticles(nf.x,nf.y,nf.w);}else if(acc>1-0.15*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;
-            const ni=floors.length;
-            if(ni>1&&ni%15===0&&!residentFloors[ni]){ if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){ const newResidents = ALL_RESIDENTS.filter(r => !isResidentCollected(r.id)); if (newResidents.length > 0) { const pick = newResidents[Math.floor(Math.random() * newResidents.length)]; residentFloors[ni] = pick.id; } } }
-            spawnFloor();hintText.style.display='none';autoSave();checkAchievements(); }
+function placeFloor(){ if(!currentFloor||gameState!=='playing')return;const lf=floors[floors.length-1];const ol=Math.max(currentFloor.x,lf.x),or=Math.min(currentFloor.x+currentFloor.w,lf.x+lf.w);const ow=or-ol;if(ow<=0){triggerGameOver();return;}// Переносим окна с пересчётом размеров под новую ширину
+const oldWindows = currentFloor._windows || [];
+let newWindows = [];
+let newWw = currentFloor._windowWidth || 6;
+let newWh = currentFloor._windowHeight || 6;
+let newGap = currentFloor._windowGap || 3;
+let newWc = oldWindows.length;
+
+if (ow > 15 && oldWindows.length > 0) {
+    // Пересчитываем размеры окон под новую ширину
+    const maxWindowWidth = Math.min(14, ow / 2 - 4);
+    const minWindowWidth = 6;
+    newWw = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(ow / 20)));
+    newWh = Math.max(6, Math.min(12, newWw * 0.8));
+    newGap = Math.max(3, newWw * 0.4);
+    const maxWindows = Math.floor((ow - newGap) / (newWw + newGap));
+    newWc = Math.min(oldWindows.length, Math.max(1, Math.min(maxWindows, 10)));
+    
+    // Копируем только нужное количество окон, сохраняя их свойства
+    for (let i = 0; i < newWc; i++) {
+        const oldWin = oldWindows[i];
+        newWindows.push({
+            i: i,
+            lit: oldWin.lit,
+            special: oldWin.special,
+            hasResident: oldWin.hasResident
+        });
+    }
+} else {
+    newWindows = oldWindows;
+}
+
+const nf={x:ol,y:currentFloor.y,w:ow,_windows:newWindows,_windowWidth:newWw,_windowHeight:newWh,_windowGap:newGap,_windowCount:newWc};floors.push(nf);const fi=floors.length-1;
+
+totalFloorsBuilt++;
+
+// Назначаем жильца в окно и собираем
+if(residentFloors[fi] && nf._windows.length > 0){
+    const rw = currentFloor._residentWindow !== null ? currentFloor._residentWindow : Math.floor(Math.random() * nf._windows.length);
+    nf._residentWindow = rw;
+    nf._windows.forEach((w, i) => { w.hasResident = (i === rw); });
+    
+    const res=ALL_RESIDENTS.find(r=>r.id===residentFloors[fi]);
+    if(res&&!isResidentCollected(res.id))collectResident(res);
+}
+
+const acc=ow/lf.w,ab=getArchitectBonus(),cb=1+getCollectionBonus()/100;let earned=0;if(acc>1-0.02*ab){comboCount++;if(comboCount>bestCombo)bestCombo=comboCount;earned=Math.floor(floors.length*(1+Math.min(comboCount,10))*cb);showCombo(comboCount);soundPerfect();spawnPerfectParticles(nf.x,nf.y,nf.w);}else if(acc>1-0.15*ab){comboCount=0;earned=Math.floor(floors.length*0.5*cb);showCombo(0);soundGood();}else{comboCount=0;earned=Math.floor((floors.length/6)*cb);hideCombo();soundPlace();}if(Math.random()<Math.min(getGoldrushChance(),0.57)){earned*=2;showGoldrush();soundGoldrush();}coins+=earned;totalCoinsEarned+=earned;if(floors.length>bestFloors)bestFloors=floors.length;currentFloor=null;if(floors.length>6)targetCameraY=(floors.length-6)*FLOOR_HEIGHT;updateUI();direction*=-1;
+
+// Спавн жильца ДО spawnFloor
+const ni=floors.length;
+if(ni>1&&ni%15===0&&!residentFloors[ni]){
+    if(Math.random()<Math.min(0.20+getMagnetBonus(),0.50)){
+        const newResidents = ALL_RESIDENTS.filter(r => !isResidentCollected(r.id));
+        if (newResidents.length > 0) {
+            const pick = newResidents[Math.floor(Math.random() * newResidents.length)];
+            residentFloors[ni] = pick.id;
+        }
+    }
+}
+
+spawnFloor();hintText.style.display='none';autoSave();checkAchievements(); }
         
         function showGoldrush(){comboPopup.textContent='💰 ЗОЛОТО! ×2';comboPopup.style.color='#ffd700';comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},700);}
         function showCombo(c){if(c>1){comboPopup.textContent=`ИДЕАЛЬНО! x${c} 🔥`;comboPopup.style.color='#ffd700';}else if(c===0&&floors.length>1){comboPopup.textContent='Отлично! ✨';comboPopup.style.color='#fff';}else return;comboPopup.style.opacity='1';comboPopup.style.transform='translate(-50%,-50%) scale(1.2)';clearTimeout(comboPopup._timeout);comboPopup._timeout=setTimeout(()=>{comboPopup.style.opacity='0';comboPopup.style.transform='translate(-50%,-50%) scale(0.8)';},500);}
         function hideCombo(){comboPopup.style.opacity='0';}
-        function triggerGameOver(){soundGameOver();gameState='gameover';currentFloor=null;const tf=floors.length,cb=1+getCollectionBonus()/100;const bc=Math.floor(tf*1*cb);coins+=bc;totalCoinsEarned+=bc;if(tf>bestFloors){bestFloors=tf;bestDisplay.textContent=bestFloors;}goFloorsEl.textContent=tf;goComboEl.textContent=bestCombo;goCoinsEl.textContent=bc;pendingBonusCoins=bc;adBtn.style.display='block';gameoverPanel.style.display='flex';hintText.style.display='none';bottomButtons.style.display='none';updateUI();saveGame();checkAchievements();updateMenuStats();savedGameState=null;resumeBtn.style.display='none';}
+        function triggerGameOver(){soundGameOver();gameState='gameover';currentFloor=null;const tf=floors.length,cb=1+getCollectionBonus()/100;const bc=Math.floor(tf*1*cb);coins+=bc;totalCoinsEarned+=bc;if(tf>bestFloors){bestFloors=tf;bestDisplay.textContent=bestFloors;}goFloorsEl.textContent=tf;goComboEl.textContent=bestCombo;goCoinsEl.textContent=bc;gameoverPanel.style.display='flex';hintText.style.display='none';bottomButtons.style.display='none';updateUI();saveGame();checkAchievements();updateMenuStats();savedGameState=null;resumeBtn.style.display='none';}
         function updateUI(){floorCountEl.textContent=Math.max(1,floors.length);bestDisplay.textContent=bestFloors;comboTextEl.textContent=comboCount;coinDisplayEl.textContent=coins;updateMenuStats();}
         
         function handleTap(e){e.preventDefault();initAudio();if(gameState==='gameover'||panelOpen||gameState!=='playing'||!currentFloor)return;placeFloor();}
@@ -1011,36 +1002,48 @@
             ctx.strokeRect(floor.x, floor.y, floor.w, FLOOR_HEIGHT); ctx.shadowBlur = 0;
             ctx.fillStyle = 'rgba(255,255,255,0.12)'; ctx.fillRect(floor.x, floor.y, floor.w, 3);
             
-            if (floor.w > 15 && index > 0 && floor._windows && floor._windows.length > 0) {
-                const ww = floor._windowWidth || 6;
-                const wh = floor._windowHeight || 6;
-                const wg = floor._windowGap || 3;
-                const wc = floor._windowCount || floor._windows.length;
-                const totalWidth = wc * ww + (wc - 1) * wg;
-                const startX = floor.x + (floor.w - totalWidth) / 2;
+            if (floor.w > 15 && index > 0) {
+                const maxWindowWidth = Math.min(14, floor.w / 2 - 4);
+                const minWindowWidth = 6;
+                const windowWidth = Math.max(minWindowWidth, Math.min(maxWindowWidth, 10 + Math.floor(floor.w / 20)));
+                const windowHeight = Math.max(6, Math.min(12, windowWidth * 0.8));
+                const gap = Math.max(3, windowWidth * 0.4);
+                const maxWindows = Math.floor((floor.w - gap) / (windowWidth + gap));
+                const windowCount = Math.max(1, Math.min(maxWindows, 12));
                 
-                floor._windows.forEach(win => {
-                    const wx = startX + win.i * (ww + wg);
-                    const wy = floor.y + (FLOOR_HEIGHT - wh) / 2;
-                    if (wx < floor.x || wx + ww > floor.x + floor.w) return;
-                    
-                    if (win.hasResident) {
-                        ctx.fillStyle = 'rgba(255,255,150,0.9)'; ctx.fillRect(wx, wy, ww, wh);
-                        ctx.strokeStyle = 'rgba(255,215,0,0.8)'; ctx.lineWidth = 1; ctx.strokeRect(wx, wy, ww, wh);
-                        const resident = ALL_RESIDENTS.find(r => r.id === residentFloors[index]);
-                        if (resident) { ctx.font = `${Math.max(7, ww - 4)}px Arial`; ctx.fillText(resident.emoji, wx + 1, wy + wh - 2); }
-                    } else {
-                        const bgColor = win.lit ? 'rgba(255,255,200,0.5)' : 'rgba(20,20,40,0.5)';
-                        ctx.fillStyle = bgColor; ctx.fillRect(wx, wy, ww, wh);
-                        ctx.strokeStyle = win.lit ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
-                        ctx.lineWidth = 0.5; ctx.strokeRect(wx, wy, ww, wh);
-                        if (ww >= 8) {
-                            ctx.strokeStyle = win.lit ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.05)';
-                            ctx.beginPath(); ctx.moveTo(wx + ww/2, wy); ctx.lineTo(wx + ww/2, wy + wh);
-                            ctx.moveTo(wx, wy + wh/2); ctx.lineTo(wx + ww, wy + wh/2); ctx.stroke();
-                        }
-                    }
-                });
+                if (!floor._windows) {
+    floor._windows = [];
+    // Окна будут сгенерированы в placeFloor
+}
+
+const ww = floor._windowWidth;
+const wh = floor._windowHeight;
+const wg = floor._windowGap;
+const totalWidth = windowCount * ww + (windowCount - 1) * wg;
+const startX = floor.x + (floor.w - totalWidth) / 2;
+
+floor._windows.forEach(win => {
+    const wx = startX + win.i * (ww + wg);
+    const wy = floor.y + (FLOOR_HEIGHT - wh) / 2;
+    if (wx < floor.x || wx + ww > floor.x + floor.w) return;
+    
+    if (win.hasResident) {
+        ctx.fillStyle = 'rgba(255,255,150,0.9)'; ctx.fillRect(wx, wy, ww, wh);
+        ctx.strokeStyle = 'rgba(255,215,0,0.8)'; ctx.lineWidth = 1; ctx.strokeRect(wx, wy, ww, wh);
+        const resident = ALL_RESIDENTS.find(r => r.id === residentFloors[index]);
+        if (resident) { ctx.font = `${Math.max(7, ww - 4)}px Arial`; ctx.fillText(resident.emoji, wx + 1, wy + wh - 2); }
+    } else {
+        const bgColor = win.lit ? 'rgba(255,255,200,0.5)' : 'rgba(20,20,40,0.5)';
+        ctx.fillStyle = bgColor; ctx.fillRect(wx, wy, ww, wh);
+        ctx.strokeStyle = win.lit ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 0.5; ctx.strokeRect(wx, wy, ww, wh);
+        if (ww >= 8) {
+            ctx.strokeStyle = win.lit ? 'rgba(0,0,0,0.2)' : 'rgba(255,255,255,0.05)';
+            ctx.beginPath(); ctx.moveTo(wx + ww/2, wy); ctx.lineTo(wx + ww/2, wy + wh);
+            ctx.moveTo(wx, wy + wh/2); ctx.lineTo(wx + ww, wy + wh/2); ctx.stroke();
+        }
+    }
+});
             }
         }
         
@@ -1058,6 +1061,10 @@
         if ('serviceWorker' in navigator && location.hostname.includes('github.io')) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
         }
+		// Офлайн-режим
+    if ('serviceWorker' in navigator && location.hostname.includes('github.io')) {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
     })();
     </script>
 </body>
